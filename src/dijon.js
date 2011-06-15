@@ -1,12 +1,9 @@
 /** @namespace */
 dijon = {
-	VERSION : '0.2.0'
-}
-
-dijon.qualifiers = {
-	injector : {},
-	context : {},
-	signalMap : {},
+	VERSION : '0.2.0',
+	INJECTOR : 'dijon.INJECTOR',
+	CONTEXT : 'dijon.CONTEXT',
+	SIGNAL_MAP : 'dijon.SIGNAL_MAP'
 }
 
   //======================================//
@@ -362,28 +359,24 @@ dijon.Context = function(){
 	this._signalMap = null;
 	
 	this._init = function(){
-		this._injector = new dijon.Injector();
-		
+		this._createInjector();
 		this._mapInjectionPoints();
 		this._mapDependencies();
-		this._instantiateDependencies();
+	}
+	
+	this._createInjector = function(){
+		this._injector = new dijon.Injector();		
 	}
 	
 	this._mapInjectionPoints = function(){
-		this._injector.addInjectionPoint( dijon.Context, 'signalMap', dijon.qualifiers.signalMap );
-		this._injector.addInjectionPoint( dijon.SignalMap, 'injector', dijon.qualifiers.injector );
+		this._injector.addInjectionPoint( dijon.SignalMap, 'injector', dijon.INJECTOR );
 	}
-	
 	
 	this._mapDependencies = function(){
-		this._injector.mapValue( dijon.qualifiers.injector, this._injector );
-		this._injector.mapSingletonOf( dijon.qualifiers.signalMap, dijon.SignalMap );
+		this._injector.mapValue( dijon.INJECTOR, this._injector );
+		this._injector.mapSingletonOf( dijon.SIGNAL_MAP, dijon.SignalMap );
 	}
 	
-	
-	this._instantiateDependencies = function(){
-		//this.injector.injectInto( this );
-	}
 	
 	this._init();
 }
@@ -392,6 +385,6 @@ dijon.Context = function(){
  * @returns {dijon.qualifiers.signalMap}
  */
 dijon.Context.prototype.getSignalMap = function(){
-	if( this._signalMap == null || this._signalMap == undefined ) this._signalMap = this._injector.getInstance( dijon.qualifiers.signalMap );
+	if( this._signalMap == null || this._signalMap == undefined ) this._signalMap = this._injector.getInstance( dijon.SIGNAL_MAP );
 	return this._signalMap;
 }
