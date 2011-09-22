@@ -448,13 +448,12 @@
 		 * 
 		 * @param target
 		 * @param property
-		 * @param clazz
 		 * @param [name]
 		 */
-		removeInjectionPoint : function( target, property, clazz, name ){
+		removeInjectionPoint : function( target, property, name ){
 			for( var i = 0, n = this._injectionPoints.length ; i < n ; i++ ){
 				var point = this._injectionPoints[ i ];
-				if( point.target == target && point.property == property && point.clazz == clazz && point.name == name ) {
+				if( point.target == target && point.property == property && point.name == name ) {
 					this._injectionPoints.splice( i, 1 );
 					return;
 				}

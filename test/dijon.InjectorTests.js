@@ -14,7 +14,7 @@ function TestClassA(){
 function TestClassB(){
 	this.name = 'TestClassB';
 
-	this.bar = null;
+	this.bar = undefined;
 }
 
 module( 'dijon.Injector', {
@@ -163,4 +163,13 @@ test( 'addInjectionPoint', function(){
 	injector.addInjectionPoint( TestClassB, 'bar', TestClassA );
 	var b = injector.getInstance( TestClassB );
 	ok( b.bar instanceof TestClassA );
+})
+
+test( 'removeInjectionPoint', function() {
+	injector.mapSingleton( TestClassA );
+	injector.mapSingleton( TestClassB );
+	injector.addInjectionPoint( TestClassB, 'bar', TestClassA );
+	injector.removeInjectionPoint( TestClassB, 'bar' );
+	var b = injector.getInstance( TestClassB );
+	strictEqual( b.bar, undefined );
 })
