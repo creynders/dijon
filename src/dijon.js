@@ -19,7 +19,7 @@
 	//======================================//
 
 	/**
-	 * @class EventDispatcher
+	 * @class dijon.EventDispatcher
 	 * @author Camille Reynders - www.creynders.be
 	 * @version 1.4.0
 	 * @constructor
@@ -45,6 +45,8 @@
 		 */
 		_removeListenerByIndex : function( eventType, index ){
 			this._listeners[ eventType ].splice( index, 1 );
+			if( this._listeners[ eventType ].length <= 0 )
+				delete this._listeners[ eventType ];
 			this._length--;
 		},
 
@@ -70,8 +72,8 @@
 		 */
 		addScopedListener : function( eventType, listener, scope, oneShot ){
 			if( oneShot == undefined ) oneShot = false;
-			if( ! this._listeners[ eventType ] ){
-				this._listeners[ eventType ] = new Array();
+			if( this._listeners[ eventType ] == undefined ){
+				this._listeners[ eventType ] = [];
 			}
 			this._listeners[ eventType ].push( {
 				scope : scope,
@@ -80,6 +82,37 @@
 			} );
 			++this._length;
 			return this;
+		},
+
+		/**
+		 * 
+		 * @param eventType
+		 * @param listener
+		 * @return {Boolean}
+		 */
+		hasListener : function( eventType, listener ){
+			return this.hasScopedListener( eventType, listener, undefined );
+		},
+
+		/**
+		 *
+		 * @param eventType
+		 * @param listener
+		 * @param scope
+		 * @return {Boolean}
+		 */
+		hasScopedListener : function( eventType, listener, scope ){
+			if( this._listeners[ eventType ] ){
+				var listeners = this._listeners[ eventType ];
+				for( var i = 0, n = listeners.length ; i < n ; i++  ){
+					var obj = listeners[ i ];
+					if( obj.listener === listener && obj.scope === scope ){
+						return true;
+					}
+				}
+			}
+
+			return false;
 		},
 
 		/**
@@ -101,7 +134,7 @@
 		 * @return {EventDispatcher} The EventDispatcher instance
 		 */
 		removeScopedListener : function( eventType, listener, scope ) {
-			for ( var i = 0 ; i < this._listeners[ eventType ].length ;  ){
+			for ( var i = 0 ; this._listeners[ eventType ] && i < this._listeners[ eventType ].length ;  ){
 				var obj = this._listeners[ eventType ][ i ];
 				if( obj.listener == listener && obj.scope === scope ){
 					this._removeListenerByIndex( eventType, i );
@@ -131,7 +164,7 @@
 			}
 
 			if( this._listeners[ event.type ] ){
-				for( var i = 0 ; i < this._listeners[ event.type ].length ;  ){
+				for( var i = 0 ; this._listeners[ event.type ] && i < this._listeners[ event.type ].length ;  ){
 					var obj = this._listeners[ event.type ][ i ];
 					if( obj.oneShot ){
 						this._removeListenerByIndex( event.type, i );
@@ -266,7 +299,7 @@
 		this.qcn = 'dijon.Injector';
 
 		/** @private */
-		this._mappings = new dijon.Dictionary();
+		this._mappingsByEventType = new dijon.Dictionary();
 
 		/** @private */
 		this._injectionPoints = [];
@@ -291,7 +324,7 @@
 		 * @param overrideSingleton
 		 */
 		_retrieveFromCacheOrCreate : function( clazz, overrideSingleton ){
-			var value = this._mappings.getValue( clazz );
+			var value = this._mappingsByEventType.getValue( clazz );
 			var output = null;
 			if( value ){
 				//found
@@ -336,6 +369,7 @@
 		 * @param {Function} whenAskedFor
 		 */
 		mapSingleton : function( whenAskedFor ){
+			if( this._mappingsByEventType.hasValue( whenAskedFor ) ) throw new Error( this.qcn + ' cannot remap ' + ' without unmapping first' );
 			this.mapSingletonOf( whenAskedFor, whenAskedFor );
 		},
 
@@ -345,7 +379,8 @@
 		 * @param useValue
 		 */
 		mapValue : function( whenAskedFor, useValue ){
-			this._mappings.add(
+			if( this._mappingsByEventType.hasValue( whenAskedFor ) ) throw new Error( this.qcn + ' cannot remap ' + ' without unmapping first' );
+			this._mappingsByEventType.add(
 				whenAskedFor,
 				{
 					clazz : whenAskedFor,
@@ -360,7 +395,7 @@
 		 * @param whenAskedFor
 		 */
 		hasMapping : function( whenAskedFor ){
-			return this._mappings.hasValue( whenAskedFor );
+			return this._mappingsByEventType.hasValue( whenAskedFor );
 		},
 
 		/**
@@ -369,7 +404,8 @@
 		 * @param instantiateClass
 		 */
 		mapClass : function( whenAskedFor, instantiateClass ){
-			this._mappings.add(
+			if( this.hasMapping( whenAskedFor ) ) throw new Error( this.qcn + ' cannot remap ' + ' without unmapping first' );
+			this._mappingsByEventType.add(
 				whenAskedFor,
 				{
 					clazz : instantiateClass,
@@ -385,7 +421,8 @@
 		 * @param useSingletonOf
 		 */
 		mapSingletonOf : function( whenAskedFor, useSingletonOf ){
-			this._mappings.add(
+			if( this._mappingsByEventType.hasValue( whenAskedFor ) ) throw new Error( this.qcn + ' cannot remap ' + ' without unmapping first' );
+			this._mappingsByEventType.add(
 				whenAskedFor,
 				{
 					clazz : useSingletonOf,
@@ -420,7 +457,7 @@
 		 * @param whenAskedFor
 		 */
 		unmap : function( whenAskedFor ){
-			this._mappings.remove( whenAskedFor );
+			this._mappingsByEventType.remove( whenAskedFor );
 		},
 
 		/**
@@ -438,7 +475,189 @@
 			}
 		}
 
-	}//dijon.Injector.prototype
+	} //dijon.Injector.prototype
+
+	  //======================================//
+	 // dijon.EventMap
+	//======================================//
+
+	/**
+	 @class dijon.EventMap
+	 @author Camille Reynders - www.creynders.be
+	 @constructor
+	*/
+	dijon.EventMap = function(){
+		this.qcn = 'dijon.EventMap';
+
+		/**
+		 * @private
+		 * @type Object
+		 */
+		this._mappingsByEventType = {};
+
+		/**
+		 * @private
+		 * @type Object
+		 */
+		this._mappingsNumByClazz = {};
+		
+		/**
+		 * @private
+		 * @type dijon.EventDispatcher
+		 */
+		this.dispatcher = undefined; //inject
+
+		/**
+		 * @private
+		 * @type dijon.Injector
+		 */
+		this.injector = undefined; //inject
+
+	} //dijon.EventMap
+
+	dijon.EventMap.prototype = {
+		/**
+		 * @private
+		 * @param {Object} event
+		 */
+		_handleRuledMappedEvent : function( event ){
+			var mappingsListForEvent = this._mappingsByEventType[ event.type ];
+			var args = [];
+
+			//[!] args includes the event object
+			for( var i = 0, n = arguments.length; i < n ; i++ ){
+				args.push( arguments[ i ] );
+			}
+			for( var i = 0, n = mappingsListForEvent.length; i < n; i++ ){
+				var obj = mappingsListForEvent[i];
+				if( this.injector.hasMapping( obj.clazz ) ){
+					if( obj.oneShot )
+						this.removeRuledMapping( event.type, obj.clazz, obj.handler );
+					var instance = this.injector.getInstance( obj.clazz );
+					obj.handler.apply( instance, args );
+				}else{
+					//injector mapping has been deleted, but
+					//eventMap mapping not
+					//TODO: remove or throw error?
+				}
+			}
+		},
+
+		/**
+		 * 
+		 * @param eventType
+		 * @param clazz
+		 * @param handler
+		 */
+		_removeRuledMappingAndUnmapFromInjectorIfNecessary : function( eventType, clazz, handler ){
+			this.removeRuledMapping( eventType, clazz, handler );
+			var mappingsNum = this._mappingsNumByClazz[ clazz ] || 0;
+			if( mappingsNum <= 0 )
+				this.injector.unmap( clazz );
+		},
+
+		/**
+		 * 
+		 * @param eventType
+		 * @param clazz
+		 * @param handler
+		 */
+		removeRuledMapping : function( eventType, clazz, handler ){
+			var mappingsListForEvent = this._mappingsByEventType[ eventType ];
+			if( mappingsListForEvent ){
+				for( var i = 0, n = mappingsListForEvent.length; i < n ; i++ ){
+					var mapping = mappingsListForEvent[ i ];
+					if( mapping.clazz === clazz && mapping.handler === handler ){
+						delete mapping.clazz;
+						delete mapping.handler;
+						mapping = null;
+						mappingsListForEvent.splice( i, 1 );
+						if( mappingsListForEvent.length <= 0 )
+							delete mappingsListForEvent[ eventType ];
+						var mappingsNum = this._mappingsNumByClazz[ clazz ] || 0;
+						if( mappingsNum <= 0 ){
+							delete this._mappingsNumByClazz[ clazz ];
+						}else{
+							this._mappingsNumByClazz[ clazz ] = --mappingsNum;
+						}
+						return true;
+					}
+				}
+			}
+
+			return false;
+		},
+		
+		/**
+		 * @param eventType
+		 * @param clazz
+		 * @param handler
+		 * @param oneShot
+		 */
+		addRuledMapping : function( eventType, clazz, handler, oneShot ){
+			if( ! this._mappingsByEventType[ eventType ] ){
+				this._mappingsByEventType[ eventType ] = [];
+				this.dispatcher.addScopedListener( eventType, this._handleRuledMappedEvent, this );
+			}
+			
+			var mappingsNum = this._mappingsNumByClazz[ clazz ] || 0;
+			this._mappingsNumByClazz[ clazz ] = ++mappingsNum;
+			
+			this._mappingsByEventType[ eventType ].push( { clazz : clazz, handler : handler, oneShot : oneShot } );
+		},
+
+
+		/**
+		 *
+		 * @param eventType
+		 * @param clazz
+		 * @param handler
+		 * @param {Boolean} oneShot, defaults false
+		 */
+		addClassMapping : function( eventType, clazz, handler, oneShot ){
+			if( ! this.injector.hasMapping( clazz ) ){
+				this.injector.mapClass( clazz, clazz );
+			}
+
+			this.addRuledMapping( eventType, clazz, handler, oneShot );
+		},
+
+		addSingletonMapping : function( eventType, clazz, handler, oneShot ){
+			if( ! this.injector.hasMapping( clazz ) ){
+				this.injector.mapSingleton( clazz );
+			}
+			this.addRuledMapping( eventType, clazz, handler, oneShot );
+		},
+
+		addObjectMapping : function( eventType, instance, handler, oneShot ){
+			if( ! this.dispatcher.hasScopedListener( eventType, handler, instance ) )
+				this.dispatcher.addScopedListener( eventType, handler, instance, oneShot );
+		},
+
+		addFunctionMapping : function( eventType, listener, oneShot ){
+			if( ! this.dispatcher.hasListener( eventType, listener ) )
+				this.dispatcher.addListener( eventType, listener, oneShot );
+		},
+
+		removeFunctionMapping : function( eventType, listener ){
+			if( this.dispatcher.hasListener( eventType, listener ) )
+				this.dispatcher.removeListener( eventType, listener );
+		},
+
+		removeObjectMapping : function( eventType, instance, handler ){
+			if( this.dispatcher.hasScopedListener( eventType, handler, instance ) )
+				this.dispatcher.removeScopedListener( eventType, handler, instance );
+		},
+
+		removeClassMapping : function( eventType, clazz, handler ){
+			this._removeRuledMappingAndUnmapFromInjectorIfNecessary( eventType, clazz, handler );
+		},
+
+		removeSingletonMapping : function( eventType, clazz, handler ){
+			this._removeRuledMappingAndUnmapFromInjectorIfNecessary( eventType, clazz, handler );
+		}
+
+	}//dijon.EventMap.prototype
 
 
 	global.dijon = dijon;
