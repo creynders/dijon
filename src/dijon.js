@@ -187,12 +187,11 @@
 		/**
 		 * @private
 		 * @param key
-		 * @param name
 		 * @return index
 		 */
-		_getIndexByKey : function( key, name ){
+		_getIndexByKey : function( key ){
 			for( var i = 0, n = this._map.length ; i < n ; i++ ){
-				if( this._map[ i ].key === key && this._map[ i ].name == name ) return i;
+				if( this._map[ i ].key === key ) return i;
 			}
 
 			return -1;
@@ -201,22 +200,19 @@
 		/**
 		 * @param {Object} key
 		 * @param {Object} value
-		 * @param {String} [name]
 		 * @return {Dictionary} the Dictionary instance
 		 */
-		add : function( key, value, name ){
-			var index = this._getIndexByKey( key, name );
+		add : function( key, value ){
+			var index = this._getIndexByKey( key );
 			if( index < 0 ){
 				this._map.push( {
 					key : key,
-					value : value,
-					name : name
+					value : value
 				});
 			}else{
 				this._map[ index ] = {
 					key : key,
-					value : value,
-					name : name
+					value : value
 				}
 			}
 			return this;
@@ -224,11 +220,10 @@
 
 		/**
 		 * @param {Object} key
-		 * @param {String} [name]
 		 * @return {Dictionary} the Dictionary instance
 		 */
-		remove : function( key, name ){
-			var index = this._getIndexByKey( key, name );
+		remove : function( key ){
+			var index = this._getIndexByKey( key );
 			if( index >= 0 ) return this._map.splice( index, 1 ).value;
 
 			return this;
@@ -236,11 +231,10 @@
 
 		/**
 		 * @param {Object} key
-		 * @param {String} [name]
-		 * @return {Object} 
+		 * @return {Object}
 		 */
-		getValue : function( key, name ){
-			var index = this._getIndexByKey( key, name );
+		getValue : function( key ){
+			var index = this._getIndexByKey( key );
 
 			if( index >= 0 ) return this._map[ index ].value;
 
@@ -250,11 +244,10 @@
 		/**
 		 * 
 		 * @param key
-		 * @param [name]
 		 * @return {Boolean}
 		 */
-		hasValue : function( key, name ){
-			var index = this._getIndexByKey( key, name );
+		hasValue : function( key ){
+			var index = this._getIndexByKey( key );
 			return ( index >= 0 );
 		}
 
