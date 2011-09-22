@@ -1,390 +1,481 @@
-/** @namespace */
-dijon = {
-	VERSION : '0.2.0',
-	INJECTOR : 'dijon.INJECTOR',
-	CONTEXT : 'dijon.CONTEXT',
-	SIGNAL_MAP : 'dijon.SIGNAL_MAP'
-}
-
-  //======================================//
- // dijon.MinimumArgumentsError
-//======================================//
-
-/**
- @class dijon.MinimumArgumentsError
- @author <a href="mailto:info@creynders.be">creynders</a>
- @constructor
-*/
-dijon.MinimumArgumentsError = function( classQCN, methodName, minArgsLength ){
-	this.qcn = 'dijon.MinimumArgumentsError';
-	this.message = classQCN + '#' + methodName + " needs at least " + minArgsLength + " argument(s)."
-}
-
-  //======================================//
- // dijon.Dictionary
-//======================================//
-
-/**
- @class Hash
- @author <a href="mailto:info@creynders.be">creynders</a>
- @constructor
+/*
+	Dijon Framework
+	@author Camille Reynders - www.creynders.be
+	@version 0.2.0
  */
-dijon.Dictionary = function(){
-	this.qcn = 'dijon.Dictionary';
-}
-dijon.Dictionary.prototype._map = [];
 
-dijon.Dictionary.prototype._getIndexByKey = function( key, name ){
-	for( var i = 0, n = this._map.length ; i < n ; i++ ){
-		if( this._map[ i ].key === key && this._map[ i ].name == name ) return i;
-	}
+(function(global){
+
+	/** @namespace */
+	var dijon = {
+		/**
+		 * framework version number
+		 */
+		VERSION : '0.2.0'
+	}//dijon
+
+	  //======================================//
+	 // dijon.EventDispatcher
+	//======================================//
+
+	/**
+	 * @class EventDispatcher
+	 * @author Camille Reynders - www.creynders.be
+	 * @version 1.4.0
+	 * @constructor
+	 */
+	dijon.EventDispatcher = function(){
+
+		this.qcn = 'dijon.EventDispatcher';
+
+		/** @private */
+		this._listeners = {};
+
+		/** @private */
+		this._length = 0;
+
+	}//dijon.EventDispatcher
 	
-	return -1;
-}
+	dijon.EventDispatcher.prototype = {
 
-/**
- * @param {Object} key
- * @param {Object} value
- * @param {String} name [optional]
- */
-dijon.Dictionary.prototype.add = function( key, value, name ){
-	var index = this._getIndexByKey( key, name );
-	if( index < 0 ){
-		this._map.push( {
-			key : key,
-			value : value,
-			name : name
-		});
-	}else{
-		this._map[ index ] = {
-			key : key,
-			value : value,
-			name : name
-		}
-	}
-}
+		/**
+		 * @private
+		 * @param eventType
+		 * @param index
+		 */
+		_removeListenerByIndex : function( eventType, index ){
+			this._listeners[ eventType ].splice( index, 1 );
+			this._length--;
+		},
 
-/**
- * @param {Object} key
- * @param {String} name
- */
-dijon.Dictionary.prototype.remove = function( key, name ){
-	var index = this._getIndexByKey( key, name );
-	if( index >= 0 ) return this._map.splice( index, 1 ).value;
-	
-	return null;
-}
+		/**
+		 * adds a handler to be invoked when an event is dispatched
+		 * @param {String} eventType The name of the event to be listened to
+		 * @param {Function} listener The handler to be called when the event has been dispatched
+		 * @param {Boolean} [oneShot] Whether the listener must be called only once, default <code>false</code>
+		 * @return {EventDispatcher} The EventDispatcher instance
+		*/
+		addListener : function( eventType, listener, oneShot ) {
+			this.addScopedListener( eventType, listener, undefined, oneShot );
+			return this;
+		},
 
-/**
- * @param {Object} key
- * @param {String} name
- */
-dijon.Dictionary.prototype.getValue = function( key, name ){
-	var index = this._getIndexByKey( key, name );
-	
-	if( index >= 0 ) return this._map[ index ].value;
-	
-	return null;
-}
-
-dijon.Dictionary.prototype.hasValue = function( key, name ){
-	var index = this._getIndexByKey( key, name );
-	return ( index >= 0 );
-}
-
-
-
-  //======================================//
- // dijon.Injector
-//======================================//
-
-/**
- @class dijon.Injector
- @author info@creynders.be
- @constructor
-*/
-dijon.Injector = function(){
-	this.qcn = 'dijon.Injector';
-	
-	this._mappings = new dijon.Dictionary();
-	this._injectionPoints = new Array();
-}
-
-/** @private */
-dijon.Injector.prototype._createInstance = function( clazz ){
-    var instance = new clazz();
-	this.injectInto( instance );
-    if( "setup" in instance ) instance.setup.call( instance );
-    return instance;
-}
-
-dijon.Injector.prototype.addInjectionPoint = function( target, property, clazz, name ){
-	var minArgsLength = 3;
-	if( arguments.length < minArgsLength ) throw dijon.minimumArgumentsError( this.qcn, "addInjectionPoint", minArgsLength );
-	this._injectionPoints.push( {
-		target : target,
-		property : property,
-		name : name,
-		clazz : clazz
-	} );
-}
-
-dijon.Injector.prototype._doGetInstance = function( clazz, name, overrideSingleton ){
-	var minArgsLength = 1;
-	if( arguments.length < minArgsLength ) throw dijon.minimumArgumentsError( this.qcn, "getInstance", minArgsLength );
-	var value = this._mappings.getValue( clazz, name );
-	var output = null;
-	if( value ){
-		//found
-		if( value.isSingleton && ! overrideSingleton ){
-			if( value.object == null ){
-				 value.object = this._createInstance( value.clazz );
+		/**
+		 * adds a handler to be invoked in a specific <code>scope</code> when an event of <code>eventType</code> is dispatched
+		 * @param {String} eventType The name of the event to be listened to
+		 * @param {Function} listener The handler to be called when the event has been dispatched
+		 * @param {Object} scope The scope in which the listener will be called
+		 * @param {Boolean} [oneShot] Whether the listener must be called only once, default <code>false</code>
+		 * @return {EventDispatcher} The EventDispatcher instance
+		 */
+		addScopedListener : function( eventType, listener, scope, oneShot ){
+			if( oneShot == undefined ) oneShot = false;
+			if( ! this._listeners[ eventType ] ){
+				this._listeners[ eventType ] = new Array();
 			}
-			output = value.object;
-		}else{
-			output = this._createInstance( value.clazz );            
-		}
-	}else{
-		throw new Error( this.qcn + " is missing a rule for " + clazz );        
-	}
-	return output;
-}
-
-/**
-Create or retrieve an instance of the given class
-@returns {Object} an instance of the object mapped to <code>classRef</code>
-*/
-dijon.Injector.prototype.getInstance = function( clazz, name ){
-	return this._doGetInstance( clazz, name, false );
-}
-
-/**
-When asked for an instance of the class <code>whenAskedFor</code> inject an (- the only -) instance of <code>whenAskedFor</code>.
-@param {Object} whenAskedFor
-@returns {null}
-*/
-dijon.Injector.prototype.mapSingleton = function( whenAskedFor, name ){
-	var minArgsLength = 1;
-	if( arguments.length < minArgsLength ) throw dijon.minimumArgumentsError( this.qcn, "mapSingleton", minArgsLength );
-	this.mapSingletonOf( whenAskedFor, whenAskedFor, name );
-}
-
-/**
-When asked for an instance of the class <code>whenAskedFor</code> inject the instance <code>useValue</code>.
-@param {Object} whenAskedFor
-@param {Object} useValue
-@returns {Object} passes <code>useValue</code> through
-*/
-dijon.Injector.prototype.mapValue = function( whenAskedFor, useValue, name ){
-	var minArgsLength = 2;
-	if( arguments.length < minArgsLength ) throw dijon.minimumArgumentsError( this.qcn, "mapValue", minArgsLength );
-	this._mappings.add(
-		whenAskedFor,
-		{
-			clazz : null, 
-			object : useValue,
-			isSingleton : true
+			this._listeners[ eventType ].push( {
+				scope : scope,
+				listener : listener,
+				oneShot : oneShot
+			} );
+			++this._length;
+			return this;
 		},
-		name
-	);
-}
 
-/**
-Does a rule exist to satsify such a request?
-@param {Object} rule
-@returns {Boolean}
-*/
-dijon.Injector.prototype.hasMapping = function( whenAskedFor, name ){
-	var minArgsLength = 1;
-	if( arguments.length < minArgsLength ) throw dijon.minimumArgumentsError( this.qcn, "hasMapping", minArgsLength );
-	return this._mappings.hasValue( whenAskedFor, name );
-}
-
-/**
-When asked for an instance of the class <code>whenAskedFor</code> inject a <b>new</b> instance of <code>instantiateClass</code>.
-@param {Object} whenAskedFor
-@param {Object} instantiateClass
-@returns {null}
-*/
-dijon.Injector.prototype.mapClass = function( whenAskedFor, instantiateClass, name ){
-	var minArgsLength = 2;
-	if( arguments.length < minArgsLength ) throw new dijon.MinimumArgumentsError( this.qcn, "mapClass", minArgsLength );
-	this._mappings.add(
-		whenAskedFor,
-		{
-			clazz : instantiateClass, 
-			object : null,
-			isSingleton : false
+		/**
+		 *
+		 * @param {String} eventType The name of the event to be listened to
+		 * @param {Function} listener The handler to be called when the event has been dispatched
+		 * @return {EventDispatcher} The EventDispatcher instance
+		 */
+		removeListener : function( eventType, listener ){
+			this.removeScopedListener( eventType, listener, undefined );
+			return this;
 		},
-		name
-	);
-}
 
-/**
-When asked for an instance of the class <code>whenAskedFor</code> inject an instance of <code>useSingletonOf</code>.
-@param {Object} whenAskedFor
-@param {Object} useSingletonOf
-@returns {null}
-*/
-dijon.Injector.prototype.mapSingletonOf = function( whenAskedFor, useSingletonOf, name ){
-	var minArgsLength = 2;
-	if( arguments.length < minArgsLength ) throw new dijon.MinimumArgumentsError( this.qcn, "mapSingletonOf", minArgsLength );
-	this._mappings.add(
-		whenAskedFor,
-		{
-			clazz : useSingletonOf, 
-			object : null,
-			isSingleton : true
+		/**
+		 * 
+		 * @param {String} eventType The name of the event to be listened to
+		 * @param {Function} listener The handler to be called when the event has been dispatched
+		 * @param {Object} scope The scope in which the listener will be called
+		 * @return {EventDispatcher} The EventDispatcher instance
+		 */
+		removeScopedListener : function( eventType, listener, scope ) {
+			for ( var i = 0 ; i < this._listeners[ eventType ].length ;  ){
+				var obj = this._listeners[ eventType ][ i ];
+				if( obj.listener == listener && obj.scope === scope ){
+					this._removeListenerByIndex( eventType, i );
+				}else{
+					i++;
+				}
+			}
+			return this;
 		},
-		name
-	);
-}
 
-/**
-creates an instance of <code>whenAskedFor</code>.
-Is a wrapper for getInstance, w/o return, just to create a semantic difference.
-@param {Object} whenAskedFor
-@returns {null}
-*/
-dijon.Injector.prototype.instantiate = function( clazz, name ){
-	return this._doGetInstance( clazz, name, true );
-}
+		/**
+		 * dispatches an event with any number of arguments [0;n]
+		 * @param {Object} event The event object or event type
+		 * @param ... Any number of parameters
+		 * @return {EventDispatcher} The EventDispatcher instance
+		 */
+		dispatchEvent : function( event ){
+			if (typeof event == "string"){
+				event = { type: event };
+			}
+			if (!event.target){
+				event.target = this;
+			}
+			var args = [];
+			for( var i = 1, n = arguments.length; i < n ; i++ ){
+				args.push( arguments[ i ] );
+			}
 
-dijon.Injector.prototype.injectInto = function( instance ){
-	var minArgsLength = 1;
-	if( arguments.length < minArgsLength ) throw dijon.minimumArgumentsError( this.qcn, "injectInto", minArgsLength );
-	for( var i = 0, n = this._injectionPoints.length ; i < n ; i++ ){
-		var mapping = this._injectionPoints[ i ];
-		if( instance && instance instanceof mapping.target && mapping.property in instance ) instance[ mapping.property ] = this.getInstance( mapping.clazz, mapping.name );
-	}	
-}
+			if( this._listeners[ event.type ] ){
+				for( var i = 0 ; i < this._listeners[ event.type ].length ;  ){
+					var obj = this._listeners[ event.type ][ i ];
+					if( obj.oneShot ){
+						this._removeListenerByIndex( event.type, i );
+					}else{
+						i++;
+					}
+					obj.listener.call( obj.scope, event, args );
+				}
+			}
 
-dijon.Injector.prototype.unmap = function( whenAskedFor, name ){
-	this._mappings.remove( whenAskedFor, name );
-}
+			return this;
+		},
 
-dijon.Injector.prototype.removeInjectionPoint = function( target, property, clazz, name ){
-	for( var i = 0, n = this._injectionPoints.length ; i < n ; i++ ){
-		var point = this._injectionPoints[ i ];
-		if( point.target == target && point.property == property && point.clazz == clazz && point.name == name ) {
-			this._injectionPoints.splice( i, 1 );
-			return;
+		/**
+		 * removes all event listeners
+		 * @return {EventDispatcher} The EventDispatcher instance
+		 */
+		removeAllListeners : function(){
+		   this._listeners = {};
+		   this._length = 0;
+
+		   return this;
+		},
+
+		/**
+		 * Returns the number of listeners
+		 * @return {Number} The number of listeners
+		 */
+		length : function(){
+			return this._length;
 		}
-	}
-}
 
-  //======================================//
- // dijon.SignalMap
-//======================================//
+	}//dijon.EventDispatcher.prototype
 
-/**
- @class dijon.SignalMap
- @author <a href="mailto:info@creynders.be">creynders</a>
- @constructor
-*/
-dijon.SignalMap = function(){
-	this.qcn = 'dijon.SignalMap';
-	
-	this._map = [];
-	
-	/** @type dijon.Injector */
-	this.injector = null;
-}
+	  //======================================//
+	 // dijon.Dictionary
+	//======================================//
 
+	/**
+	 @class dijon.Dictionary
+	 @author Camille Reynders - www.creynders.be
+	 @constructor
+	 */
+	dijon.Dictionary = function(){
+		this.qcn = 'dijon.Dictionary';
+		/**
+		 * @private
+		 */
+		this._map = [];
+	}//dijon.Dictionary
 
-/**
- * @param {signals.Signal} signal
- * @param {Function} callback
- * @param {Object} scope [optional] defaults to global
- * @param {Boolean} oneShot [optional] defaults to false
- */
-dijon.SignalMap.prototype.mapCallback = function( signal, callback, scope, oneShot ){
-	var binding = ( oneShot ) ? signal.addOnce( callback ) : signal.add( callback );
-	if( scope ) binding.context = scope;
-	return binding;
-}
+	dijon.Dictionary.prototype = {
+		/**
+		 * @private
+		 * @param key
+		 * @param name
+		 * @return index
+		 */
+		_getIndexByKey : function( key, name ){
+			for( var i = 0, n = this._map.length ; i < n ; i++ ){
+				if( this._map[ i ].key === key && this._map[ i ].name == name ) return i;
+			}
 
-/**
- * @param {signals.Signal} signal
- * @param {Function} callback
- */
-dijon.SignalMap.prototype.unmapCallback = function( signal, callback ){
-	signal.remove( callback );
-}
+			return -1;
+		},
 
-/**
- * @param {signals.Signal} signal
- * @param {Object} clazz
- * @param {Function} handler [optional] defaults to 'execute', falls back on constructor
- * @param {Boolean} oneShot [optional] defaults to false
- */
-dijon.SignalMap.prototype.mapClass = function( signal, clazz, handler, oneShot ){
-	if( ! this.injector.hasMapping( clazz ) ) this.injector.mapClass( clazz, clazz );
-	var callback = function(){
-		var instance = this.injector.getInstance( clazz );
-		if( handler ) handler.apply( instance, arguments );
-		else if( instance.execute ) instance.execute.apply( instance, arguments );
-		
-		if( oneShot ) this.unmapClass( signal, clazz, handler );
-	}
-	var binding = ( oneShot ) ? signal.addOnce( callback, this ) : signal.add( callback, this );
-	this._map.push( { signal : signal, target : clazz, handler : handler, callback : callback } );
-	return binding;
-}
+		/**
+		 * @param {Object} key
+		 * @param {Object} value
+		 * @param {String} [name]
+		 * @return {Dictionary} the Dictionary instance
+		 */
+		add : function( key, value, name ){
+			var index = this._getIndexByKey( key, name );
+			if( index < 0 ){
+				this._map.push( {
+					key : key,
+					value : value,
+					name : name
+				});
+			}else{
+				this._map[ index ] = {
+					key : key,
+					value : value,
+					name : name
+				}
+			}
+			return this;
+		},
 
-dijon.SignalMap.prototype.unmapClass = function( signal, clazz, handler ){
-	for( var i = 0, n = this._map.length ; i < n ; i++ ){
-		var mapping = this._map[ i ];
-		if( mapping.signal === signal && mapping.target === clazz && mapping.handler === handler ){
-			signal.remove( mapping.callback );
-			this._map.splice( i, 1 );
-			return;
+		/**
+		 * @param {Object} key
+		 * @param {String} [name]
+		 * @return {Dictionary} the Dictionary instance
+		 */
+		remove : function( key, name ){
+			var index = this._getIndexByKey( key, name );
+			if( index >= 0 ) return this._map.splice( index, 1 ).value;
+
+			return this;
+		},
+
+		/**
+		 * @param {Object} key
+		 * @param {String} [name]
+		 * @return {Object} 
+		 */
+		getValue : function( key, name ){
+			var index = this._getIndexByKey( key, name );
+
+			if( index >= 0 ) return this._map[ index ].value;
+
+			return null;
+		},
+
+		/**
+		 * 
+		 * @param key
+		 * @param [name]
+		 * @return {Boolean}
+		 */
+		hasValue : function( key, name ){
+			var index = this._getIndexByKey( key, name );
+			return ( index >= 0 );
 		}
-	}
-}
 
-  //======================================//
- // dijon.Context
-//======================================//
+	}//dijon.Dictionary.prototype
 
-/**
- @class dijon.Context
- @author <a href="mailto:info@creynders.be">creynders</a>
- @constructor
-*/
-dijon.Context = function(){
-	this.qcn = 'dijon.Context';
-	
-	this._injector = null;
-	this._signalMap = null;
-	
-	this._init = function(){
-		this._createInjector();
-		this._mapInjectionPoints();
-		this._mapDependencies();
-	}
-	
-	this._createInjector = function(){
-		this._injector = new dijon.Injector();		
-	}
-	
-	this._mapInjectionPoints = function(){
-		this._injector.addInjectionPoint( dijon.SignalMap, 'injector', dijon.INJECTOR );
-	}
-	
-	this._mapDependencies = function(){
-		this._injector.mapValue( dijon.INJECTOR, this._injector );
-		this._injector.mapSingletonOf( dijon.SIGNAL_MAP, dijon.SignalMap );
-	}
-	
-	
-	this._init();
-}
+	  //======================================//
+	 // dijon.Injector
+	//======================================//
 
-/**
- * @returns {dijon.qualifiers.signalMap}
- */
-dijon.Context.prototype.getSignalMap = function(){
-	if( this._signalMap == null || this._signalMap == undefined ) this._signalMap = this._injector.getInstance( dijon.SIGNAL_MAP );
-	return this._signalMap;
-}
+	/**
+	 @class dijon.Injector
+	 @author Camille Reynders - www.creynders.be
+	 @constructor
+	*/
+	dijon.Injector = function(){
+		this.qcn = 'dijon.Injector';
+
+		/** @private */
+		this._mappings = new dijon.Dictionary();
+
+		/** @private */
+		this._injectionPoints = [];
+	}//dijon.Injector
+
+	dijon.Injector.prototype = {
+
+		/**
+		 * @private
+		 * @param clazz
+		 */
+		_createAndSetupInstance : function( clazz ){
+			var instance = new clazz();
+			this.injectInto( instance );
+			if( "setup" in instance ) instance.setup.call( instance );
+			return instance;
+		},
+
+		/**
+		 * @private
+		 * @param clazz
+		 * @param name
+		 * @param overrideSingleton
+		 */
+		_retrieveFromCacheOrCreate : function( clazz, name, overrideSingleton ){
+			var value = this._mappings.getValue( clazz, name );
+			var output = null;
+			if( value ){
+				//found
+				if( value.isSingleton && ! overrideSingleton ){
+					if( value.object == null ){
+						 value.object = this._createAndSetupInstance( value.clazz );
+					}
+					output = value.object;
+				}else{
+					output = this._createAndSetupInstance( value.clazz );
+				}
+			}else{
+				throw new Error( this.qcn + " is missing a rule for " + clazz );
+			}
+			return output;
+		},
+
+		/**
+		 * 
+		 * @param target
+		 * @param property
+		 * @param clazz
+		 * @param [name]
+		 */
+		addInjectionPoint : function( target, property, clazz, name ){
+			this._injectionPoints.push( {
+				target : target,
+				property : property,
+				name : name,
+				clazz : clazz
+			} );
+		},
+
+		/**
+		 * 
+		 * @param clazz
+		 * @param [name]
+		 */
+		getInstance : function( clazz, name ){
+			return this._retrieveFromCacheOrCreate( clazz, name, false );
+		},
+
+		/**
+		 * 
+		 * @param whenAskedFor
+		 * @param [name]
+		 */
+		mapSingleton : function( whenAskedFor, name ){
+			this.mapSingletonOf( whenAskedFor, whenAskedFor, name );
+		},
+
+		/**
+		 *
+		 * @param whenAskedFor
+		 * @param useValue
+		 * @param [name]
+		 */
+		mapValue : function( whenAskedFor, useValue, name ){
+			this._mappings.add(
+				whenAskedFor,
+				{
+					clazz : whenAskedFor,
+					object : useValue,
+					isSingleton : true
+				},
+				name
+			);
+		},
+
+		/**
+		 * 
+		 * @param whenAskedFor
+		 * @param [name]
+		 */
+		hasMapping : function( whenAskedFor, name ){
+			return this._mappings.hasValue( whenAskedFor, name );
+		},
+
+		/**
+		 *
+		 * @param whenAskedFor
+		 * @param instantiateClass
+		 * @param [name]
+		 */
+		mapClass : function( whenAskedFor, instantiateClass, name ){
+			this._mappings.add(
+				whenAskedFor,
+				{
+					clazz : instantiateClass,
+					object : null,
+					isSingleton : false
+				},
+				name
+			);
+		},
+
+		/**
+		 *
+		 * @param whenAskedFor
+		 * @param useSingletonOf
+		 * @param [name]
+		 */
+		mapSingletonOf : function( whenAskedFor, useSingletonOf, name ){
+			this._mappings.add(
+				whenAskedFor,
+				{
+					clazz : useSingletonOf,
+					object : null,
+					isSingleton : true
+				},
+				name
+			);
+		},
+
+		/**
+		 * 
+		 * @param clazz
+		 * @param [name]
+		 */
+		instantiate : function( clazz, name ){
+			return this._retrieveFromCacheOrCreate( clazz, name, true );
+		},
+
+		/**
+		 * 
+		 * @param instance
+		 */
+		injectInto : function( instance ){
+			for( var i = 0, n = this._injectionPoints.length ; i < n ; i++ ){
+				var mapping = this._injectionPoints[ i ];
+				if( instance && instance instanceof mapping.target && mapping.property in instance )
+					instance[ mapping.property ] = this.getInstance( mapping.clazz, mapping.name );
+			}
+		},
+
+		/**
+		 * 
+		 * @param whenAskedFor
+		 * @param [name]
+		 */
+		unmap : function( whenAskedFor, name ){
+			this._mappings.remove( whenAskedFor, name );
+		},
+
+		/**
+		 * 
+		 * @param target
+		 * @param property
+		 * @param clazz
+		 * @param [name]
+		 */
+		removeInjectionPoint : function( target, property, clazz, name ){
+			for( var i = 0, n = this._injectionPoints.length ; i < n ; i++ ){
+				var point = this._injectionPoints[ i ];
+				if( point.target == target && point.property == property && point.clazz == clazz && point.name == name ) {
+					this._injectionPoints.splice( i, 1 );
+					return;
+				}
+			}
+		}
+
+	}//dijon.Injector.prototype
+
+
+	global.dijon = dijon;
+	
+}( window || global || this ));
+
+
+
+
+
+
+
+
+
+
+
+
