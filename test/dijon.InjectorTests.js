@@ -29,14 +29,6 @@ module( 'dijon.Injector', {
 test( 'unnamed mapSingleton', function(){
 	injector.mapSingleton( TestClassA );
 	ok( injector.hasMapping( TestClassA ) );
-	ok( !injector.hasMapping( TestClassA, 'foo' ) );
-})
-
-test( 'named mapSingleton', function(){
-	var name = 'foo';
-	injector.mapSingleton( TestClassA, name );
-	ok( injector.hasMapping( TestClassA, name ) );
-	ok( ! injector.hasMapping( TestClassA ) );
 })
 
 test( 'unnamed mapValue', function(){
@@ -45,36 +37,14 @@ test( 'unnamed mapValue', function(){
 	ok( injector.hasMapping( TestClassA ) );
 })
 
-test( 'named mapValue', function(){
-	var name = 'foo';
-	var a = new TestClassA();
-	injector.mapValue( TestClassA, a, name );
-	ok( injector.hasMapping( TestClassA, name ) );
-	ok( ! injector.hasMapping( TestClassA ) );
-})
-
 test( 'unnamed mapClass', function(){
 	injector.mapClass( TestClassA, function(){} );
 	ok( injector.hasMapping( TestClassA ) );
 })
 
-test( 'named mapClass', function(){
-	var name = 'foo';
-	injector.mapClass( TestClassA, function(){}, name );
-	ok( injector.hasMapping( TestClassA, name ) );
-	ok( ! injector.hasMapping( TestClassA ) );
-})
-
 test( 'unnamed mapSingletonOf', function(){
 	injector.mapSingletonOf( TestClassA, function(){} );
 	ok( injector.hasMapping( TestClassA ) );
-})
-
-test( 'named mapSingletonOf', function(){
-	var name = 'foo';
-	injector.mapSingletonOf( TestClassA, function(){}, name );
-	ok( injector.hasMapping( TestClassA, name ) );
-	ok( ! injector.hasMapping( TestClassA ) );
 })
 
 test( 'getInstance for unnamed mapSingleton', function(){
@@ -84,27 +54,11 @@ test( 'getInstance for unnamed mapSingleton', function(){
 	strictEqual( injector.getInstance( TestClassA ), a );
 })
 
-test( 'getInstance for named mapSingleton', function(){
-	var name = 'foo';
-	injector.mapSingleton( TestClassA, name );
-	var a = injector.getInstance( TestClassA, name );
-	ok( a instanceof TestClassA );
-	strictEqual( injector.getInstance( TestClassA, name ), a );
-})
-
 test( 'getInstance for unnamed mapSingletonOf', function(){
 	injector.mapSingletonOf( TestClassA, TestClassB );
 	var b = injector.getInstance( TestClassA );
 	ok( b instanceof TestClassB );
 	strictEqual( injector.getInstance( TestClassA ), b );
-})
-
-test( 'getInstance for named mapSingletonOf', function(){
-	var name = 'foo';
-	injector.mapSingletonOf( TestClassA, TestClassB, name );
-	var b = injector.getInstance( TestClassA, name );
-	ok( b instanceof TestClassB );
-	strictEqual( injector.getInstance( TestClassA, name ), b );
 })
 
 test( 'getInstance for mapClass', function(){
@@ -148,13 +102,6 @@ test( 'unnamed unmap', function(){
 	injector.mapSingleton( TestClassA )
 	injector.unmap( TestClassA );
 	ok( ! injector.hasMapping( TestClassA ) );
-})
-
-test( 'named unmap', function(){
-	var name = 'foo'
-	injector.mapSingleton( TestClassA, name )
-	injector.unmap( TestClassA, name );
-	ok( ! injector.hasMapping( TestClassA, name ) );
 })
 
 test( 'addInjectionPoint', function(){

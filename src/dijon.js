@@ -115,7 +115,7 @@
 		/**
 		 * dispatches an event with any number of arguments [0;n]
 		 * @param {Object} event The event object or event type
-		 * @param ... Any number of parameters
+		 * @param ... Any number of parameter
 		 * @return {EventDispatcher} The EventDispatcher instance
 		 */
 		dispatchEvent : function( event ){
@@ -295,11 +295,10 @@
 		/**
 		 * @private
 		 * @param clazz
-		 * @param name
 		 * @param overrideSingleton
 		 */
-		_retrieveFromCacheOrCreate : function( clazz, name, overrideSingleton ){
-			var value = this._mappings.getValue( clazz, name );
+		_retrieveFromCacheOrCreate : function( clazz, overrideSingleton ){
+			var value = this._mappings.getValue( clazz );
 			var output = null;
 			if( value ){
 				//found
@@ -322,13 +321,11 @@
 		 * @param target
 		 * @param property
 		 * @param clazz
-		 * @param [name]
 		 */
-		addInjectionPoint : function( target, property, clazz, name ){
+		addInjectionPoint : function( target, property, clazz ){
 			this._injectionPoints.push( {
 				target : target,
 				property : property,
-				name : name,
 				clazz : clazz
 			} );
 		},
@@ -336,63 +333,56 @@
 		/**
 		 * 
 		 * @param clazz
-		 * @param [name]
 		 */
-		getInstance : function( clazz, name ){
-			return this._retrieveFromCacheOrCreate( clazz, name, false );
+		getInstance : function( clazz ){
+			return this._retrieveFromCacheOrCreate( clazz, false );
 		},
 
 		/**
-		 * 
-		 * @param whenAskedFor
-		 * @param [name]
+		 * When asked for an instance of the class <code>whenAskedFor<code> inject an instance of <code>whenAskedFor<code>.
+		 * @param {Function} whenAskedFor
 		 */
-		mapSingleton : function( whenAskedFor, name ){
-			this.mapSingletonOf( whenAskedFor, whenAskedFor, name );
+		mapSingleton : function( whenAskedFor ){
+			this.mapSingletonOf( whenAskedFor, whenAskedFor );
 		},
 
 		/**
 		 *
 		 * @param whenAskedFor
 		 * @param useValue
-		 * @param [name]
 		 */
-		mapValue : function( whenAskedFor, useValue, name ){
+		mapValue : function( whenAskedFor, useValue ){
 			this._mappings.add(
 				whenAskedFor,
 				{
 					clazz : whenAskedFor,
 					object : useValue,
 					isSingleton : true
-				},
-				name
+				}
 			);
 		},
 
 		/**
 		 * 
 		 * @param whenAskedFor
-		 * @param [name]
 		 */
-		hasMapping : function( whenAskedFor, name ){
-			return this._mappings.hasValue( whenAskedFor, name );
+		hasMapping : function( whenAskedFor ){
+			return this._mappings.hasValue( whenAskedFor );
 		},
 
 		/**
 		 *
 		 * @param whenAskedFor
 		 * @param instantiateClass
-		 * @param [name]
 		 */
-		mapClass : function( whenAskedFor, instantiateClass, name ){
+		mapClass : function( whenAskedFor, instantiateClass ){
 			this._mappings.add(
 				whenAskedFor,
 				{
 					clazz : instantiateClass,
 					object : null,
 					isSingleton : false
-				},
-				name
+				}
 			);
 		},
 
@@ -400,27 +390,24 @@
 		 *
 		 * @param whenAskedFor
 		 * @param useSingletonOf
-		 * @param [name]
 		 */
-		mapSingletonOf : function( whenAskedFor, useSingletonOf, name ){
+		mapSingletonOf : function( whenAskedFor, useSingletonOf ){
 			this._mappings.add(
 				whenAskedFor,
 				{
 					clazz : useSingletonOf,
 					object : null,
 					isSingleton : true
-				},
-				name
+				}
 			);
 		},
 
 		/**
 		 * 
 		 * @param clazz
-		 * @param [name]
 		 */
-		instantiate : function( clazz, name ){
-			return this._retrieveFromCacheOrCreate( clazz, name, true );
+		instantiate : function( clazz ){
+			return this._retrieveFromCacheOrCreate( clazz, true );
 		},
 
 		/**
@@ -431,29 +418,27 @@
 			for( var i = 0, n = this._injectionPoints.length ; i < n ; i++ ){
 				var mapping = this._injectionPoints[ i ];
 				if( instance && instance instanceof mapping.target && mapping.property in instance )
-					instance[ mapping.property ] = this.getInstance( mapping.clazz, mapping.name );
+					instance[ mapping.property ] = this.getInstance( mapping.clazz );
 			}
 		},
 
 		/**
 		 * 
 		 * @param whenAskedFor
-		 * @param [name]
 		 */
-		unmap : function( whenAskedFor, name ){
-			this._mappings.remove( whenAskedFor, name );
+		unmap : function( whenAskedFor ){
+			this._mappings.remove( whenAskedFor );
 		},
 
 		/**
 		 * 
 		 * @param target
 		 * @param property
-		 * @param [name]
 		 */
-		removeInjectionPoint : function( target, property, name ){
+		removeInjectionPoint : function( target, property ){
 			for( var i = 0, n = this._injectionPoints.length ; i < n ; i++ ){
 				var point = this._injectionPoints[ i ];
-				if( point.target == target && point.property == property && point.name == name ) {
+				if( point.target == target && point.property == property ) {
 					this._injectionPoints.splice( i, 1 );
 					return;
 				}
