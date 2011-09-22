@@ -22,7 +22,7 @@ module( 'dijon.Injector', {
 		injector = new dijon.Injector();
 	},
 	teardown : function(){
-		delete injector;
+		injector = undefined;
 	}
 });
 

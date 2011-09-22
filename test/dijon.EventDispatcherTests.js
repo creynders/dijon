@@ -5,10 +5,33 @@ module( 'dijon.EventDispatcher', {
 			dispatcher = new dijon.EventDispatcher();
 		},
 		teardown : function(){
-			delete dispatcher;
+			dispatcher.removeAllListeners();
+			dispatcher = null;
 		}
 	}
 )
+
+test( 'hasListener', function(){
+	var listener = function(){};
+	var event = 'start';
+	dispatcher.addListener( event, listener );
+	ok( dispatcher.hasListener( event, listener ) );
+	ok( ! dispatcher.hasListener( event, function(){} ) );
+} )
+
+test( 'hasScopedListener', function(){
+	var scope;
+	var a = {
+		listener : function(){
+			scope = this;
+		}
+	};
+	var event = 'start';
+	dispatcher.addScopedListener( event, a.listener, a );
+	ok( dispatcher.hasScopedListener( event, a.listener, a ) );
+	ok( ! dispatcher.hasScopedListener( event, a.listener ) );
+	ok( ! dispatcher.hasScopedListener( event, function(){} ) );
+} )
 
 test( 'standard usage', function(){
 	var isExecuted = false;
@@ -188,3 +211,5 @@ test( 'remove all listeners', function(){
 	equal( isExecuted, 0, "listener should not 've been called" );
 	equal( dispatcher.length(), 0, 'dispatcher should have exactly 0 listeners' );
 });
+
+//TODO: test payload

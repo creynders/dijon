@@ -13,7 +13,7 @@ module( 'dijon.Dictionary', {
 		dictionary = new dijon.Dictionary();
 	},
 	teardown : function(){
-		delete dictionary;
+		dictionary = undefined;
 	}
 })
 
