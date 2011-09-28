@@ -73,9 +73,9 @@ test( 'mapEvent', function(){
 } );
 
 test( 'mapEvent with payload', function(){
-	var vo = 'foo';
+	var vo = {};
 	commandMap.mapEvent( startedEvent, TestCommand );
 	eventDispatcher.dispatchEvent( startedEvent, vo );
-	//var p = passed;
-	equal( hasExecuted, 1 );
+	var p = passed;
+	strictEqual( vo, p );
 } );

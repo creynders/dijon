@@ -1,0 +1,25 @@
+info@creynders.be
+
+h1. DIJON FRAMEWORK
+
+A JS port of RobotLegs. Since it's substantially different from RL, I chose quite a different name.
+"pronunciation":http://www.audioenglish.net/dictionary/dijon.htm
+
+h2. Contact
+
+You can contact me on Twitter with questions/remarks : "@camillereynders":http://twitter.com/camillereynders
+
+h2. FEATURES
+
+* covariant injections (map an injection point for a baseclass and all instances of the mapped subclasses will have that dependency injected)
+* framework independency. Doesn't rely on Prototype, JQuery or anything else.
+
+h2. Coming from RobotLegs?
+
+h3. Differences
+
+Although most of the classes have the same names as in RL, the public API *AND* functionality of all of them differs (drastically) from their original namesakes.
+Some concepts just don't make sense in a dynamic language as JS and therefore I chose to try and cherrypick the parts that do have benefits and cut away stuff that would make it cumbersome to use.
+
+h2. Roadmap
+* improvement of injection point mappings. It is pretty cumbersome at the moment and definitely needs the possibility of easier configuration

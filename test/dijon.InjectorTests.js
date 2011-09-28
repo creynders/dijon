@@ -120,3 +120,31 @@ test( 'removeInjectionPoint', function() {
 	var b = injector.getInstance( TestClassB );
 	strictEqual( b.bar, undefined );
 })
+
+test( 'autoexec setup', function(){
+	var isExecuted = 0;
+	function TestActor(){
+	}
+	TestActor.prototype = {
+		setup : function(){
+			isExecuted++;
+		}
+	}
+	injector.mapSingleton( TestActor );
+	var a = injector.getInstance( TestActor );
+	equal( 1, isExecuted );
+})
+
+test( 'covariant injection', function(){
+	var isExecuted = 0;
+	function TestActor(){
+	}
+	TestActor.prototype = new TestClassB();
+	TestActor.prototype.constructor = TestActor;
+	injector.addInjectionPoint( TestClassB, 'bar', TestClassA );
+	injector.mapSingleton( TestClassA );
+	injector.mapSingleton( TestActor );
+	var a = injector.getInstance( TestActor );
+	ok( a.bar instanceof TestClassA  );
+
+} )

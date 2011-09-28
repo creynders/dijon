@@ -212,16 +212,32 @@ test( 'remove all listeners', function(){
 	equal( dispatcher.length(), 0, 'dispatcher should have exactly 0 listeners' );
 });
 
-test( 'dispatch with payload', function(){
+test( 'dispatch with payload excluding event', function(){
 	var eventType = 'start';
+	var payloadA = {}, payloadB = {};
 	var passedA, passedB;
 	var listener = function( foo, bar ){
 		passedA = foo;
 		passedB = bar;
 	};
 	dispatcher.addListener( eventType, listener );
-	dispatcher.dispatchEvent( eventType, 'a', 'b' );
-	ok( true );
+	dispatcher.dispatchEvent( eventType, payloadA, payloadB );
+	strictEqual( payloadA, passedA );
+	strictEqual( payloadB, passedB );
 })
 
-//TODO: test payload
+test( 'dispatch with payload including event', function(){
+	var eventType = 'start';
+	var payloadA = {}, payloadB = {};
+	var passedA, passedB, passedEvent ;
+	var listener = function( event, foo, bar ){
+		passedEvent = event;
+		passedA = foo;
+		passedB = bar;
+	};
+	dispatcher.addListener( eventType, listener, false, true );
+	dispatcher.dispatchEvent( eventType, payloadA, payloadB );
+	strictEqual( eventType, passedEvent.type )
+	strictEqual( payloadA, passedA );
+	strictEqual( payloadB, passedB );
+})

@@ -527,8 +527,7 @@ dijon.EventMap.prototype = {
 		var mappingsListForEvent = this._mappingsByEventType[ event.type ];
 		var args = [];
 
-		//[!] args includes the event object
-		for( var i = 0, n = arguments.length; i < n ; i++ ){
+		for( var i = 1, n = arguments.length; i < n ; i++ ){
 			args.push( arguments[ i ] );
 		}
 		for( var i = 0, n = mappingsListForEvent.length; i < n; i++ ){
@@ -537,6 +536,8 @@ dijon.EventMap.prototype = {
 				if( obj.oneShot )
 					this.removeRuledMapping( event.type, obj.clazz, obj.handler );
 				var instance = this.injector.getInstance( obj.clazz );
+				if( obj.passEvent )
+					args.unshift( event );
 				obj.handler.apply( instance, args );
 			}else{
 				//injector mapping has been deleted, but
@@ -547,7 +548,7 @@ dijon.EventMap.prototype = {
 	},
 
 	/**
-	 *
+	 * @private
 	 * @param eventType
 	 * @param clazz
 	 * @param handler
@@ -557,6 +558,25 @@ dijon.EventMap.prototype = {
 		var mappingsNum = this._mappingsNumByClazz[ clazz ] || 0;
 		if( mappingsNum <= 0 )
 			this.injector.unmap( clazz );
+	},
+
+	/**
+	 * @param eventType
+	 * @param clazz
+	 * @param handler
+	 * @param oneShot
+	 * @param {Boolean} [passEvent] default false
+	 */
+	addRuledMapping : function( eventType, clazz, handler, oneShot, passEvent ){
+		if( ! this._mappingsByEventType[ eventType ] ){
+			this._mappingsByEventType[ eventType ] = [];
+			this.dispatcher.addScopedListener( eventType, this._handleRuledMappedEvent, this, false, true );
+		}
+
+		var mappingsNum = this._mappingsNumByClazz[ clazz ] || 0;
+		this._mappingsNumByClazz[ clazz ] = ++mappingsNum;
+
+		this._mappingsByEventType[ eventType ].push( { clazz : clazz, handler : handler, oneShot : oneShot, passEvent: passEvent } );
 	},
 
 	/**
@@ -592,71 +612,22 @@ dijon.EventMap.prototype = {
 	},
 
 	/**
-	 * @param eventType
-	 * @param clazz
-	 * @param handler
-	 * @param oneShot
-	 */
-	addRuledMapping : function( eventType, clazz, handler, oneShot ){
-		if( ! this._mappingsByEventType[ eventType ] ){
-			this._mappingsByEventType[ eventType ] = [];
-			this.dispatcher.addScopedListener( eventType, this._handleRuledMappedEvent, this, false, true );
-		}
-
-		var mappingsNum = this._mappingsNumByClazz[ clazz ] || 0;
-		this._mappingsNumByClazz[ clazz ] = ++mappingsNum;
-
-		this._mappingsByEventType[ eventType ].push( { clazz : clazz, handler : handler, oneShot : oneShot } );
-	},
-
-
-	/**
 	 *
 	 * @param eventType
 	 * @param clazz
 	 * @param handler
-	 * @param {Boolean} oneShot, defaults false
+	 * @param {Boolean} [oneShot] default false
+	 * @param {Boolean} [passEvent] default false
 	 */
-	addClassMapping : function( eventType, clazz, handler, oneShot ){
+	addClassMapping : function( eventType, clazz, handler, oneShot, passEvent ){
 		if( ! this.injector.hasMapping( clazz ) ){
 			this.injector.mapClass( clazz, clazz );
 		}
 
-		this.addRuledMapping( eventType, clazz, handler, oneShot );
-	},
-
-	addSingletonMapping : function( eventType, clazz, handler, oneShot ){
-		if( ! this.injector.hasMapping( clazz ) ){
-			this.injector.mapSingleton( clazz );
-		}
-		this.addRuledMapping( eventType, clazz, handler, oneShot );
-	},
-
-	addObjectMapping : function( eventType, instance, handler, oneShot ){
-		if( ! this.dispatcher.hasScopedListener( eventType, handler, instance ) )
-			this.dispatcher.addScopedListener( eventType, handler, instance, oneShot );
-	},
-
-	addFunctionMapping : function( eventType, listener, oneShot ){
-		if( ! this.dispatcher.hasListener( eventType, listener ) )
-			this.dispatcher.addListener( eventType, listener, oneShot );
-	},
-
-	removeFunctionMapping : function( eventType, listener ){
-		if( this.dispatcher.hasListener( eventType, listener ) )
-			this.dispatcher.removeListener( eventType, listener );
-	},
-
-	removeObjectMapping : function( eventType, instance, handler ){
-		if( this.dispatcher.hasScopedListener( eventType, handler, instance ) )
-			this.dispatcher.removeScopedListener( eventType, handler, instance );
+		this.addRuledMapping( eventType, clazz, handler, oneShot, passEvent );
 	},
 
 	removeClassMapping : function( eventType, clazz, handler ){
-		this._removeRuledMappingAndUnmapFromInjectorIfNecessary( eventType, clazz, handler );
-	},
-
-	removeSingletonMapping : function( eventType, clazz, handler ){
 		this._removeRuledMappingAndUnmapFromInjectorIfNecessary( eventType, clazz, handler );
 	}
 
@@ -741,10 +712,43 @@ dijon.CommandMap = function(){
 };//dijon.CommandMap
 
 dijon.CommandMap.prototype = {
-	mapEvent : function( eventType, commandClazz, oneShot ){
-		this.eventMap.addClassMapping( eventType, commandClazz, commandClazz.prototype.execute, oneShot );
+	/**
+	 *
+	 * @param eventType
+	 * @param commandClazz
+	 * @param {Boolean} [oneShot] default false
+	 * @param {passEvent} [oneShot] default false
+	 */
+	mapEvent : function( eventType, commandClazz, oneShot, passEvent ){
+		this.eventMap.addClassMapping( eventType, commandClazz, commandClazz.prototype.execute, oneShot, passEvent );
 	},
 	unmapEvent : function( eventType, commandClazz ){
 		this.eventMap.removeClassMapping( eventType, commandClazz, commandClazz.prototype.execute );
 	}
 };//dijon.CommandMap.prototype
+
+  //======================================//
+ // dijon.Actor
+//======================================//
+
+/**
+ * @class dijon.Actor
+ * @author Camille Reynders - www.creynders.be
+ * @constructor
+ */
+dijon.Actor = function(){
+	/**
+	 * @type dijon.EventMap
+	 */
+	this.eventMap = undefined;//inject
+
+	/**
+	 * @type dijon.EventDispatcher
+	 */
+	this.eventDispatcher = undefined; //inject
+};//dijon.Actor
+
+dijon.Actor.prototype = {
+	setup : function(){
+	}
+};//dijon.Actor.prototype

@@ -43,68 +43,6 @@ module( 'dijon.EventMap', {
 	}
 )
 
-test( 'addFunctionMapping standard', function(){
-	var handler = function(){
-		isExecuted++;
-	}
-	eventMap.addFunctionMapping( started, handler );
-	dispatcher.dispatchEvent( started );
-	equal( isExecuted, 1 );
-})
-
-test( 'removeFunctionMapping', function(){
-	var handler = function(){
-		isExecuted++;
-	}
-	eventMap.addFunctionMapping( started, handler );
-	dispatcher.dispatchEvent( started );
-	eventMap.removeFunctionMapping( started, handler );
-	dispatcher.dispatchEvent( started );
-	equal( isExecuted, 1 );
-})
-
-test( 'addObjectMapping standard', function(){
-	var a = {
-		handler : function(){
-			isExecuted++;
-		}
-	}
-	eventMap.addObjectMapping( started, a, a.handler );
-	dispatcher.dispatchEvent( started );
-	equal( isExecuted, 1 );
-})
-
-
-test( 'removeObjectMapping', function(){
-	var a = {
-		handler : function(){
-			isExecuted++;
-		}
-	}
-	eventMap.addObjectMapping( started, a, a.handler );
-	dispatcher.dispatchEvent( started );
-	eventMap.removeObjectMapping( started, a, a.handler );
-	dispatcher.dispatchEvent( started );
-	equal( isExecuted, 1 );
-})
-
-test( 'removeObjectMapping multiple handlers persistence', function(){
-	var a = {
-		foo : function(){
-			isExecuted++;
-		},
-		bar : function(){
-			isExecuted++;
-		}
-	}
-	eventMap.addObjectMapping( started, a, a.foo );
-	eventMap.addObjectMapping( started, a, a.bar );
-	dispatcher.dispatchEvent( started );
-	eventMap.removeObjectMapping( started, a, a.foo );
-	dispatcher.dispatchEvent( started );
-	equal( isExecuted, 3 );
-})
-
 test( 'addRuledMapping standard', function(){
 	injector.mapSingleton( Test1 );
 	eventMap.addRuledMapping( started, Test1, Test1.prototype.handler );
@@ -119,23 +57,6 @@ test( 'removeRuledMapping standard', function(){
 	dispatcher.dispatchEvent( started );
 	equal( isExecuted, 0 );
 	ok( injector.hasMapping( Test1 ) );
-})
-
-test( 'addSingletonMapping standard', function(){
-	eventMap.addSingletonMapping( started, Test1, Test1.prototype.handler );
-	dispatcher.dispatchEvent( started );
-	var firstScope = scope;
-	equal( isExecuted, 1 );
-	dispatcher.dispatchEvent( started );
-	strictEqual( firstScope, scope );
-})
-
-test( 'removeSingletonMapping standard', function(){
-	eventMap.addSingletonMapping( started, Test1, Test1.prototype.handler );
-	eventMap.removeSingletonMapping( started, Test1, Test1.prototype.handler );
-	dispatcher.dispatchEvent( started );
-	equal( isExecuted, 0 );
-	ok( ! injector.hasMapping( Test1 ) );
 })
 
 test( 'addClassMapping standard', function(){
