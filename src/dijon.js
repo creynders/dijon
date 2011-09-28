@@ -347,7 +347,7 @@ dijon.Injector.prototype = {
 	/**
 	 *
 	 * @param {Function} targetClazz
-	 * @param {String} property
+	 * @param {String} propertyName
 	 * @param {Function} sourceClazz
 	 */
 	addInjectionPoint : function( targetClazz, propertyName, sourceClazz ){
@@ -635,64 +635,54 @@ dijon.EventMap.prototype = {
 
 
   //======================================//
- // dijon.Context
+ // dijon.Actor
 //======================================//
 
 /**
- * @class dijon.Context
+ * @class dijon.Actor
  * @author Camille Reynders - www.creynders.be
  * @constructor
  */
-dijon.Context = function(){
-	this.qcn = 'dijon.Context';
-
-	/**
-	 * @type dijon.Injector
-	 */
-	this.injector = undefined;
-
+dijon.Actor = function(){
 	/**
 	 * @type dijon.EventMap
 	 */
-	this.eventMap = undefined;
+	this.eventMap = undefined;//inject
 
 	/**
 	 * @type dijon.EventDispatcher
 	 */
-	this.eventDispatcher = undefined;
+	this.eventDispatcher = undefined; //inject
+};//dijon.Actor
 
-	this._createInjector();
-	this._wireEventDispatcher();
-	this._wireEventMap();
-
-};//dijon.Context
-
-dijon.Context.prototype = {
-
-	/**
-	 * @protected
-	 */
-	_createInjector : function(){
-		this.injector = new dijon.Injector();
-		this.injector.mapValue( dijon.Injector, this.injector );
-	},
-	/**
-	 * @protected
-	 */
-	_wireEventDispatcher : function(){
-		this.injector.mapSingleton( dijon.EventDispatcher );
-		this.eventDispatcher = this.injector.getInstance( dijon.EventDispatcher );
-	},
-	/**
-	 * @protected
-	 */
-	_wireEventMap : function(){
-		this.injector.addInjectionPoint( dijon.EventMap, 'dispatcher', dijon.EventDispatcher );
-		this.injector.addInjectionPoint( dijon.EventMap, 'injector', dijon.Injector );
-		this.injector.mapSingleton( dijon.EventMap );
-		this.eventMap = this.injector.getInstance( dijon.EventMap );
+dijon.Actor.prototype = {
+	setup : function(){
 	}
-};//dijon.Context.prototype
+};//dijon.Actor.prototype
+
+  //======================================//
+ // dijon.Command
+//======================================//
+
+/**
+ * @class dijon.Command
+ * @author Camille Reynders - www.creynders.be
+ * @constructor
+ */
+dijon.Command = function(){
+	/**
+	 * @type dijon.Injector
+	 */
+	this.injector = undefined;//inject
+
+};//dijon.Command
+
+dijon.Command.prototype = new dijon.Actor();
+dijon.Command.prototype.constructor = dijon.Command;
+
+dijon.Command.prototype.execute = function(){
+
+}
 
   //======================================//
  // dijon.CommandMap
@@ -727,28 +717,89 @@ dijon.CommandMap.prototype = {
 	}
 };//dijon.CommandMap.prototype
 
+
+
   //======================================//
- // dijon.Actor
+ // dijon.Context
 //======================================//
 
 /**
- * @class dijon.Actor
+ * @class dijon.Context
  * @author Camille Reynders - www.creynders.be
  * @constructor
  */
-dijon.Actor = function(){
+dijon.Context = function(){
+	this.qcn = 'dijon.Context';
+
+	/**
+	 * @type dijon.Injector
+	 */
+	this.injector = undefined;
+
 	/**
 	 * @type dijon.EventMap
 	 */
-	this.eventMap = undefined;//inject
+	this.eventMap = undefined;
 
 	/**
 	 * @type dijon.EventDispatcher
 	 */
-	this.eventDispatcher = undefined; //inject
-};//dijon.Actor
+	this.eventDispatcher = undefined;
 
-dijon.Actor.prototype = {
-	setup : function(){
+	/**
+	 * @type dijon.CommandMap
+	 */
+	this.commandMap = undefined;
+
+	this._createInjector();
+	this._wireAndCreateEventDispatcher();
+	this._wireAndCreateEventMap();
+	this._wireActor();
+	this._wireCommand();
+	this._wireAndCreateCommandMap();
+
+};//dijon.Context
+
+dijon.Context.prototype = {
+
+	/**
+	 * @private
+	 */
+	_createInjector : function(){
+		this.injector = new dijon.Injector();
+		this.injector.mapValue( dijon.Injector, this.injector );
+	},
+	/**
+	 * @private
+	 */
+	_wireAndCreateEventDispatcher : function(){
+		this.injector.mapSingleton( dijon.EventDispatcher );
+		this.eventDispatcher = this.injector.getInstance( dijon.EventDispatcher );
+	},
+	/**
+	 * @private
+	 */
+	_wireAndCreateEventMap : function(){
+		this.injector.addInjectionPoint( dijon.EventMap, 'dispatcher', dijon.EventDispatcher );
+		this.injector.addInjectionPoint( dijon.EventMap, 'injector', dijon.Injector );
+		this.injector.mapSingleton( dijon.EventMap );
+		this.eventMap = this.injector.getInstance( dijon.EventMap );
+	},
+
+	_wireActor : function(){
+		this.injector.addInjectionPoint( dijon.Actor, 'eventDispatcher', dijon.EventDispatcher );
+		this.injector.addInjectionPoint( dijon.Actor, 'eventMap', dijon.EventMap );
+	},
+
+	_wireCommand : function(){
+		this.injector.addInjectionPoint( dijon.Command, 'injector', dijon.Injector );
+		//no need to map inherited properties, since dijon has covariant injections
+	},
+
+	_wireAndCreateCommandMap : function(){
+		this.injector.addInjectionPoint( dijon.CommandMap, 'eventMap', dijon.EventMap );
+		this.injector.mapSingleton( dijon.CommandMap );
+		this.commandMap = this.injector.getInstance( dijon.CommandMap );
 	}
-};//dijon.Actor.prototype
+};//dijon.Context.prototype
+
