@@ -212,4 +212,16 @@ test( 'remove all listeners', function(){
 	equal( dispatcher.length(), 0, 'dispatcher should have exactly 0 listeners' );
 });
 
+test( 'dispatch with payload', function(){
+	var eventType = 'start';
+	var passedA, passedB;
+	var listener = function( foo, bar ){
+		passedA = foo;
+		passedB = bar;
+	};
+	dispatcher.addListener( eventType, listener );
+	dispatcher.dispatchEvent( eventType, 'a', 'b' );
+	ok( true );
+})
+
 //TODO: test payload
