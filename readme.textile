@@ -3,6 +3,10 @@ h1. DIJON FRAMEWORK
 A JS port of RobotLegs. Since it's substantially different from RL, I chose quite a different name.
 "pronunciation":http://www.audioenglish.net/dictionary/dijon.htm
 
+it's an acronym for:
+*D*ependency *I*njection for *J*avaScript *O*bjects with *N*otifications ;)
+I know, it's gibberish...
+
 h2. Contact
 
 You can contact me on Twitter with questions/remarks : "@camillereynders":http://twitter.com/camillereynders
