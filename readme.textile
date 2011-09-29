@@ -10,6 +10,7 @@ or send me a mail at:
 info [at] creynders [dot] be
 
 h2. Resources
+
 "API documentation":http://creynders.github.com/dijon-framework/docs
 
 h2. FEATURES
