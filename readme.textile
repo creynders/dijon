@@ -1,5 +1,3 @@
-info@creynders.be
-
 h1. DIJON FRAMEWORK
 
 A JS port of RobotLegs. Since it's substantially different from RL, I chose quite a different name.
@@ -8,6 +6,11 @@ A JS port of RobotLegs. Since it's substantially different from RL, I chose quit
 h2. Contact
 
 You can contact me on Twitter with questions/remarks : "@camillereynders":http://twitter.com/camillereynders
+or send me a mail at:
+info [at] creynders [dot] be
+
+h2. Resources
+"API documentation":http://creynders.github.com/dijon-framework/docs
 
 h2. FEATURES
 
