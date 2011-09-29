@@ -32,8 +32,8 @@ dijon.EventDispatcher.prototype = {
 
 	/**
 	 * @private
-	 * @param eventType
-	 * @param index
+	 * @param {String} eventType
+	 * @param {Number} index
 	 */
 	_removeListenerByIndex : function( eventType, index ){
 		this._listeners[ eventType ].splice( index, 1 );
@@ -46,9 +46,9 @@ dijon.EventDispatcher.prototype = {
 	 * adds a handler to be invoked when an event is dispatched
 	 * @param {String} eventType The name of the event to be listened to
 	 * @param {Function} listener The handler to be called when the event has been dispatched
-	 * @param {Boolean} [oneShot] Whether the listener must be called only once, default <code>false</code>
-	 * @param {Boolean} [passEvent] Whether the event object needs to be passed to the listener, default <code>false</code>
-	 * @return {EventDispatcher} The EventDispatcher instance
+	 * @param {Boolean} [oneShot=false] Whether the listener must be called only once
+	 * @param {Boolean} [passEvent=false] Whether the event object needs to be passed to the listener
+	 * @return {dijon.EventDispatcher} The EventDispatcher instance
 	*/
 	addListener : function( eventType, listener, oneShot, passEvent ) {
 		this.addScopedListener( eventType, listener, undefined, oneShot, passEvent );
@@ -60,9 +60,9 @@ dijon.EventDispatcher.prototype = {
 	 * @param {String} eventType The name of the event to be listened to
 	 * @param {Function} listener The handler to be called when the event has been dispatched
 	 * @param {Object} scope The scope in which the listener will be called
-	 * @param {Boolean} [oneShot] Whether the listener must be called only once, default <code>false</code>
-	 * @param {Boolean} [passEvent] Whether the event object needs to be passed to the listener, default <code>false</code>
-	 * @return {EventDispatcher} The EventDispatcher instance
+	 * @param {Boolean} [oneShot=false] Whether the listener must be called only once
+	 * @param {Boolean} [passEvent=false] Whether the event object needs to be passed to the listener
+	 * @return {dijon.EventDispatcher} The EventDispatcher instance
 	 */
 	addScopedListener : function( eventType, listener, scope, oneShot, passEvent ){
 		if( oneShot == undefined ) oneShot = false;
@@ -81,9 +81,9 @@ dijon.EventDispatcher.prototype = {
 	},
 
 	/**
-	 *
-	 * @param eventType
-	 * @param listener
+	 * Checks whether the dispatcher object has registered <code>listener</code> for <code>eventType</code>
+	 * @param {String} eventType The name of the event to be listened to
+	 * @param {Function} listener The handler to be called when the event has been dispatched
 	 * @return {Boolean}
 	 */
 	hasListener : function( eventType, listener ){
@@ -91,10 +91,10 @@ dijon.EventDispatcher.prototype = {
 	},
 
 	/**
-	 *
-	 * @param eventType
-	 * @param listener
-	 * @param scope
+	 * Checks whether the dispatcher object has registered <code>listener</code> in <code>scope</code> for <code>eventType</code>
+	 * @param {String} eventType The name of the event to be listened to
+	 * @param {Function} listener The handler to be called when the event has been dispatched
+	 * @param {Object} scope The scope in which the listener will be called
 	 * @return {Boolean}
 	 */
 	hasScopedListener : function( eventType, listener, scope ){
@@ -112,10 +112,10 @@ dijon.EventDispatcher.prototype = {
 	},
 
 	/**
-	 *
+	 * Removes a <code>listener</code> registered for <code>eventType</code>
 	 * @param {String} eventType The name of the event to be listened to
 	 * @param {Function} listener The handler to be called when the event has been dispatched
-	 * @return {EventDispatcher} The EventDispatcher instance
+	 * @return {dijon.EventDispatcher} The EventDispatcher instance
 	 */
 	removeListener : function( eventType, listener ){
 		this.removeScopedListener( eventType, listener, undefined );
@@ -123,11 +123,11 @@ dijon.EventDispatcher.prototype = {
 	},
 
 	/**
-	 *
+	 * Removes a <code>listener</code> in <code>scope</code> registered for <code>eventType</code>
 	 * @param {String} eventType The name of the event to be listened to
 	 * @param {Function} listener The handler to be called when the event has been dispatched
 	 * @param {Object} scope The scope in which the listener will be called
-	 * @return {EventDispatcher} The EventDispatcher instance
+	 * @return {dijon.EventDispatcher} The EventDispatcher instance
 	 */
 	removeScopedListener : function( eventType, listener, scope ) {
 		for ( var i = 0 ; this._listeners[ eventType ] && i < this._listeners[ eventType ].length ;  ){
@@ -142,10 +142,11 @@ dijon.EventDispatcher.prototype = {
 	},
 
 	/**
-	 * dispatches an event with any number of arguments [0;n]
-	 * @param {Object} event The event object or event type
-	 * @param ... Any number of parameter
-	 * @return {EventDispatcher} The EventDispatcher instance
+	 * dispatches an event with any number of arguments
+	 * @param {Object|String} event The event object or event type
+	 * @param {String} event.type if <code>event</code> is of type <code>Object</code> it requires a <code>type</code> property set to the name of the event that will be listened to.
+	 * @param {...} [...=undefined] Any number of parameters
+	 * @return {dijon.EventDispatcher} The EventDispatcher instance
 	 */
 	dispatchEvent : function( event ){
 		if (typeof event == "string"){
@@ -179,7 +180,7 @@ dijon.EventDispatcher.prototype = {
 
 	/**
 	 * removes all event listeners
-	 * @return {EventDispatcher} The EventDispatcher instance
+	 * @return {dijon.EventDispatcher} The EventDispatcher instance
 	 */
 	removeAllListeners : function(){
 	   this._listeners = {};
@@ -203,6 +204,7 @@ dijon.EventDispatcher.prototype = {
 //======================================//
 
 /**
+ * The Dictionary class lets you create a dynamic collection of properties, which uses strict equality (===) for key comparison.
  * @class dijon.Dictionary
  * @author Camille Reynders - www.creynders.be
  * @constructor
@@ -233,9 +235,10 @@ dijon.Dictionary.prototype = {
 	},
 
 	/**
+	 * Maps <code>value</code> to <code>key</code>
 	 * @param {Object} key
 	 * @param {Object} value
-	 * @return {Dictionary} the Dictionary instance
+	 * @return {dijon.Dictionary} the Dictionary instance
 	 */
 	add : function( key, value ){
 		var index = this._getIndexByKey( key );
@@ -254,8 +257,9 @@ dijon.Dictionary.prototype = {
 	},
 
 	/**
+	 * removes the mapping of the value of <code>key</code>
 	 * @param {Object} key
-	 * @return {Dictionary} the Dictionary instance
+	 * @return {dijon.Dictionary} the Dictionary instance
 	 */
 	remove : function( key ){
 		var index = this._getIndexByKey( key );
@@ -265,8 +269,9 @@ dijon.Dictionary.prototype = {
 	},
 
 	/**
+	 * retrieves the value mapped to <code>key</code>
 	 * @param {Object} key
-	 * @return {Object}
+	 * @return {Object} the value mapped to <code>key</code>
 	 */
 	getValue : function( key ){
 		var index = this._getIndexByKey( key );
@@ -277,8 +282,8 @@ dijon.Dictionary.prototype = {
 	},
 
 	/**
-	 *
-	 * @param key
+	 * checks whether a value has been mapped to <code>key</code>
+	 * @param {Object} key
 	 * @return {Boolean}
 	 */
 	hasValue : function( key ){
@@ -311,7 +316,7 @@ dijon.Injector.prototype = {
 
 	/**
 	 * @private
-	 * @param clazz
+	 * @param {Class} clazz
 	 */
 	_createAndSetupInstance : function( clazz ){
 		var instance = new clazz();
@@ -322,8 +327,9 @@ dijon.Injector.prototype = {
 
 	/**
 	 * @private
-	 * @param clazz
-	 * @param overrideSingleton
+	 * @param {Class} clazz
+	 * @param {Boolean} overrideSingleton
+	 * @return {Object}
 	 */
 	_retrieveFromCacheOrCreate : function( clazz, overrideSingleton ){
 		var value = this._mappingsByEventType.getValue( clazz );
@@ -345,10 +351,12 @@ dijon.Injector.prototype = {
 	},
 
 	/**
-	 *
-	 * @param {Function} targetClazz
-	 * @param {String} propertyName
-	 * @param {Function} sourceClazz
+	 * defines <code>propertyName</code> as an injection point for <code>targetClazz</code> to be injected with an instance
+	 * of <code>sourceClazz</code>.
+	 * @param {Class} targetClazz the class the injection point is applied to.
+	 * @param {String} propertyName the <strong>name</strong> of the property used as an injection point.<br/>
+	 * [!] MUST BE STRING
+	 * @param {Class} sourceClazz the type of the instance that will be injected
 	 */
 	addInjectionPoint : function( targetClazz, propertyName, sourceClazz ){
 		this._injectionPoints.push( {
@@ -359,16 +367,17 @@ dijon.Injector.prototype = {
 	},
 
 	/**
-	 *
-	 * @param clazz
+	 * Create (if possible) or retrieve an instance of the class mapped to <code>clazz</code>
+	 * @param {Class} clazz
+	 * @return {Object}
 	 */
 	getInstance : function( clazz ){
 		return this._retrieveFromCacheOrCreate( clazz, false );
 	},
 
 	/**
-	 * When asked for an instance of the class <code>whenAskedFor<code> inject an instance of <code>whenAskedFor<code>.
-	 * @param {Function} whenAskedFor
+	 * When asked for an instance of the class <code>whenAskedFor<code> or object <code>whenAskedFor</code> inject an instance of <code>whenAskedFor<code>.
+	 * @param {Class|Object} whenAskedFor
 	 */
 	mapSingleton : function( whenAskedFor ){
 		if( this._mappingsByEventType.hasValue( whenAskedFor ) ) throw new Error( this.qcn + ' cannot remap ' + ' without unmapping first' );
@@ -376,9 +385,9 @@ dijon.Injector.prototype = {
 	},
 
 	/**
-	 *
-	 * @param whenAskedFor
-	 * @param useValue
+	 * When asked for an instance of the class <code>whenAskedFor</code> or object <code>whenAskedFor</code> inject the instance <code>useValue</code>.
+	 * @param {Class|Object} whenAskedFor
+	 * @param {Object} useValue
 	 */
 	mapValue : function( whenAskedFor, useValue ){
 		if( this._mappingsByEventType.hasValue( whenAskedFor ) ) throw new Error( this.qcn + ' cannot remap ' + ' without unmapping first' );
@@ -393,17 +402,18 @@ dijon.Injector.prototype = {
 	},
 
 	/**
-	 *
-	 * @param whenAskedFor
+	 * Does a rule exist to satsify such a request?
+	 * @param {Class} whenAskedFor
+	 * @return {Boolean}
 	 */
 	hasMapping : function( whenAskedFor ){
 		return this._mappingsByEventType.hasValue( whenAskedFor );
 	},
 
 	/**
-	 *
-	 * @param whenAskedFor
-	 * @param instantiateClass
+	 * When asked for an instance of the class <code>whenAskedFor</code> or for object <code>whenAskedFor</code> inject a <strong>new</strong> instance of <code>instantiateClass</code>.
+	 * @param {Class|Object} whenAskedFor
+	 * @param {Class} instantiateClass
 	 */
 	mapClass : function( whenAskedFor, instantiateClass ){
 		if( this.hasMapping( whenAskedFor ) ) throw new Error( this.qcn + ' cannot remap ' + ' without unmapping first' );
@@ -418,9 +428,9 @@ dijon.Injector.prototype = {
 	},
 
 	/**
-	 *
-	 * @param whenAskedFor
-	 * @param useSingletonOf
+	 * When asked for an instance of the class <code>whenAskedFor</code> or object <code>whenAskedFor</code> inject an instance of <code>useSingletonOf</code>.
+	 * @param {Class|Object} whenAskedFor
+	 * @param {Class} useSingletonOf
 	 */
 	mapSingletonOf : function( whenAskedFor, useSingletonOf ){
 		if( this._mappingsByEventType.hasValue( whenAskedFor ) ) throw new Error( this.qcn + ' cannot remap ' + ' without unmapping first' );
@@ -435,16 +445,18 @@ dijon.Injector.prototype = {
 	},
 
 	/**
-	 *
-	 * @param clazz
+	 * create an instance of the class mapped to <code>clazz</code> and fulfill it's mapped dependencies<br/>
+	 * <strong>WILL ALWAYS CREATE A NEW INSTANCE</strong>, even if <code>clazz</code> was mapped otherwise.
+	 * @param {Class} clazz
+	 * @return {Object}
 	 */
 	instantiate : function( clazz ){
 		return this._retrieveFromCacheOrCreate( clazz, true );
 	},
 
 	/**
-	 *
-	 * @param instance
+	 * Perform an injection into an object, satisfying all it's dependencies
+	 * @param {Object} instance
 	 */
 	injectInto : function( instance ){
 		for( var i = 0, n = this._injectionPoints.length ; i < n ; i++ ){
@@ -455,22 +467,23 @@ dijon.Injector.prototype = {
 	},
 
 	/**
-	 *
-	 * @param whenAskedFor
+	 * Remove a rule from the injector
+	 * @param {Class|Object} whenAskedFor
 	 */
 	unmap : function( whenAskedFor ){
 		this._mappingsByEventType.remove( whenAskedFor );
 	},
 
 	/**
-	 *
-	 * @param target
-	 * @param property
+	 * removes an injection point mapping for a given class
+	 * @param {Function} targetClazz
+	 * @param {String} propertyName MUST BE STRING
+	 * @see dijon.Injector#addInjectionPoint
 	 */
-	removeInjectionPoint : function( target, property ){
+	removeInjectionPoint : function( targetClazz, propertyName ){
 		for( var i = 0, n = this._injectionPoints.length ; i < n ; i++ ){
 			var point = this._injectionPoints[ i ];
-			if( point.target == target && point.property == property ) {
+			if( point.target == targetClazz && point.property == propertyName ) {
 				this._injectionPoints.splice( i, 1 );
 				return;
 			}
@@ -484,7 +497,9 @@ dijon.Injector.prototype = {
 //======================================//
 
 /**
- * Facade for event mapping types
+ * registers class members as listeners for specific events, before (or after) instantiation.<br/>
+ * Allows for mapping listeners to lazily instantiated objects.<br/>
+ * [!] This class differs substantially from the RobotLegs EventMap both in use and functionality
  * @class dijon.EventMap
  * @author Camille Reynders - www.creynders.be
  * @constructor
@@ -549,9 +564,9 @@ dijon.EventMap.prototype = {
 
 	/**
 	 * @private
-	 * @param eventType
-	 * @param clazz
-	 * @param handler
+	 * @param {String} eventType
+	 * @param {Class} clazz
+	 * @param {Function} handler
 	 */
 	_removeRuledMappingAndUnmapFromInjectorIfNecessary : function( eventType, clazz, handler ){
 		this.removeRuledMapping( eventType, clazz, handler );
@@ -561,11 +576,17 @@ dijon.EventMap.prototype = {
 	},
 
 	/**
-	 * @param eventType
-	 * @param clazz
-	 * @param handler
-	 * @param oneShot
-	 * @param {Boolean} [passEvent] default false
+	 * maps <code>handler</code> as a listener for <code>eventType</code> to be called as a member of a <code>clazz</code>
+	 * instance. The instance will be created according to the rule defined for <code>clazz</code> in injector.
+	 * <br/>[!] requires <code>clazz</code> is already ruled by the injector
+	 * @see dijon.Injector
+	 * @param {String} eventType The name of the event to be listened to
+	 * @param {Class} clazz
+	 * @param {Function} handler
+	 * @param {Boolean} [oneShot=false] Whether the listener must be called only once
+	 * @param {Boolean} [passEvent=false] Whether the event object should be passed as a parameter to <code>handler</code>
+	 * upon invocation or not. If <code>true</code> any additional dispatched values will be passed as parameters after
+	 * the event object
 	 */
 	addRuledMapping : function( eventType, clazz, handler, oneShot, passEvent ){
 		if( ! this._mappingsByEventType[ eventType ] ){
@@ -581,9 +602,9 @@ dijon.EventMap.prototype = {
 
 	/**
 	 *
-	 * @param eventType
-	 * @param clazz
-	 * @param handler
+	 * @param {String} eventType The name of the event to be listened to
+	 * @param {Class} clazz
+	 * @param {Function} handler
 	 */
 	removeRuledMapping : function( eventType, clazz, handler ){
 		var mappingsListForEvent = this._mappingsByEventType[ eventType ];
@@ -680,6 +701,9 @@ dijon.Command = function(){
 dijon.Command.prototype = new dijon.Actor();
 dijon.Command.prototype.constructor = dijon.Command;
 
+/**
+ * 
+ */
 dijon.Command.prototype.execute = function(){
 
 }
@@ -704,14 +728,20 @@ dijon.CommandMap = function(){
 dijon.CommandMap.prototype = {
 	/**
 	 *
-	 * @param eventType
-	 * @param commandClazz
+	 * @param {String} eventType
+	 * @param {Function} commandClazz
 	 * @param {Boolean} [oneShot] default false
-	 * @param {passEvent} [oneShot] default false
+	 * @param {Boolean} [passEvent] default false
 	 */
 	mapEvent : function( eventType, commandClazz, oneShot, passEvent ){
 		this.eventMap.addClassMapping( eventType, commandClazz, commandClazz.prototype.execute, oneShot, passEvent );
 	},
+	
+	/**
+	 *
+	 * @param {String} eventType
+	 * @param {Function} commandClazz
+	 */
 	unmapEvent : function( eventType, commandClazz ){
 		this.eventMap.removeClassMapping( eventType, commandClazz, commandClazz.prototype.execute );
 	}
