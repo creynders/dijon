@@ -449,8 +449,8 @@ dijon.Injector.prototype = {
 
 	/**
 	 * create an instance of the class mapped to <code>clazz</code> and fulfill it's mapped dependencies<br/>
-	 * <strong>WILL ALWAYS CREATE A NEW INSTANCE</strong>, even if <code>clazz</code> was mapped otherwise or not
-	 * even mapped.
+	 * <strong>WILL ALWAYS CREATE A NEW INSTANCE</strong>, even if <code>clazz</code> was mapped otherwise or
+	 * <strong>even when <code>clazz</code> was not mapped</code>.
 	 * @param {Class} clazz
 	 * @return {Object}
 	 */
@@ -804,6 +804,7 @@ dijon.CommandMap.prototype = {
 	/**
 	 *
 	 * @param {Class} commandClazz
+	 * @param {...} [...=undefined] Any number of parameters
 	 */
 	execute : function( commandClazz ){
 		var command = this.injector.instantiate( commandClazz );
