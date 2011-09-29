@@ -538,6 +538,26 @@ dijon.EventMap = function(){
 };//dijon.EventMap
 
 dijon.EventMap.prototype = {
+
+	/**
+	 * @private
+	 * @param eventType
+	 * @param clazz
+	 * @param handler
+	 */
+	_getMappingIndex : function( mappingsListForEvent, clazz, handler ){
+		if( mappingsListForEvent ){
+			for( var i = 0, n = mappingsListForEvent.length; i < n ; i++ ){
+				var mapping = mappingsListForEvent[ i ];
+				if( mapping.clazz === clazz && mapping.handler === handler ){
+					return i;
+				}
+			}
+		}
+
+		return -1;
+	},
+				
 	/**
 	 * @private
 	 * @param {Object} event
@@ -557,7 +577,8 @@ dijon.EventMap.prototype = {
 				var instance = this.injector.getInstance( obj.clazz );
 				if( obj.passEvent )
 					args.unshift( event );
-				obj.handler.apply( instance, args );
+				if( obj.handler != null )
+					obj.handler.apply( instance, args );
 			}else{
 				//injector mapping has been deleted, but
 				//eventMap mapping not
@@ -605,34 +626,32 @@ dijon.EventMap.prototype = {
 	},
 
 	/**
-	 *
+	 * Removes the mapping for <code>clazz</code>
+	 * @see dijon.EventMap#addRuledMapping
 	 * @param {String} eventType The name of the event to be listened to
 	 * @param {Class} clazz
 	 * @param {Function} handler
 	 */
 	removeRuledMapping : function( eventType, clazz, handler ){
 		var mappingsListForEvent = this._mappingsByEventType[ eventType ];
-		if( mappingsListForEvent ){
-			for( var i = 0, n = mappingsListForEvent.length; i < n ; i++ ){
-				var mapping = mappingsListForEvent[ i ];
-				if( mapping.clazz === clazz && mapping.handler === handler ){
-					delete mapping.clazz;
-					delete mapping.handler;
-					mapping = null;
-					mappingsListForEvent.splice( i, 1 );
-					if( mappingsListForEvent.length <= 0 )
-						delete mappingsListForEvent[ eventType ];
-					var mappingsNum = this._mappingsNumByClazz[ clazz ] || 0;
-					if( mappingsNum <= 0 ){
-						delete this._mappingsNumByClazz[ clazz ];
-					}else{
-						this._mappingsNumByClazz[ clazz ] = --mappingsNum;
-					}
-					return true;
-				}
+		var index = this._getMappingIndex( mappingsListForEvent, clazz, handler );
+		if( index >= 0 ){
+			var mapping = mappingsListForEvent[ index ];
+			delete mapping.clazz;
+			delete mapping.handler;
+			mapping = null;
+			mappingsListForEvent.splice( index, 1 );
+			if( mappingsListForEvent.length <= 0 )
+				delete mappingsListForEvent[ eventType ];
+			var mappingsNum = this._mappingsNumByClazz[ clazz ] || 0;
+			if( mappingsNum <= 0 ){
+				delete this._mappingsNumByClazz[ clazz ];
+			}else{
+				this._mappingsNumByClazz[ clazz ] = --mappingsNum;
 			}
-		}
+			return true;
 
+		}
 		return false;
 	},
 
@@ -640,15 +659,15 @@ dijon.EventMap.prototype = {
 	 *
 	 * @param {String} eventType
 	 * @param {Class} clazz
-	 * @param {Function} handler
+	 * @param {Function} [handler=null]
 	 * @param {Boolean} [oneShot=false]
 	 * @param {Boolean} [passEvent=false]
 	 */
 	addClassMapping : function( eventType, clazz, handler, oneShot, passEvent ){
-		if( ! this.injector.hasMapping( clazz ) ){
+		if( ! this.injector.hasMapping( clazz ) )
 			this.injector.mapClass( clazz, clazz );
-		}
-
+		if( handler == undefined )
+			handler = null;
 		this.addRuledMapping( eventType, clazz, handler, oneShot, passEvent );
 	},
 
@@ -656,10 +675,24 @@ dijon.EventMap.prototype = {
 	 *
 	 * @param {String} eventType
 	 * @param {Class} clazz
-	 * @param {Function} handler
+	 * @param {Function} [handler=null]
 	 */
 	removeClassMapping : function( eventType, clazz, handler ){
+		if( handler == undefined )
+			handler = null;
 		this._removeRuledMappingAndUnmapFromInjectorIfNecessary( eventType, clazz, handler );
+	},
+
+	/**
+	 *
+	 * @param {String} eventType
+	 * @param {Class} clazz
+	 * @param {Function} [handler=null]
+	 */
+	hasMapping : function( eventType, clazz, handler ){
+		if( handler == undefined )
+			handler = null;
+		return this._getMappingIndex( this._mappingsByEventType[ eventType ], clazz, handler ) >= 0 ;
 	}
 
 

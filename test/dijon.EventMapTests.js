@@ -19,7 +19,11 @@ Test1.prototype = {
 	handler : function(){
 		isExecuted++;
 		scope = this;
-	},
+	}
+}
+
+Test2 = function(){
+	isExecuted++;
 }
 
 
@@ -74,4 +78,22 @@ test( 'removeClassMapping standard', function(){
 	dispatcher.dispatchEvent( started );
 	equal( isExecuted, 0 );
 	ok( ! injector.hasMapping( Test1 ) );
+})
+
+test( 'optional handler for addClassMapping', function(){
+	eventMap.addClassMapping( started, Test2 );
+	dispatcher.dispatchEvent( started );
+	equal( isExecuted, 1 );
+})
+
+test( 'hasMapping', function(){
+	eventMap.addClassMapping( started, Test1, Test1.prototype.handler );
+	ok( eventMap.hasMapping( started, Test1, Test1.prototype.handler ));
+	ok( ! eventMap.hasMapping( started, Test1 ));
+})
+
+test( 'hasMapping with optional handler', function(){
+	eventMap.addClassMapping( started, Test1 );
+	ok( eventMap.hasMapping( started, Test1 ));
+	ok( ! eventMap.hasMapping( started, Test1, Test1.prototype.handler ));
 })
