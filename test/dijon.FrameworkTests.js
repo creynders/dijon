@@ -54,6 +54,7 @@ module( 'dijon.CommandMap', {
 		eventMap.injector = injector;
 		commandMap = new dijon.CommandMap();
 		commandMap.eventMap = eventMap;
+		commandMap.injector = injector;
 		hasExecuted = 0;
 	},
 	teardown : function(){
@@ -79,3 +80,16 @@ test( 'mapEvent with payload', function(){
 	var p = passed;
 	strictEqual( vo, p );
 } );
+
+test( 'execute command', function(){
+	commandMap.execute( TestCommand );
+	equal( hasExecuted, 1 );
+})
+
+test( 'execute command with payload', function(){
+	var vo = {};
+	commandMap.execute( TestCommand, vo );
+	var p = passed;
+	equal( hasExecuted, 1 );
+	strictEqual( vo, p );
+})

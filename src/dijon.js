@@ -328,26 +328,29 @@ dijon.Injector.prototype = {
 	/**
 	 * @private
 	 * @param {Class} clazz
-	 * @param {Boolean} overrideSingleton
+	 * @param {Boolean} overrideRules
 	 * @return {Object}
 	 */
-	_retrieveFromCacheOrCreate : function( clazz, overrideSingleton ){
+	_retrieveFromCacheOrCreate : function( clazz, overrideRules ){
 		var value = this._mappingsByEventType.getValue( clazz );
 		var output = null;
-		if( value ){
-			//found
-			if( value.isSingleton && ! overrideSingleton ){
-				if( value.object == null ){
-					 value.object = this._createAndSetupInstance( value.clazz );
-				}
-				output = value.object;
-			}else{
-				output = this._createAndSetupInstance( value.clazz );
-			}
+		if( overrideRules ){
+			output = this._createAndSetupInstance( clazz );
 		}else{
-			throw new Error( this.qcn + " is missing a rule for " + clazz );
+			if( value ){
+				if( value.isSingleton ){
+					if( value.object == null  ){
+						value.object = this._createAndSetupInstance( value.clazz );
+					}
+					output = value.object;
+				}else{
+					output = this._createAndSetupInstance( value.clazz );
+				}
+			}else{
+				throw new Error( this.qcn + " is missing a rule for " + clazz );
+			}
 		}
-		return output;
+		return output
 	},
 
 	/**
@@ -446,7 +449,8 @@ dijon.Injector.prototype = {
 
 	/**
 	 * create an instance of the class mapped to <code>clazz</code> and fulfill it's mapped dependencies<br/>
-	 * <strong>WILL ALWAYS CREATE A NEW INSTANCE</strong>, even if <code>clazz</code> was mapped otherwise.
+	 * <strong>WILL ALWAYS CREATE A NEW INSTANCE</strong>, even if <code>clazz</code> was mapped otherwise or not
+	 * even mapped.
 	 * @param {Class} clazz
 	 * @return {Object}
 	 */
@@ -634,11 +638,11 @@ dijon.EventMap.prototype = {
 
 	/**
 	 *
-	 * @param eventType
-	 * @param clazz
-	 * @param handler
-	 * @param {Boolean} [oneShot] default false
-	 * @param {Boolean} [passEvent] default false
+	 * @param {String} eventType
+	 * @param {Class} clazz
+	 * @param {Function} handler
+	 * @param {Boolean} [oneShot=false]
+	 * @param {Boolean} [passEvent=false]
 	 */
 	addClassMapping : function( eventType, clazz, handler, oneShot, passEvent ){
 		if( ! this.injector.hasMapping( clazz ) ){
@@ -648,9 +652,16 @@ dijon.EventMap.prototype = {
 		this.addRuledMapping( eventType, clazz, handler, oneShot, passEvent );
 	},
 
+	/**
+	 *
+	 * @param {String} eventType
+	 * @param {Class} clazz
+	 * @param {Function} handler
+	 */
 	removeClassMapping : function( eventType, clazz, handler ){
 		this._removeRuledMappingAndUnmapFromInjectorIfNecessary( eventType, clazz, handler );
 	}
+
 
 };//dijon.EventMap.prototype
 
@@ -696,6 +707,11 @@ dijon.Command = function(){
 	 */
 	this.injector = undefined;//inject
 
+	/**
+	 * @type dijon.CommandMap
+	 */
+	this.commandMap = undefined;//inject
+
 };//dijon.Command
 
 dijon.Command.prototype = new dijon.Actor();
@@ -723,13 +739,19 @@ dijon.CommandMap = function(){
 	 * @type dijon.EventMap
 	 */
 	this.eventMap = undefined;//inject
+
+	/**
+	 * @private
+	 * @type dijon.Injector
+	 */
+	this.injector = undefined;
 };//dijon.CommandMap
 
 dijon.CommandMap.prototype = {
 	/**
 	 *
 	 * @param {String} eventType
-	 * @param {Function} commandClazz
+	 * @param {Class} commandClazz
 	 * @param {Boolean} [oneShot] default false
 	 * @param {Boolean} [passEvent] default false
 	 */
@@ -740,10 +762,26 @@ dijon.CommandMap.prototype = {
 	/**
 	 *
 	 * @param {String} eventType
-	 * @param {Function} commandClazz
+	 * @param {Class} commandClazz
 	 */
 	unmapEvent : function( eventType, commandClazz ){
 		this.eventMap.removeClassMapping( eventType, commandClazz, commandClazz.prototype.execute );
+	},
+
+	/**
+	 *
+	 * @param {Class} commandClazz
+	 */
+	execute : function( commandClazz ){
+		var command = this.injector.instantiate( commandClazz );
+		var args = [];
+
+		//do not add commandClazz to args
+		for( var i = 1, n = arguments.length; i < n ; i++ ){
+			args.push( arguments[ i ] );
+		}
+
+		command.execute.apply( command, args );
 	}
 };//dijon.CommandMap.prototype
 
@@ -823,11 +861,13 @@ dijon.Context.prototype = {
 
 	_wireCommand : function(){
 		this.injector.addInjectionPoint( dijon.Command, 'injector', dijon.Injector );
+		this.injector.addInjectionPoint( dijon.Command, 'commandMap', dijon.CommandMap );
 		//no need to map inherited properties, since dijon has covariant injections
 	},
 
 	_wireAndCreateCommandMap : function(){
 		this.injector.addInjectionPoint( dijon.CommandMap, 'eventMap', dijon.EventMap );
+		this.injector.addInjectionPoint( dijon.CommandMap, 'injector', dijon.Injector );
 		this.injector.mapSingleton( dijon.CommandMap );
 		this.commandMap = this.injector.getInstance( dijon.CommandMap );
 	}
