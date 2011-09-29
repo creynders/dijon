@@ -1,7 +1,13 @@
-/** @namespace */
+/**
+ * @author <a href="http://www.creynders.be">Camille Reynders</a>
+ * @version 0.2.0
+ * @namespace
+ */
 var dijon = {
 	/**
 	 * framework version number
+	 * @constant
+	 * @type String
 	 */
 	VERSION : '0.2.0'
 };//dijon
@@ -13,7 +19,6 @@ var dijon = {
 /**
  * @class dijon.EventDispatcher
  * @author Camille Reynders - www.creynders.be
- * @version 1.4.0
  * @constructor
  */
 dijon.EventDispatcher = function(){
@@ -206,7 +211,6 @@ dijon.EventDispatcher.prototype = {
 /**
  * The Dictionary class lets you create a dynamic collection of properties, which uses strict equality (===) for key comparison.
  * @class dijon.Dictionary
- * @author Camille Reynders - www.creynders.be
  * @constructor
  */
 dijon.Dictionary = function(){
@@ -298,9 +302,8 @@ dijon.Dictionary.prototype = {
 //======================================//
 
 /**
- @class dijon.Injector
- @author Camille Reynders - www.creynders.be
- @constructor
+ * @class dijon.Injector
+ * @constructor
 */
 dijon.Injector = function(){
 	this.qcn = 'dijon.Injector';
@@ -505,7 +508,6 @@ dijon.Injector.prototype = {
  * Allows for mapping listeners to lazily instantiated objects.<br/>
  * [!] This class differs substantially from the RobotLegs EventMap both in use and functionality
  * @class dijon.EventMap
- * @author Camille Reynders - www.creynders.be
  * @constructor
  */
 dijon.EventMap = function(){
@@ -656,7 +658,10 @@ dijon.EventMap.prototype = {
 	},
 
 	/**
-	 *
+	 * maps <code>handler</code> as a listener for <code>eventType</code> to be called as a member of a <code>clazz</code>
+	 * instance. The instance will ALWAYS be a new one, regardless of previous injector mappings for that <code>clazz</code>.<br/>
+	 * If <code>handler</code> is <code>undefined</code> or <code>null</code> the instance will be created but no handler will be invoked.<br/>
+	 * In that case the dispatched payload will not be passed. (no constructor injection at the moment)
 	 * @param {String} eventType
 	 * @param {Class} clazz
 	 * @param {Function} [handler=null]
@@ -672,7 +677,8 @@ dijon.EventMap.prototype = {
 	},
 
 	/**
-	 *
+	 * Removes the mapping for <code>clazz</code>
+	 * @see dijon.EventMap#addClassMapping
 	 * @param {String} eventType
 	 * @param {Class} clazz
 	 * @param {Function} [handler=null]
@@ -684,10 +690,14 @@ dijon.EventMap.prototype = {
 	},
 
 	/**
-	 *
+	 * Checks whether a mapping exists. The combination of <code>eventType, clazz, handler</code> must be identical
+	 * to what was mapped for this to return true. If <code>clazz</code> was mapped for <code>eventType</code> <strong>with</strong>
+	 * a <code>handler</code> then <code>hasMapping</code> will return <code>false</code> if only invoked with parameters
+	 * <code>eventType</code> and <code>clazz</code>
 	 * @param {String} eventType
 	 * @param {Class} clazz
 	 * @param {Function} [handler=null]
+	 * @return {Boolean}
 	 */
 	hasMapping : function( eventType, clazz, handler ){
 		if( handler == undefined )
@@ -704,8 +714,8 @@ dijon.EventMap.prototype = {
 //======================================//
 
 /**
+ * Convenience class
  * @class dijon.Actor
- * @author Camille Reynders - www.creynders.be
  * @constructor
  */
 dijon.Actor = function(){
@@ -721,6 +731,10 @@ dijon.Actor = function(){
 };//dijon.Actor
 
 dijon.Actor.prototype = {
+	/**
+	 * is automatically invoked after injection has occurred.
+	 * <br/> cfr. RobotLegs' <code>[PostConstruct]</code> or <code>Mediator#onRegister</code>
+	 */
 	setup : function(){
 	}
 };//dijon.Actor.prototype
@@ -731,8 +745,8 @@ dijon.Actor.prototype = {
 
 /**
  * @class dijon.Command
- * @author Camille Reynders - www.creynders.be
  * @constructor
+ * @extends dijon.Actor
  */
 dijon.Command = function(){
 	/**
@@ -751,7 +765,10 @@ dijon.Command.prototype = new dijon.Actor();
 dijon.Command.prototype.constructor = dijon.Command;
 
 /**
- * 
+ * is automatically invoked after instantiation, injection and setup.
+ * <br/>Receives the payload of the event that was dispatched or that was provided to dijon.CommandMap#execute
+ * @see dijon.CommandMap#execute
+ * @see dijon.EventDispatcher#dispatchEvent
  */
 dijon.Command.prototype.execute = function(){
 
@@ -763,7 +780,6 @@ dijon.Command.prototype.execute = function(){
 
 /**
  * @class dijon.CommandMap
- * @author Camille Reynders - www.creynders.be
  * @constructor
  */
 dijon.CommandMap = function(){
@@ -827,7 +843,6 @@ dijon.CommandMap.prototype = {
 
 /**
  * @class dijon.Context
- * @author Camille Reynders - www.creynders.be
  * @constructor
  */
 dijon.Context = function(){
