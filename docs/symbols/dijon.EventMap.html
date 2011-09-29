@@ -296,9 +296,27 @@ instance.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/dijon.EventMap.html#removeRuledMapping">removeRuledMapping</a></b>(eventType, clazz, handler)
+								<div class="fixedFont"><b><a href="../symbols/dijon.EventMap.html#hasMapping">hasMapping</a></b>(eventType, clazz, handler)
 								</div>
 								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/dijon.EventMap.html#removeClassMapping">removeClassMapping</a></b>(eventType, clazz, handler)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/dijon.EventMap.html#removeRuledMapping">removeRuledMapping</a></b>(eventType, clazz, handler)
+								</div>
+								<div class="description">Removes the mapping for <code>clazz</code></div>
 							</td>
 						</tr>
 					
@@ -372,34 +390,34 @@ Allows for mapping listeners to lazily instantiated objects.<br/>
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>eventType</b>
+									<span class="light fixedFont">{String}</span> <b>eventType</b>
 									
 								</dt>
 								<dd></dd>
 							
 								<dt>
-									<b>clazz</b>
+									<span class="light fixedFont">{Class}</span> <b>clazz</b>
 									
 								</dt>
 								<dd></dd>
 							
 								<dt>
-									<b>handler</b>
-									
+									<span class="light fixedFont">{Function}</span> <b>handler</b>
+									<i>Optional, Default: null</i>
 								</dt>
 								<dd></dd>
 							
 								<dt>
 									<span class="light fixedFont">{Boolean}</span> <b>oneShot</b>
-									<i>Optional</i>
+									<i>Optional, Default: false</i>
 								</dt>
-								<dd>default false</dd>
+								<dd></dd>
 							
 								<dt>
 									<span class="light fixedFont">{Boolean}</span> <b>passEvent</b>
-									<i>Optional</i>
+									<i>Optional, Default: false</i>
 								</dt>
-								<dd>default false</dd>
+								<dd></dd>
 							
 							</dl>
 						
@@ -452,16 +470,18 @@ instance. The instance will be created according to the rule defined for <code>c
 								<dd></dd>
 							
 								<dt>
-									<span class="light fixedFont">{Function}</span> <b>oneShot</b>
-									
+									<span class="light fixedFont">{Boolean}</span> <b>oneShot</b>
+									<i>Optional, Default: false</i>
 								</dt>
-								<dd></dd>
+								<dd>Whether the listener must be called only once</dd>
 							
 								<dt>
 									<span class="light fixedFont">{Boolean}</span> <b>passEvent</b>
 									<i>Optional, Default: false</i>
 								</dt>
-								<dd></dd>
+								<dd>Whether the event object should be passed as a parameter to <code>handler</code>
+upon invocation or not. If <code>true</code> any additional dispatched values will be passed as parameters after
+the event object</dd>
 							
 							</dl>
 						
@@ -481,11 +501,11 @@ instance. The instance will be created according to the rule defined for <code>c
 
 					<hr />
 				
-					<a name="removeRuledMapping"> </a>
+					<a name="hasMapping"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>removeRuledMapping</b>(eventType, clazz, handler)
+					<b>hasMapping</b>(eventType, clazz, handler)
 					
 					</div>
 					<div class="description">
@@ -501,19 +521,115 @@ instance. The instance will be created according to the rule defined for <code>c
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>eventType</b>
+									<span class="light fixedFont">{String}</span> <b>eventType</b>
 									
 								</dt>
 								<dd></dd>
 							
 								<dt>
-									<b>clazz</b>
+									<span class="light fixedFont">{Class}</span> <b>clazz</b>
 									
 								</dt>
 								<dd></dd>
 							
 								<dt>
-									<b>handler</b>
+									<span class="light fixedFont">{Function}</span> <b>handler</b>
+									<i>Optional, Default: null</i>
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="removeClassMapping"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>removeClassMapping</b>(eventType, clazz, handler)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>eventType</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{Class}</span> <b>clazz</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>handler</b>
+									<i>Optional, Default: null</i>
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="removeRuledMapping"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>removeRuledMapping</b>(eventType, clazz, handler)
+					
+					</div>
+					<div class="description">
+						Removes the mapping for <code>clazz</code>
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>eventType</b>
+									
+								</dt>
+								<dd>The name of the event to be listened to</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Class}</span> <b>clazz</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>handler</b>
 									
 								</dt>
 								<dd></dd>
@@ -525,6 +641,13 @@ instance. The instance will be created according to the rule defined for <code>c
 						
 						
 						
+						
+							<dl class="detailList">
+							<dt class="heading">See:</dt>
+							
+								<dd><a href="../symbols/dijon.EventMap.html#addRuledMapping">dijon.EventMap#addRuledMapping</a></dd>
+							
+							</dl>
 						
 
 					
@@ -541,7 +664,7 @@ instance. The instance will be created according to the rule defined for <code>c
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Wed Sep 28 2011 17:23:18 GMT+0200 (CEST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Thu Sep 29 2011 12:18:19 GMT+0200 (CEST)
 		</div>
 	</body>
 </html>
