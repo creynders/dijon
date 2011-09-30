@@ -868,14 +868,6 @@ dijon.Context = function(){
 	 */
 	this.commandMap = undefined;
 
-	this._createInjector();
-	this._wireAndCreateEventDispatcher();
-	this._wireAndCreateEventMap();
-	this._wireActor();
-	this._wireCommand();
-	this._wireAndCreateCommandMap();
-
-	this.startup();
 
 };//dijon.Context
 
@@ -934,10 +926,23 @@ dijon.Context.prototype = {
 	},
 
 	/**
+	 * @param {Boolean} [autoStartup=true]
+	 */
+	init : function( autoStartup ){
+		this._createInjector();
+		this._wireAndCreateEventDispatcher();
+		this._wireAndCreateEventMap();
+		this._wireActor();
+		this._wireCommand();
+		this._wireAndCreateCommandMap();
+
+		if( autoStartup == true || autoStartup==undefined ) this.startup();
+	},
+
+	/**
 	 * 
 	 */
 	startup : function(){
-		
 	}
 };//dijon.Context.prototype
 
