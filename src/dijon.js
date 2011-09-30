@@ -724,6 +724,11 @@ dijon.EventMap.prototype = {
  */
 dijon.Actor = function(){
 	/**
+	 * @type dijon.Injector
+	 */
+	this.injector = undefined;//inject
+	
+	/**
 	 * @type dijon.EventMap
 	 */
 	this.eventMap = undefined;//inject
@@ -753,10 +758,6 @@ dijon.Actor.prototype = {
  * @extends dijon.Actor
  */
 dijon.Command = function(){
-	/**
-	 * @type dijon.Injector
-	 */
-	this.injector = undefined;//inject
 
 	/**
 	 * @type dijon.CommandMap
@@ -909,6 +910,7 @@ dijon.Context.prototype = {
 	 * @private
 	 */
 	_wireActor : function(){
+		this.injector.addInjectionPoint( dijon.Actor, 'injector', dijon.Injector );
 		this.injector.addInjectionPoint( dijon.Actor, 'eventDispatcher', dijon.EventDispatcher );
 		this.injector.addInjectionPoint( dijon.Actor, 'eventMap', dijon.EventMap );
 	},
@@ -917,7 +919,6 @@ dijon.Context.prototype = {
 	 * @private
 	 */
 	_wireCommand : function(){
-		this.injector.addInjectionPoint( dijon.Command, 'injector', dijon.Injector );
 		this.injector.addInjectionPoint( dijon.Command, 'commandMap', dijon.CommandMap );
 		//no need to map inherited properties, since dijon has covariant injections
 	},
