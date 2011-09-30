@@ -309,7 +309,7 @@ dijon.Injector = function(){
 	this.qcn = 'dijon.Injector';
 
 	/** @private */
-	this._mappingsByEventType = new dijon.Dictionary();
+	this._mappingsByClassOrObject = new dijon.Dictionary();
 
 	/** @private */
 	this._injectionPoints = [];
@@ -335,7 +335,7 @@ dijon.Injector.prototype = {
 	 * @return {Object}
 	 */
 	_retrieveFromCacheOrCreate : function( clazz, overrideRules ){
-		var value = this._mappingsByEventType.getValue( clazz );
+		var value = this._mappingsByClassOrObject.getValue( clazz );
 		var output = null;
 		if( overrideRules ){
 			output = this._createAndSetupInstance( clazz );
@@ -386,7 +386,7 @@ dijon.Injector.prototype = {
 	 * @param {Class|Object} whenAskedFor
 	 */
 	mapSingleton : function( whenAskedFor ){
-		if( this._mappingsByEventType.hasValue( whenAskedFor ) ) throw new Error( this.qcn + ' cannot remap ' + ' without unmapping first' );
+		if( this._mappingsByClassOrObject.hasValue( whenAskedFor ) ) throw new Error( this.qcn + ' cannot remap ' + ' without unmapping first' );
 		this.mapSingletonOf( whenAskedFor, whenAskedFor );
 	},
 
@@ -396,8 +396,8 @@ dijon.Injector.prototype = {
 	 * @param {Object} useValue
 	 */
 	mapValue : function( whenAskedFor, useValue ){
-		if( this._mappingsByEventType.hasValue( whenAskedFor ) ) throw new Error( this.qcn + ' cannot remap ' + ' without unmapping first' );
-		this._mappingsByEventType.add(
+		if( this._mappingsByClassOrObject.hasValue( whenAskedFor ) ) throw new Error( this.qcn + ' cannot remap ' + ' without unmapping first' );
+		this._mappingsByClassOrObject.add(
 			whenAskedFor,
 			{
 				clazz : whenAskedFor,
@@ -413,7 +413,7 @@ dijon.Injector.prototype = {
 	 * @return {Boolean}
 	 */
 	hasMapping : function( whenAskedFor ){
-		return this._mappingsByEventType.hasValue( whenAskedFor );
+		return this._mappingsByClassOrObject.hasValue( whenAskedFor );
 	},
 
 	/**
@@ -423,7 +423,7 @@ dijon.Injector.prototype = {
 	 */
 	mapClass : function( whenAskedFor, instantiateClass ){
 		if( this.hasMapping( whenAskedFor ) ) throw new Error( this.qcn + ' cannot remap ' + ' without unmapping first' );
-		this._mappingsByEventType.add(
+		this._mappingsByClassOrObject.add(
 			whenAskedFor,
 			{
 				clazz : instantiateClass,
@@ -439,8 +439,8 @@ dijon.Injector.prototype = {
 	 * @param {Class} useSingletonOf
 	 */
 	mapSingletonOf : function( whenAskedFor, useSingletonOf ){
-		if( this._mappingsByEventType.hasValue( whenAskedFor ) ) throw new Error( this.qcn + ' cannot remap ' + ' without unmapping first' );
-		this._mappingsByEventType.add(
+		if( this._mappingsByClassOrObject.hasValue( whenAskedFor ) ) throw new Error( this.qcn + ' cannot remap ' + ' without unmapping first' );
+		this._mappingsByClassOrObject.add(
 			whenAskedFor,
 			{
 				clazz : useSingletonOf,
@@ -478,7 +478,7 @@ dijon.Injector.prototype = {
 	 * @param {Class|Object} whenAskedFor
 	 */
 	unmap : function( whenAskedFor ){
-		this._mappingsByEventType.remove( whenAskedFor );
+		this._mappingsByClassOrObject.remove( whenAskedFor );
 	},
 
 	/**
@@ -574,9 +574,9 @@ dijon.EventMap.prototype = {
 		for( var i = 0, n = mappingsListForEvent.length; i < n; i++ ){
 			var obj = mappingsListForEvent[i];
 			if( this.injector.hasMapping( obj.clazz ) ){
+				var instance = this.injector.getInstance( obj.clazz );
 				if( obj.oneShot )
 					this.removeRuledMapping( event.type, obj.clazz, obj.handler );
-				var instance = this.injector.getInstance( obj.clazz );
 				if( obj.passEvent )
 					args.unshift( event );
 				if( obj.handler != null )
@@ -625,6 +625,7 @@ dijon.EventMap.prototype = {
 		this._mappingsNumByClazz[ clazz ] = ++mappingsNum;
 
 		this._mappingsByEventType[ eventType ].push( { clazz : clazz, handler : handler, oneShot : oneShot, passEvent: passEvent } );
+		var a=1;
 	},
 
 	/**
@@ -638,10 +639,13 @@ dijon.EventMap.prototype = {
 		var mappingsListForEvent = this._mappingsByEventType[ eventType ];
 		var index = this._getMappingIndex( mappingsListForEvent, clazz, handler );
 		if( index >= 0 ){
+			/* DO NOT CLEAN UP MAPPING DEPENDENCIES, mapping maybe still in use
+			/*
 			var mapping = mappingsListForEvent[ index ];
 			delete mapping.clazz;
 			delete mapping.handler;
 			mapping = null;
+			*/
 			mappingsListForEvent.splice( index, 1 );
 			if( mappingsListForEvent.length <= 0 )
 				delete mappingsListForEvent[ eventType ];
@@ -783,6 +787,9 @@ dijon.Command.prototype.execute = function(){
  * @constructor
  */
 dijon.CommandMap = function(){
+
+	this.qcn = 'dijon.CommandMap';
+	
 	/**
 	 * @private
 	 * @type dijon.EventMap
@@ -940,7 +947,7 @@ dijon.Context.prototype = {
 	},
 
 	/**
-	 * 
+	 * abstract, should be overridden
 	 */
 	startup : function(){
 	}
