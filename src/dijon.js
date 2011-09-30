@@ -875,6 +875,8 @@ dijon.Context = function(){
 	this._wireCommand();
 	this._wireAndCreateCommandMap();
 
+	this.startup();
+
 };//dijon.Context
 
 dijon.Context.prototype = {
@@ -893,6 +895,7 @@ dijon.Context.prototype = {
 		this.injector.mapSingleton( dijon.EventDispatcher );
 		this.eventDispatcher = this.injector.getInstance( dijon.EventDispatcher );
 	},
+
 	/**
 	 * @private
 	 */
@@ -903,22 +906,38 @@ dijon.Context.prototype = {
 		this.eventMap = this.injector.getInstance( dijon.EventMap );
 	},
 
+	/**
+	 * @private
+	 */
 	_wireActor : function(){
 		this.injector.addInjectionPoint( dijon.Actor, 'eventDispatcher', dijon.EventDispatcher );
 		this.injector.addInjectionPoint( dijon.Actor, 'eventMap', dijon.EventMap );
 	},
 
+	/**
+	 * @private
+	 */
 	_wireCommand : function(){
 		this.injector.addInjectionPoint( dijon.Command, 'injector', dijon.Injector );
 		this.injector.addInjectionPoint( dijon.Command, 'commandMap', dijon.CommandMap );
 		//no need to map inherited properties, since dijon has covariant injections
 	},
 
+	/**
+	 * @private
+	 */
 	_wireAndCreateCommandMap : function(){
 		this.injector.addInjectionPoint( dijon.CommandMap, 'eventMap', dijon.EventMap );
 		this.injector.addInjectionPoint( dijon.CommandMap, 'injector', dijon.Injector );
 		this.injector.mapSingleton( dijon.CommandMap );
 		this.commandMap = this.injector.getInstance( dijon.CommandMap );
+	},
+
+	/**
+	 * 
+	 */
+	startup : function(){
+		
 	}
 };//dijon.Context.prototype
 
