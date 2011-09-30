@@ -625,7 +625,6 @@ dijon.EventMap.prototype = {
 		this._mappingsNumByClazz[ clazz ] = ++mappingsNum;
 
 		this._mappingsByEventType[ eventType ].push( { clazz : clazz, handler : handler, oneShot : oneShot, passEvent: passEvent } );
-		var a=1;
 	},
 
 	/**
@@ -639,7 +638,7 @@ dijon.EventMap.prototype = {
 		var mappingsListForEvent = this._mappingsByEventType[ eventType ];
 		var index = this._getMappingIndex( mappingsListForEvent, clazz, handler );
 		if( index >= 0 ){
-			/* DO NOT CLEAN UP MAPPING DEPENDENCIES, mapping maybe still in use
+			/* DO NOT CLEAN UP MAPPING DEPENDENCIES, mapping maybe still in use */
 			/*
 			var mapping = mappingsListForEvent[ index ];
 			delete mapping.clazz;
