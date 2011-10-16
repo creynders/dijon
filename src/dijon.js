@@ -356,6 +356,22 @@ dijon.Injector.prototype = {
 		return output
 	},
 
+	parseConfig : function( configList ){
+		for( var configName in configList ){
+			var configObj = configList[ configName ];
+			if( configObj.singleton ){
+				this.mapSingletonOf( configObj, configObj.impl );
+			}else{
+				this.mapClass( configObj, configObj.impl );
+			}
+			for( var outletName in configObj.outlets ){
+				var outletWiring = configObj.outlets[ outletName ];
+				this.addInjectionPoint( configObj.impl, outletName, outletWiring );
+			}
+		}
+	},
+
+
 	/**
 	 * defines <code>propertyName</code> as an injection point for <code>targetClazz</code> to be injected with an instance
 	 * of <code>sourceClazz</code>.
@@ -407,6 +423,11 @@ dijon.Injector.prototype = {
 				isSingleton : true
 			}
 		);
+	},
+
+	setValue : function( whenAskedFor, useValue ){
+		var config = this._mappingsByClassOrObject.getValue( whenAskedFor );
+		config.object = useValue;
 	},
 
 	/**
@@ -531,7 +552,7 @@ dijon.EventMap = function(){
 	 * @private
 	 * @type dijon.EventDispatcher
 	 */
-	this.dispatcher = undefined; //inject
+	this.eventDispatcher = undefined; //inject
 
 	/**
 	 * @private
@@ -624,7 +645,7 @@ dijon.EventMap.prototype = {
 		}
 		if( ! this._mappingsByEventType[ eventType ] ){
 			this._mappingsByEventType[ eventType ] = [];
-			this.dispatcher.addScopedListener( eventType, this._handleRuledMappedEvent, this, false, true );
+			this.eventDispatcher.addScopedListener( eventType, this._handleRuledMappedEvent, this, false, true );
 		}
 
 		var mappingsNum = this._mappingsNumByClazz[ injectionKey ] || 0;
@@ -753,102 +774,6 @@ dijon.Actor.prototype = {
 	}
 };//dijon.Actor.prototype
 
-  //======================================//
- // dijon.Command
-//======================================//
-
-/**
- * @class dijon.Command
- * @constructor
- * @extends dijon.Actor
- */
-dijon.Command = function(){
-
-	/**
-	 * @type dijon.CommandMap
-	 */
-	this.commandMap = undefined;//inject
-
-};//dijon.Command
-
-dijon.Command.prototype = new dijon.Actor();
-dijon.Command.prototype.constructor = dijon.Command;
-
-/**
- * is automatically invoked after instantiation, injection and setup.
- * <br/>Receives the payload of the event that was dispatched or that was provided to dijon.CommandMap#execute
- * @see dijon.CommandMap#execute
- * @see dijon.EventDispatcher#dispatchEvent
- */
-dijon.Command.prototype.execute = function(){
-
-}
-
-  //======================================//
- // dijon.CommandMap
-//======================================//
-
-/**
- * @class dijon.CommandMap
- * @constructor
- */
-dijon.CommandMap = function(){
-
-	this.fqn = 'dijon.CommandMap';
-	
-	/**
-	 * @private
-	 * @type dijon.EventMap
-	 */
-	this.eventMap = undefined;//inject
-
-	/**
-	 * @private
-	 * @type dijon.Injector
-	 */
-	this.injector = undefined;
-};//dijon.CommandMap
-
-dijon.CommandMap.prototype = {
-	/**
-	 *
-	 * @param {String} eventType
-	 * @param {Class} commandClazz
-	 * @param {Boolean} [oneShot] default false
-	 * @param {Boolean} [passEvent] default false
-	 */
-	mapEvent : function( eventType, commandClazz, oneShot, passEvent ){
-		this.eventMap.addClassMapping( eventType, commandClazz, 'execute', oneShot, passEvent );
-	},
-	
-	/**
-	 *
-	 * @param {String} eventType
-	 * @param {Class} commandClazz
-	 */
-	unmapEvent : function( eventType, commandClazz ){
-		this.eventMap.removeClassMapping( eventType, commandClazz, 'execute' );
-	},
-
-	/**
-	 *
-	 * @param {Class} commandClazz
-	 * @param {...} [...=undefined] Any number of parameters
-	 */
-	execute : function( commandClazz ){
-		var command = this.injector.instantiate( commandClazz );
-		var args = [];
-
-		//do not add commandClazz to args
-		for( var i = 1, n = arguments.length; i < n ; i++ ){
-			args.push( arguments[ i ] );
-		}
-
-		command.execute.apply( command, args );
-	}
-};//dijon.CommandMap.prototype
-
-
 
   //======================================//
  // dijon.Context
@@ -861,101 +786,63 @@ dijon.CommandMap.prototype = {
 dijon.Context = function(){
 	this.fqn = 'dijon.Context';
 
-	/**
-	 * @type dijon.Injector
-	 */
-	this.injector = undefined;
-
-	/**
-	 * @type dijon.EventMap
-	 */
-	this.eventMap = undefined;
-
-	/**
-	 * @type dijon.EventDispatcher
-	 */
-	this.eventDispatcher = undefined;
-
-	/**
-	 * @type dijon.CommandMap
-	 */
-	this.commandMap = undefined;
-
-
 };//dijon.Context
+dijon.Context.prototype = new dijon.Actor();
+dijon.Context.prototype.constructor = dijon.Context;
 
-dijon.Context.prototype = {
+/**
+ * @private
+ */
+dijon.Context.prototype._createInjector = function(){
+	this.injector = new dijon.Injector();
+};
 
-	/**
-	 * @private
-	 */
-	_createInjector : function(){
-		this.injector = new dijon.Injector();
-		this.injector.mapValue( dijon.Injector, this.injector );
-	},
-	/**
-	 * @private
-	 */
-	_wireAndCreateEventDispatcher : function(){
-		this.injector.mapSingleton( dijon.EventDispatcher );
-		this.eventDispatcher = this.injector.getInstance( dijon.EventDispatcher );
-	},
+/**
+ * @private
+ */
+dijon.Context.prototype._setupWirings = function(){
+	this.injector.parseConfig( dijon.wirings );
+	this.injector.setValue( dijon.wirings.injector, this.injector );
+}
+/**
+ * @param {Boolean} [autoStartup=true]
+ */
+dijon.Context.prototype.init = function( autoStartup ){
+	this._createInjector();
+	this._setupWirings();
+	this.injector.injectInto( this );
+	if( autoStartup == true || autoStartup==undefined ) this.startup();
+};
 
-	/**
-	 * @private
-	 */
-	_wireAndCreateEventMap : function(){
-		this.injector.addInjectionPoint( dijon.EventMap, 'dispatcher', dijon.EventDispatcher );
-		this.injector.addInjectionPoint( dijon.EventMap, 'injector', dijon.Injector );
-		this.injector.mapSingleton( dijon.EventMap );
-		this.eventMap = this.injector.getInstance( dijon.EventMap );
-	},
+/**
+ * abstract, should be overridden
+ */
+dijon.Context.prototype.startup = function(){
+}
 
-	/**
-	 * @private
-	 */
-	_wireActor : function(){
-		this.injector.addInjectionPoint( dijon.Actor, 'injector', dijon.Injector );
-		this.injector.addInjectionPoint( dijon.Actor, 'eventDispatcher', dijon.EventDispatcher );
-		this.injector.addInjectionPoint( dijon.Actor, 'eventMap', dijon.EventMap );
-	},
-
-	/**
-	 * @private
-	 */
-	_wireCommand : function(){
-		this.injector.addInjectionPoint( dijon.Command, 'commandMap', dijon.CommandMap );
-		//no need to map inherited properties, since dijon has covariant injections
-	},
-
-	/**
-	 * @private
-	 */
-	_wireAndCreateCommandMap : function(){
-		this.injector.addInjectionPoint( dijon.CommandMap, 'eventMap', dijon.EventMap );
-		this.injector.addInjectionPoint( dijon.CommandMap, 'injector', dijon.Injector );
-		this.injector.mapSingleton( dijon.CommandMap );
-		this.commandMap = this.injector.getInstance( dijon.CommandMap );
-	},
-
-	/**
-	 * @param {Boolean} [autoStartup=true]
-	 */
-	init : function( autoStartup ){
-		this._createInjector();
-		this._wireAndCreateEventDispatcher();
-		this._wireAndCreateEventMap();
-		this._wireActor();
-		this._wireCommand();
-		this._wireAndCreateCommandMap();
-
-		if( autoStartup == true || autoStartup==undefined ) this.startup();
-	},
-
-	/**
-	 * abstract, should be overridden
-	 */
-	startup : function(){
+dijon.wirings = {};
+dijon.wirings.injector = {
+	impl : dijon.Injector,
+	singleton : true
+};
+dijon.wirings.eventDispatcher = {
+	impl : dijon.EventDispatcher,
+	singleton : true
+};
+dijon.wirings.eventMap = {
+	impl : dijon.EventMap,
+	singleton : true,
+	outlets : {
+		eventDispatcher : dijon.wirings.eventDispatcher,
+		injector : dijon.wirings.injector
 	}
-};//dijon.Context.prototype
-
+};
+dijon.wirings.actor = {
+	impl : dijon.Actor,
+	singleton : true,
+	outlets : {
+		eventDispatcher : dijon.wirings.eventDispatcher,
+		injector : dijon.wirings.injector,
+		eventMap : dijon.wirings.eventMap
+	}
+};
