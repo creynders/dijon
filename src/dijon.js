@@ -232,7 +232,8 @@ dijon.Dictionary.prototype = {
 	 */
 	_getIndexByKey : function( key ){
 		for( var i = 0, n = this._map.length ; i < n ; i++ ){
-			if( this._map[ i ].key === key ) return i;
+			if( this._map[ i ].key === key )
+                return i;
 		}
 
 		return -1;
@@ -354,21 +355,6 @@ dijon.Injector.prototype = {
 			}
 		}
 		return output
-	},
-
-	parseConfig : function( configList ){
-		for( var configName in configList ){
-			var configObj = configList[ configName ];
-			if( configObj.singleton ){
-				this.mapSingletonOf( configObj, configObj.impl );
-			}else{
-				this.mapClass( configObj, configObj.impl );
-			}
-			for( var outletName in configObj.outlets ){
-				var outletWiring = configObj.outlets[ outletName ];
-				this.addInjectionPoint( configObj.impl, outletName, outletWiring );
-			}
-		}
 	},
 
 
@@ -801,7 +787,7 @@ dijon.Context.prototype._createInjector = function(){
  * @private
  */
 dijon.Context.prototype._setupWirings = function(){
-	this.injector.parseConfig( dijon.wirings );
+	this.parseConfig( dijon.wirings );
 	this.injector.setValue( dijon.wirings.injector, this.injector );
 }
 /**
@@ -813,6 +799,27 @@ dijon.Context.prototype.init = function( autoStartup ){
 	this.injector.injectInto( this );
 	if( autoStartup == true || autoStartup==undefined ) this.startup();
 };
+
+dijon.Context.prototype.parseConfig = function( configList ){
+	for( var configName in configList ){
+		var configObj = configList[ configName ];
+		if( configObj.singleton ){
+			this.injector.mapSingletonOf( configObj, configObj.impl );
+		}else{
+			this.injector.mapClass( configObj, configObj.impl );
+		}
+		for( var outletName in configObj.outlets ){
+			var outletWiring = configObj.outlets[ outletName ];
+			this.injector.addInjectionPoint( configObj.impl, outletName, outletWiring );
+		}
+		for( var i in configObj.handlers ){
+			var handlerConfig = configObj.handlers[ i ];
+			this.eventMap.addRuledMapping( handlerConfig.event, configObj, handlerConfig.handler, handlerConfig.oneShot, handlerConfig.passEvent )
+		}
+	}
+};
+
+
 
 /**
  * abstract, should be overridden

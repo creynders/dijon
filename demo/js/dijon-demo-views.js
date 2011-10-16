@@ -4,12 +4,20 @@
  * Time: 13:28
  */
 
-dijondemo.viewEvents = {
-	loadTwitterStream : 'dijondemo.viewEvents.loadTwitterStream'
+
+/**
+ * @namespace
+ */
+var dijondemo = {
+	fqn : 'dijondemo'
 }
 
+dijondemo.viewEvents = {
+	loadTwitterStream : 'dijondemo.viewEvents.loadTwitterStream'
+};
+
 $(document).ready( function(){
-	
+
 	/** @type dijondemo.DemoContext */
 	var demoContext = new dijondemo.DemoContext();
 	demoContext.init();
@@ -17,7 +25,7 @@ $(document).ready( function(){
 	var system = demoContext.eventDispatcher;
 
 	system.addListener( dijondemo.systemEvents.twitterStreamLoaded, streamLoaded );
-	
+
 	$('#loadTwitterStreamButton').click( function(){
 		console.log( 'load the tweets!' );
 		system.dispatchEvent( dijondemo.viewEvents.loadTwitterStream, $( '#username' ).val(), $( '#numTweets' ).val() );
@@ -37,4 +45,4 @@ $(document).ready( function(){
 			$.mobile.changePage( '#tweetsListPage' );
 		}
 	}
-});	
+});

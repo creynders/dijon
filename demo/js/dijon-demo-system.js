@@ -5,13 +5,6 @@
  */
 
 /**
- * @namespace
- */
-var dijondemo = {
-	fqn : 'dijondemo'
-}
-
-/**
  * @constructor
  * @extends dijon.Context
  */
@@ -25,22 +18,9 @@ dijondemo.DemoContext.prototype.constructor = dijondemo.DemoContext;
 dijondemo.DemoContext.prototype.startup = function(){
 	console.log( this.fqn + " startup" );
 	
-	this.commandMap.mapEvent( dijondemo.systemEvents.startup, dijondemo.StartupCommand, true );
+	this.parseConfig( dijondemo.wirings );
 
 	this.eventDispatcher.dispatchEvent( dijondemo.systemEvents.startup );
-}
-
-dijondemo.StartupCommand = function(){
-	this.fqn = 'dijondemo.StartupCommand';
-}
-dijondemo.StartupCommand.prototype = new dijon.Command();
-dijondemo.StartupCommand.prototype.constructor = dijondemo.StartupCommand;
-dijondemo.StartupCommand.prototype.execute = function(){
-	console.log( "dijondemo.StartupCommand execute" );
-
-	this.injector.mapSingleton( dijondemo.classRefs.twitterService.impl );
-
-	this.eventMap.addRuledMapping( dijondemo.viewEvents.loadTwitterStream, dijondemo.classRefs.twitterService.impl, dijondemo.classRefs.twitterService.loadTwitterStream )
 }
 
 dijondemo.JQueryTwitterService = function(){
@@ -73,15 +53,22 @@ dijondemo.JQueryTwitterService.prototype.loadStream = function( username, numTwe
 
 
 
-
 dijondemo.systemEvents = {
 	startup : 'dijondemo.systemEvents.startup',
 	twitterStreamLoaded : 'dijondemo.systemEvents.twitterStreamLoaded'
-}
+};
 
-dijondemo.classRefs = {
-	twitterService : {
+dijondemo.wirings = {
+	twitterService: {
 		impl : dijondemo.JQueryTwitterService,
-		loadTwitterStream: dijondemo.JQueryTwitterService.prototype.loadStream
+		singleton : true,
+		handlers : [
+			{
+				handler : 'loadStream',
+				event : dijondemo.viewEvents.loadTwitterStream,
+				oneShot : false,
+				passEvent : false
+			}
+		]
 	}
 }
