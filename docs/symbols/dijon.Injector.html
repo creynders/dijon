@@ -1,0 +1,906 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="generator" content="JsDoc Toolkit" />
+		
+		<title>JsDoc Reference - dijon.Injector</title>
+
+		<style type="text/css">
+			/* default.css */
+body
+{
+	font: 12px "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+	width: 800px;
+}
+
+.header
+{
+	clear: both;
+	background-color: #ccc;
+	padding: 8px;
+}
+
+h1
+{
+	font-size: 150%;
+	font-weight: bold;
+	padding: 0;
+	margin: 1em 0 0 .3em;
+}
+
+hr
+{
+	border: none 0;
+	border-top: 1px solid #7F8FB1;
+	height: 1px;
+}
+
+pre.code
+{
+	display: block;
+	padding: 8px;
+	border: 1px dashed #ccc;
+}
+
+#index
+{
+	margin-top: 24px;
+	float: left;
+	width: 160px;
+	position: absolute;
+	left: 8px;
+	background-color: #F3F3F3;
+	padding: 8px;
+}
+
+#content
+{
+	margin-left: 190px;
+	width: 600px;
+}
+
+.classList
+{
+	list-style-type: none;
+	padding: 0;
+	margin: 0 0 0 8px;
+	font-family: arial, sans-serif;
+	font-size: 1em;
+	overflow: auto;
+}
+
+.classList li
+{
+	padding: 0;
+	margin: 0 0 8px 0;
+}
+
+.summaryTable { width: 100%; }
+
+h1.classTitle
+{
+	font-size:170%;
+	line-height:130%;
+}
+
+h2 { font-size: 110%; }
+caption, div.sectionTitle
+{
+	background-color: #7F8FB1;
+	color: #fff;
+	font-size:130%;
+	text-align: left;
+	padding: 2px 6px 2px 6px;
+	border: 1px #7F8FB1 solid;
+}
+
+div.sectionTitle { margin-bottom: 8px; }
+.summaryTable thead { display: none; }
+
+.summaryTable td
+{
+	vertical-align: top;
+	padding: 4px;
+	border-bottom: 1px #7F8FB1 solid;
+	border-right: 1px #7F8FB1 solid;
+}
+
+/*col#summaryAttributes {}*/
+.summaryTable td.attributes
+{
+	border-left: 1px #7F8FB1 solid;
+	width: 140px;
+	text-align: right;
+}
+
+td.attributes, .fixedFont
+{
+	line-height: 15px;
+	color: #002EBE;
+	font-family: "Courier New",Courier,monospace;
+	font-size: 13px;
+}
+
+.summaryTable td.nameDescription
+{
+	text-align: left;
+	font-size: 13px;
+	line-height: 15px;
+}
+
+.summaryTable td.nameDescription, .description
+{
+	line-height: 15px;
+	padding: 4px;
+	padding-left: 4px;
+}
+
+.summaryTable { margin-bottom: 8px; }
+
+ul.inheritsList
+{
+	list-style: square;
+	margin-left: 20px;
+	padding-left: 0;
+}
+
+.detailList {
+	margin-left: 20px; 
+	line-height: 15px;
+}
+.detailList dt { margin-left: 20px; }
+
+.detailList .heading
+{
+	font-weight: bold;
+	padding-bottom: 6px;
+	margin-left: 0;
+}
+
+.light, td.attributes, .light a:link, .light a:visited
+{
+	color: #777;
+	font-style: italic;
+}
+
+.fineprint
+{
+	text-align: right;
+	font-size: 10px;
+}
+		</style>
+	</head>
+
+	<body>
+<!-- ============================== header ================================= -->	
+		<!-- begin static/header.html -->
+		<div id="header">
+</div>
+		<!-- end static/header.html -->
+
+<!-- ============================== classes index ============================ -->
+		<div id="index">
+			<!-- begin publish.classesIndex -->
+			<div align="center"><a href="../index.html">Class Index</a>
+| <a href="../files.html">File Index</a></div>
+<hr />
+<h2>Classes</h2>
+<ul class="classList">
+	
+	<li><i><a href="../symbols/_global_.html">_global_</a></i></li>
+	
+	<li><a href="../symbols/dijon.html">dijon</a></li>
+	
+	<li><a href="../symbols/dijon.Actor.html">dijon.Actor</a></li>
+	
+	<li><a href="../symbols/dijon.Command.html">dijon.Command</a></li>
+	
+	<li><a href="../symbols/dijon.CommandMap.html">dijon.CommandMap</a></li>
+	
+	<li><a href="../symbols/dijon.Context.html">dijon.Context</a></li>
+	
+	<li><a href="../symbols/dijon.Dictionary.html">dijon.Dictionary</a></li>
+	
+	<li><a href="../symbols/dijon.EventDispatcher.html">dijon.EventDispatcher</a></li>
+	
+	<li><a href="../symbols/dijon.EventMap.html">dijon.EventMap</a></li>
+	
+	<li><a href="../symbols/dijon.Injector.html">dijon.Injector</a></li>
+	
+</ul>
+<hr />
+			<!-- end publish.classesIndex -->
+		</div>
+		
+		<div id="content">
+<!-- ============================== class title ============================ -->
+			<h1 class="classTitle">
+				
+				Class dijon.Injector
+			</h1>
+
+<!-- ============================== class summary ========================== -->			
+			<p class="description">
+				
+				
+			
+				dijon.Injector
+				
+				
+					<br /><i>Defined in: </i> <a href="../symbols/src/_Users_creynder_Documents_Projects_CREY - dijon_dev_src_dijon.js.html">dijon.js</a>.
+				
+			</p>
+
+<!-- ============================== constructor summary ==================== -->			
+			
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class dijon.Injector.">
+				<caption>Class Summary</caption>
+				<thead>
+					<tr>
+						<th scope="col">Constructor Attributes</th>
+						<th scope="col">Constructor Name and Description</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="attributes">&nbsp;</td>
+						<td class="nameDescription" >
+							<div class="fixedFont">
+								<b><a href="../symbols/dijon.Injector.html#constructor">dijon.Injector</a></b>()
+							</div>
+							<div class="description"></div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+
+<!-- ============================== properties summary ===================== -->
+			
+
+<!-- ============================== methods summary ======================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class dijon.Injector.">
+					<caption>Method Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Method Attributes</th>
+							<th scope="col">Method Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/dijon.Injector.html#addInjectionPoint">addInjectionPoint</a></b>(targetClazz, propertyName, sourceClazz)
+								</div>
+								<div class="description">defines <code>propertyName</code> as an injection point for <code>targetClazz</code> to be injected with an instance
+of <code>sourceClazz</code>.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/dijon.Injector.html#getInstance">getInstance</a></b>(clazz)
+								</div>
+								<div class="description">Create (if possible) or retrieve an instance of the class mapped to <code>clazz</code></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/dijon.Injector.html#hasMapping">hasMapping</a></b>(whenAskedFor)
+								</div>
+								<div class="description">Does a rule exist to satsify such a request?</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/dijon.Injector.html#injectInto">injectInto</a></b>(instance)
+								</div>
+								<div class="description">Perform an injection into an object, satisfying all it's dependencies</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/dijon.Injector.html#instantiate">instantiate</a></b>(clazz)
+								</div>
+								<div class="description">create an instance of the class mapped to <code>clazz</code> and fulfill it's mapped dependencies<br/>
+<strong>WILL ALWAYS CREATE A NEW INSTANCE</strong>, even if <code>clazz</code> was mapped otherwise or
+<strong>even when <code>clazz</code> was not mapped</code>.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/dijon.Injector.html#mapClass">mapClass</a></b>(whenAskedFor, instantiateClass)
+								</div>
+								<div class="description">When asked for an instance of the class <code>whenAskedFor</code> or for object <code>whenAskedFor</code> inject a <strong>new</strong> instance of <code>instantiateClass</code>.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/dijon.Injector.html#mapSingleton">mapSingleton</a></b>(whenAskedFor)
+								</div>
+								<div class="description">When asked for an instance of the class <code>whenAskedFor<code> or object <code>whenAskedFor</code> inject an instance of <code>whenAskedFor<code>.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/dijon.Injector.html#mapSingletonOf">mapSingletonOf</a></b>(whenAskedFor, useSingletonOf)
+								</div>
+								<div class="description">When asked for an instance of the class <code>whenAskedFor</code> or object <code>whenAskedFor</code> inject an instance of <code>useSingletonOf</code>.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/dijon.Injector.html#mapValue">mapValue</a></b>(whenAskedFor, useValue)
+								</div>
+								<div class="description">When asked for an instance of the class <code>whenAskedFor</code> or object <code>whenAskedFor</code> inject the instance <code>useValue</code>.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/dijon.Injector.html#removeInjectionPoint">removeInjectionPoint</a></b>(targetClazz, propertyName)
+								</div>
+								<div class="description">removes an injection point mapping for a given class</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/dijon.Injector.html#unmap">unmap</a></b>(whenAskedFor)
+								</div>
+								<div class="description">Remove a rule from the injector</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+			
+<!-- ============================== events summary ======================== -->
+			
+
+<!-- ============================== constructor details ==================== -->		
+			
+			<div class="details"><a name="constructor"> </a>
+				<div class="sectionTitle">
+					Class Detail
+				</div>
+				
+				<div class="fixedFont">
+						<b>dijon.Injector</b>()
+				</div>
+				
+				<div class="description">
+					
+					
+				</div>
+				
+				
+				
+				
+					
+					
+					
+					
+					
+					
+					
+
+			</div>
+			
+
+<!-- ============================== field details ========================== -->		
+			
+
+<!-- ============================== method details ========================= -->		
+			
+				<div class="sectionTitle">
+					Method Detail
+				</div>
+				
+					<a name="addInjectionPoint"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>addInjectionPoint</b>(targetClazz, propertyName, sourceClazz)
+					
+					</div>
+					<div class="description">
+						defines <code>propertyName</code> as an injection point for <code>targetClazz</code> to be injected with an instance
+of <code>sourceClazz</code>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Class}</span> <b>targetClazz</b>
+									
+								</dt>
+								<dd>the class the injection point is applied to.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>propertyName</b>
+									
+								</dt>
+								<dd>the <strong>name</strong> of the property used as an injection point.<br/>
+[!] MUST BE STRING</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Class}</span> <b>sourceClazz</b>
+									
+								</dt>
+								<dd>the type of the instance that will be injected</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getInstance"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{Object}</span>
+					<b>getInstance</b>(clazz)
+					
+					</div>
+					<div class="description">
+						Create (if possible) or retrieve an instance of the class mapped to <code>clazz</code>
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Class}</span> <b>clazz</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{Object}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="hasMapping"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{Boolean}</span>
+					<b>hasMapping</b>(whenAskedFor)
+					
+					</div>
+					<div class="description">
+						Does a rule exist to satsify such a request?
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Class}</span> <b>whenAskedFor</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{Boolean}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="injectInto"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>injectInto</b>(instance)
+					
+					</div>
+					<div class="description">
+						Perform an injection into an object, satisfying all it's dependencies
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>instance</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="instantiate"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{Object}</span>
+					<b>instantiate</b>(clazz)
+					
+					</div>
+					<div class="description">
+						create an instance of the class mapped to <code>clazz</code> and fulfill it's mapped dependencies<br/>
+<strong>WILL ALWAYS CREATE A NEW INSTANCE</strong>, even if <code>clazz</code> was mapped otherwise or
+<strong>even when <code>clazz</code> was not mapped</code>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Class}</span> <b>clazz</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{Object}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="mapClass"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>mapClass</b>(whenAskedFor, instantiateClass)
+					
+					</div>
+					<div class="description">
+						When asked for an instance of the class <code>whenAskedFor</code> or for object <code>whenAskedFor</code> inject a <strong>new</strong> instance of <code>instantiateClass</code>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Class|Object}</span> <b>whenAskedFor</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{Class}</span> <b>instantiateClass</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="mapSingleton"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>mapSingleton</b>(whenAskedFor)
+					
+					</div>
+					<div class="description">
+						When asked for an instance of the class <code>whenAskedFor<code> or object <code>whenAskedFor</code> inject an instance of <code>whenAskedFor<code>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Class|Object}</span> <b>whenAskedFor</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="mapSingletonOf"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>mapSingletonOf</b>(whenAskedFor, useSingletonOf)
+					
+					</div>
+					<div class="description">
+						When asked for an instance of the class <code>whenAskedFor</code> or object <code>whenAskedFor</code> inject an instance of <code>useSingletonOf</code>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Class|Object}</span> <b>whenAskedFor</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{Class}</span> <b>useSingletonOf</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="mapValue"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>mapValue</b>(whenAskedFor, useValue)
+					
+					</div>
+					<div class="description">
+						When asked for an instance of the class <code>whenAskedFor</code> or object <code>whenAskedFor</code> inject the instance <code>useValue</code>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Class|Object}</span> <b>whenAskedFor</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>useValue</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="removeInjectionPoint"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>removeInjectionPoint</b>(targetClazz, propertyName)
+					
+					</div>
+					<div class="description">
+						removes an injection point mapping for a given class
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>targetClazz</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>propertyName</b>
+									
+								</dt>
+								<dd>MUST BE STRING</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">See:</dt>
+							
+								<dd><a href="../symbols/dijon.Injector.html#addInjectionPoint">dijon.Injector#addInjectionPoint</a></dd>
+							
+							</dl>
+						
+
+					<hr />
+				
+					<a name="unmap"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>unmap</b>(whenAskedFor)
+					
+					</div>
+					<div class="description">
+						Remove a rule from the injector
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Class|Object}</span> <b>whenAskedFor</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					
+				
+			
+			
+<!-- ============================== event details ========================= -->		
+			
+			
+			<hr />
+		</div>
+
+		
+<!-- ============================== footer ================================= -->
+		<div class="fineprint" style="clear:both">
+			
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Thu Sep 29 2011 13:05:26 GMT+0200 (CEST)
+		</div>
+	</body>
+</html>
