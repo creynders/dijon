@@ -23,7 +23,7 @@ var dijon = {
  */
 dijon.EventDispatcher = function(){
 
-	this.qcn = 'dijon.EventDispatcher';
+	this.fqn = 'dijon.EventDispatcher';
 
 	/** @private */
 	this._listeners = {};
@@ -215,7 +215,7 @@ dijon.EventDispatcher.prototype = {
  */
 dijon.Dictionary = function(){
 
-	this.qcn = 'dijon.Dictionary';
+	this.fqn = 'dijon.Dictionary';
 	
 	/**
 	 * @private
@@ -306,7 +306,7 @@ dijon.Dictionary.prototype = {
  * @constructor
 */
 dijon.Injector = function(){
-	this.qcn = 'dijon.Injector';
+	this.fqn = 'dijon.Injector';
 
 	/** @private */
 	this._mappingsByClassOrObject = new dijon.Dictionary();
@@ -350,7 +350,7 @@ dijon.Injector.prototype = {
 					output = this._createAndSetupInstance( value.clazz );
 				}
 			}else{
-				throw new Error( this.qcn + " is missing a rule for " + clazz );
+				throw new Error( this.fqn + " is missing a rule for " + clazz );
 			}
 		}
 		return output
@@ -386,7 +386,7 @@ dijon.Injector.prototype = {
 	 * @param {Class|Object} whenAskedFor
 	 */
 	mapSingleton : function( whenAskedFor ){
-		if( this._mappingsByClassOrObject.hasValue( whenAskedFor ) ) throw new Error( this.qcn + ' cannot remap ' + ' without unmapping first' );
+		if( this._mappingsByClassOrObject.hasValue( whenAskedFor ) ) throw new Error( this.fqn + ' cannot remap ' + whenAskedFor + ' without unmapping first' );
 		this.mapSingletonOf( whenAskedFor, whenAskedFor );
 	},
 
@@ -396,7 +396,9 @@ dijon.Injector.prototype = {
 	 * @param {Object} useValue
 	 */
 	mapValue : function( whenAskedFor, useValue ){
-		if( this._mappingsByClassOrObject.hasValue( whenAskedFor ) ) throw new Error( this.qcn + ' cannot remap ' + ' without unmapping first' );
+		if( whenAskedFor == null || whenAskedFor == undefined ) throw new Error( this.fqn + ' cannot map to an undefined object' );
+		if( useValue == null || useValue == undefined ) throw new Error( this.fqn + ' cannot map an undefined object' );
+		if( this._mappingsByClassOrObject.hasValue( whenAskedFor ) ) throw new Error( this.fqn + ' cannot remap ' + ' without unmapping first' );
 		this._mappingsByClassOrObject.add(
 			whenAskedFor,
 			{
@@ -422,7 +424,7 @@ dijon.Injector.prototype = {
 	 * @param {Class} instantiateClass
 	 */
 	mapClass : function( whenAskedFor, instantiateClass ){
-		if( this.hasMapping( whenAskedFor ) ) throw new Error( this.qcn + ' cannot remap ' + ' without unmapping first' );
+		if( this.hasMapping( whenAskedFor ) ) throw new Error( this.fqn + ' cannot remap ' + ' without unmapping first' );
 		this._mappingsByClassOrObject.add(
 			whenAskedFor,
 			{
@@ -439,7 +441,7 @@ dijon.Injector.prototype = {
 	 * @param {Class} useSingletonOf
 	 */
 	mapSingletonOf : function( whenAskedFor, useSingletonOf ){
-		if( this._mappingsByClassOrObject.hasValue( whenAskedFor ) ) throw new Error( this.qcn + ' cannot remap ' + ' without unmapping first' );
+		if( this._mappingsByClassOrObject.hasValue( whenAskedFor ) ) throw new Error( this.fqn + ' cannot remap ' + ' without unmapping first' );
 		this._mappingsByClassOrObject.add(
 			whenAskedFor,
 			{
@@ -511,7 +513,7 @@ dijon.Injector.prototype = {
  * @constructor
  */
 dijon.EventMap = function(){
-	this.qcn = 'dijon.EventMap';
+	this.fqn = 'dijon.EventMap';
 
 	/**
 	 * @private
@@ -580,7 +582,8 @@ dijon.EventMap.prototype = {
 				if( obj.passEvent )
 					args.unshift( event );
 				if( obj.handler != null )
-					obj.handler.apply( instance, args );
+					instance[ obj.handler ].apply( instance, args );
+					//obj.handler.apply( instance, args );
 			}else{
 				//injector mapping has been deleted, but
 				//eventMap mapping not
@@ -608,23 +611,26 @@ dijon.EventMap.prototype = {
 	 * <br/>[!] requires <code>clazz</code> is already ruled by the injector
 	 * @see dijon.Injector
 	 * @param {String} eventType The name of the event to be listened to
-	 * @param {Class} clazz
+	 * @param {Object} injectionKey
 	 * @param {Function} handler
 	 * @param {Boolean} [oneShot=false] Whether the listener must be called only once
 	 * @param {Boolean} [passEvent=false] Whether the event object should be passed as a parameter to <code>handler</code>
 	 * upon invocation or not. If <code>true</code> any additional dispatched values will be passed as parameters after
 	 * the event object
 	 */
-	addRuledMapping : function( eventType, clazz, handler, oneShot, passEvent ){
+	addRuledMapping : function( eventType, injectionKey, handler, oneShot, passEvent ){
+		if( ! this.injector.hasMapping( injectionKey ) ){
+			throw new Error( '*** ERROR *** ' + this.fqn + ' addRuledMapping can only be used on a key already mapped by the injector')
+		}
 		if( ! this._mappingsByEventType[ eventType ] ){
 			this._mappingsByEventType[ eventType ] = [];
 			this.dispatcher.addScopedListener( eventType, this._handleRuledMappedEvent, this, false, true );
 		}
 
-		var mappingsNum = this._mappingsNumByClazz[ clazz ] || 0;
-		this._mappingsNumByClazz[ clazz ] = ++mappingsNum;
+		var mappingsNum = this._mappingsNumByClazz[ injectionKey ] || 0;
+		this._mappingsNumByClazz[ injectionKey ] = ++mappingsNum;
 
-		this._mappingsByEventType[ eventType ].push( { clazz : clazz, handler : handler, oneShot : oneShot, passEvent: passEvent } );
+		this._mappingsByEventType[ eventType ].push( { clazz : injectionKey, handler : handler, oneShot : oneShot, passEvent: passEvent } );
 	},
 
 	/**
@@ -788,7 +794,7 @@ dijon.Command.prototype.execute = function(){
  */
 dijon.CommandMap = function(){
 
-	this.qcn = 'dijon.CommandMap';
+	this.fqn = 'dijon.CommandMap';
 	
 	/**
 	 * @private
@@ -812,7 +818,7 @@ dijon.CommandMap.prototype = {
 	 * @param {Boolean} [passEvent] default false
 	 */
 	mapEvent : function( eventType, commandClazz, oneShot, passEvent ){
-		this.eventMap.addClassMapping( eventType, commandClazz, commandClazz.prototype.execute, oneShot, passEvent );
+		this.eventMap.addClassMapping( eventType, commandClazz, 'execute', oneShot, passEvent );
 	},
 	
 	/**
@@ -821,7 +827,7 @@ dijon.CommandMap.prototype = {
 	 * @param {Class} commandClazz
 	 */
 	unmapEvent : function( eventType, commandClazz ){
-		this.eventMap.removeClassMapping( eventType, commandClazz, commandClazz.prototype.execute );
+		this.eventMap.removeClassMapping( eventType, commandClazz, 'execute' );
 	},
 
 	/**
@@ -853,7 +859,7 @@ dijon.CommandMap.prototype = {
  * @constructor
  */
 dijon.Context = function(){
-	this.qcn = 'dijon.Context';
+	this.fqn = 'dijon.Context';
 
 	/**
 	 * @type dijon.Injector
