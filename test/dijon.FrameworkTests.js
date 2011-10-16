@@ -19,10 +19,13 @@ module( 'dijon.Context', {
 });
 
 test( 'auto instantiated members', function(){
+    context.init();
 	ok( context.injector != undefined );
 	ok( context.eventDispatcher != undefined );
 	ok( context.eventMap != undefined );
 });
+
+//TODO: test Context#parseConfig
 
 /** @type dijon.CommandMap */
 var commandMap;
@@ -50,7 +53,7 @@ module( 'dijon.CommandMap', {
 		injector = new dijon.Injector();
 		eventDispatcher = new dijon.EventDispatcher();
 		eventMap = new dijon.EventMap();
-		eventMap.dispatcher = eventDispatcher;
+		eventMap.eventDispatcher = eventDispatcher;
 		eventMap.injector = injector;
 		commandMap = new dijon.CommandMap();
 		commandMap.eventMap = eventMap;

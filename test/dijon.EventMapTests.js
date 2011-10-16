@@ -34,7 +34,7 @@ module( 'dijon.EventMap', {
 			dispatcher = new dijon.EventDispatcher();
 			injector = new dijon.Injector();
 			eventMap = new dijon.EventMap();
-			eventMap.dispatcher = dispatcher;
+			eventMap.eventDispatcher = dispatcher;
 			eventMap.injector = injector;
 		},
 		teardown : function(){
@@ -49,22 +49,22 @@ module( 'dijon.EventMap', {
 
 test( 'addRuledMapping standard', function(){
 	injector.mapSingleton( Test1 );
-	eventMap.addRuledMapping( started, Test1, Test1.prototype.handler );
+	eventMap.addRuledMapping( started, Test1, 'handler' );
 	dispatcher.dispatchEvent( started );
 	equal( isExecuted, 1 );
 })
 
 test( 'removeRuledMapping standard', function(){
 	injector.mapSingleton( Test1 );
-	eventMap.addRuledMapping( started, Test1, Test1.prototype.handler );
-	eventMap.removeRuledMapping( started, Test1, Test1.prototype.handler );
+	eventMap.addRuledMapping( started, Test1, "handler" );
+	eventMap.removeRuledMapping( started, Test1, "handler" );
 	dispatcher.dispatchEvent( started );
 	equal( isExecuted, 0 );
 	ok( injector.hasMapping( Test1 ) );
 })
 
 test( 'addClassMapping standard', function(){
-	eventMap.addClassMapping( started, Test1, Test1.prototype.handler );
+	eventMap.addClassMapping( started, Test1, "handler" );
 	dispatcher.dispatchEvent( started );
 	var firstScope = scope;
 	equal( isExecuted, 1 );
@@ -73,8 +73,8 @@ test( 'addClassMapping standard', function(){
 })
 
 test( 'removeClassMapping standard', function(){
-	eventMap.addClassMapping( started, Test1, Test1.prototype.handler );
-	eventMap.removeClassMapping( started, Test1, Test1.prototype.handler );
+	eventMap.addClassMapping( started, Test1, "handler" );
+	eventMap.removeClassMapping( started, Test1, "handler" );
 	dispatcher.dispatchEvent( started );
 	equal( isExecuted, 0 );
 	ok( ! injector.hasMapping( Test1 ) );

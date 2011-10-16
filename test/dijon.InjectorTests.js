@@ -17,6 +17,8 @@ function TestClassB(){
 	this.bar = undefined;
 }
 
+//TODO: test Injectro#setValue
+
 module( 'dijon.Injector', {
 	setup : function(){
 		injector = new dijon.Injector();
