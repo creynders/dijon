@@ -15,6 +15,7 @@ info [at] creynders [dot] be
 h2. Resources
 
 "API documentation":http://creynders.github.com/dijon-framework/docs
+"Live demo":http://creynders.github.com/dijon-framework/demo
 
 h2. FEATURES
 
