@@ -9,7 +9,7 @@ var dijon = {
 	 * @constant
 	 * @type String
 	 */
-	VERSION : '0.2.0'
+	VERSION : '0.3.2'
 };//dijon
 
   //======================================//
@@ -331,27 +331,29 @@ dijon.Injector.prototype = {
 
 	/**
 	 * @private
-	 * @param {Class} clazz
+	 * @param {Class} key
 	 * @param {Boolean} overrideRules
 	 * @return {Object}
 	 */
-	_retrieveFromCacheOrCreate : function( clazz, overrideRules ){
-		var value = this._mappingsByClassOrObject.getValue( clazz );
+	_retrieveFromCacheOrCreate : function( key, overrideRules ){
+		var config = this._mappingsByClassOrObject.getValue( key );
 		var output = null;
 		if( overrideRules ){
-			output = this._createAndSetupInstance( clazz );
+            //key is a class
+            //TODO: check if it IS a class
+			output = this._createAndSetupInstance( key );
 		}else{
-			if( value ){
-				if( value.isSingleton ){
-					if( value.object == null  ){
-						value.object = this._createAndSetupInstance( value.clazz );
+			if( config ){
+				if( config.isSingleton ){
+					if( config.object == null  ){
+						config.object = this._createAndSetupInstance( config.clazz );
 					}
-					output = value.object;
+					output = config.object;
 				}else{
-					output = this._createAndSetupInstance( value.clazz );
+					output = this._createAndSetupInstance( config.clazz );
 				}
 			}else{
-				throw new Error( this.fqn + " is missing a rule for " + clazz );
+				throw new Error( this.fqn + " is missing a rule for " + key );
 			}
 		}
 		return output
@@ -359,28 +361,28 @@ dijon.Injector.prototype = {
 
 
 	/**
-	 * defines <code>propertyName</code> as an injection point for <code>targetClazz</code> to be injected with an instance
-	 * of <code>sourceClazz</code>.
-	 * @param {Class} targetClazz the class the injection point is applied to.
+	 * defines <code>propertyName</code> as an injection point for the class mapped to <code>targetKey</code> to be injected with an instance
+	 * of the class mapped to <code>sourceKey</code>.
+	 * @param {Class} targetKey the class the injection point is applied to.
 	 * @param {String} propertyName the <strong>name</strong> of the property used as an injection point.<br/>
 	 * [!] MUST BE STRING
-	 * @param {Class} sourceClazz the type of the instance that will be injected
+	 * @param {Object} sourceKey the key to the value that will be injected
 	 */
-	addInjectionPoint : function( targetClazz, propertyName, sourceClazz ){
+	addInjectionPoint : function( targetKey, propertyName, sourceKey ){
 		this._injectionPoints.push( {
-			target : targetClazz,
+			target : targetKey,
 			property : propertyName,
-			clazz : sourceClazz
+			source : sourceKey
 		} );
 	},
 
 	/**
-	 * Create (if possible) or retrieve an instance of the class mapped to <code>clazz</code>
-	 * @param {Class} clazz
+	 * Create (if possible) or retrieve an instance of the class mapped to <code>key</code>
+	 * @param {Object} key
 	 * @return {Object}
 	 */
-	getInstance : function( clazz ){
-		return this._retrieveFromCacheOrCreate( clazz, false );
+	getInstance : function( key ){
+		return this._retrieveFromCacheOrCreate( key, false );
 	},
 
 	/**
@@ -460,14 +462,14 @@ dijon.Injector.prototype = {
 	},
 
 	/**
-	 * create an instance of the class mapped to <code>clazz</code> and fulfill it's mapped dependencies<br/>
-	 * <strong>WILL ALWAYS CREATE A NEW INSTANCE</strong>, even if <code>clazz</code> was mapped otherwise or
-	 * <strong>even when <code>clazz</code> was not mapped</code>.
-	 * @param {Class} clazz
+	 * create an instance of the class mapped to <code>keyOrClass</code> and fulfill it's mapped dependencies<br/>
+	 * <strong>WILL ALWAYS CREATE A NEW INSTANCE</strong>, even if <code>keyOrClass</code> was mapped otherwise or
+	 * <strong>even when <code>keyOrClass</code> was not mapped</code>.
+	 * @param {Class} keyOrClass
 	 * @return {Object}
 	 */
-	instantiate : function( clazz ){
-		return this._retrieveFromCacheOrCreate( clazz, true );
+	instantiate : function( keyOrClass ){
+		return this._retrieveFromCacheOrCreate( keyOrClass, true );
 	},
 
 	/**
@@ -478,7 +480,7 @@ dijon.Injector.prototype = {
 		for( var i = 0, n = this._injectionPoints.length ; i < n ; i++ ){
 			var mapping = this._injectionPoints[ i ];
 			if( instance && instance instanceof mapping.target && mapping.property in instance )
-				instance[ mapping.property ] = this.getInstance( mapping.clazz );
+				instance[ mapping.property ] = this.getInstance( mapping.source );
 		}
 	},
 
@@ -491,15 +493,15 @@ dijon.Injector.prototype = {
 	},
 
 	/**
-	 * removes an injection point mapping for a given class
-	 * @param {Function} targetClazz
+	 * removes an injection point mapping for a given class mapped to <code>key</code>
+	 * @param {Object} key
 	 * @param {String} propertyName MUST BE STRING
 	 * @see dijon.Injector#addInjectionPoint
 	 */
-	removeInjectionPoint : function( targetClazz, propertyName ){
+	removeInjectionPoint : function( key, propertyName ){
 		for( var i = 0, n = this._injectionPoints.length ; i < n ; i++ ){
 			var point = this._injectionPoints[ i ];
-			if( point.target == targetClazz && point.property == propertyName ) {
+			if( point.target == key && point.property == propertyName ) {
 				this._injectionPoints.splice( i, 1 );
 				return;
 			}
@@ -532,7 +534,7 @@ dijon.EventMap = function(){
 	 * @private
 	 * @type Object
 	 */
-	this._mappingsNumByClazz = {};
+	this._mappingsNumByKey = {};
 
 	/**
 	 * @private
@@ -553,14 +555,14 @@ dijon.EventMap.prototype = {
 	/**
 	 * @private
 	 * @param eventType
-	 * @param clazz
+	 * @param key
 	 * @param handler
 	 */
-	_getMappingIndex : function( mappingsListForEvent, clazz, handler ){
+	_getMappingIndex : function( mappingsListForEvent, key, handler ){
 		if( mappingsListForEvent ){
 			for( var i = 0, n = mappingsListForEvent.length; i < n ; i++ ){
 				var mapping = mappingsListForEvent[ i ];
-				if( mapping.clazz === clazz && mapping.handler === handler ){
+				if( mapping.key === key && mapping.handler === handler ){
 					return i;
 				}
 			}
@@ -582,10 +584,10 @@ dijon.EventMap.prototype = {
 		}
 		for( var i = 0, n = mappingsListForEvent.length; i < n; i++ ){
 			var obj = mappingsListForEvent[i];
-			if( this.injector.hasMapping( obj.clazz ) ){
-				var instance = this.injector.getInstance( obj.clazz );
+			if( this.injector.hasMapping( obj.key ) ){
+				var instance = this.injector.getInstance( obj.key );
 				if( obj.oneShot )
-					this.removeRuledMapping( event.type, obj.clazz, obj.handler );
+					this.removeRuledMapping( event.type, obj.key, obj.handler );
 				if( obj.passEvent )
 					args.unshift( event );
 				if( obj.handler != null )
@@ -602,31 +604,31 @@ dijon.EventMap.prototype = {
 	/**
 	 * @private
 	 * @param {String} eventType
-	 * @param {Class} clazz
+	 * @param {Class} key
 	 * @param {Function} handler
 	 */
-	_removeRuledMappingAndUnmapFromInjectorIfNecessary : function( eventType, clazz, handler ){
-		this.removeRuledMapping( eventType, clazz, handler );
-		var mappingsNum = this._mappingsNumByClazz[ clazz ] || 0;
+	_removeRuledMappingAndUnmapFromInjectorIfNecessary : function( eventType, key, handler ){
+		this.removeRuledMapping( eventType, key, handler );
+		var mappingsNum = this._mappingsNumByKey[ key ] || 0;
 		if( mappingsNum <= 0 )
-			this.injector.unmap( clazz );
+			this.injector.unmap( key );
 	},
 
 	/**
-	 * maps <code>handler</code> as a listener for <code>eventType</code> to be called as a member of a <code>clazz</code>
-	 * instance. The instance will be created according to the rule defined for <code>clazz</code> in injector.
-	 * <br/>[!] requires <code>clazz</code> is already ruled by the injector
+	 * maps <code>handler</code> as a listener for <code>eventType</code> to be called as an instance member of the class mapped to <code>key</code>
+	 * instance. The instance will be created according to the rule defined for <code>key</code> in injector.
+	 * <br/>[!] requires <code>key</code> is already ruled by the injector
 	 * @see dijon.Injector
 	 * @param {String} eventType The name of the event to be listened to
-	 * @param {Object} injectionKey
+	 * @param {Object} key
 	 * @param {Function} handler
 	 * @param {Boolean} [oneShot=false] Whether the listener must be called only once
 	 * @param {Boolean} [passEvent=false] Whether the event object should be passed as a parameter to <code>handler</code>
 	 * upon invocation or not. If <code>true</code> any additional dispatched values will be passed as parameters after
 	 * the event object
 	 */
-	addRuledMapping : function( eventType, injectionKey, handler, oneShot, passEvent ){
-		if( ! this.injector.hasMapping( injectionKey ) ){
+	addRuledMapping : function( eventType, key, handler, oneShot, passEvent ){
+		if( ! this.injector.hasMapping( key ) ){
 			throw new Error( '*** ERROR *** ' + this.fqn + ' addRuledMapping can only be used on a key already mapped by the injector')
 		}
 		if( ! this._mappingsByEventType[ eventType ] ){
@@ -634,38 +636,38 @@ dijon.EventMap.prototype = {
 			this.eventDispatcher.addScopedListener( eventType, this._handleRuledMappedEvent, this, false, true );
 		}
 
-		var mappingsNum = this._mappingsNumByClazz[ injectionKey ] || 0;
-		this._mappingsNumByClazz[ injectionKey ] = ++mappingsNum;
+		var mappingsNum = this._mappingsNumByKey[ key ] || 0;
+		this._mappingsNumByKey[ key ] = ++mappingsNum;
 
-		this._mappingsByEventType[ eventType ].push( { clazz : injectionKey, handler : handler, oneShot : oneShot, passEvent: passEvent } );
+		this._mappingsByEventType[ eventType ].push( { key : key, handler : handler, oneShot : oneShot, passEvent: passEvent } );
 	},
 
 	/**
-	 * Removes the mapping for <code>clazz</code>
+	 * Removes the mapping for <code>key</code>
 	 * @see dijon.EventMap#addRuledMapping
 	 * @param {String} eventType The name of the event to be listened to
-	 * @param {Class} clazz
+	 * @param {Class} key
 	 * @param {Function} handler
 	 */
-	removeRuledMapping : function( eventType, clazz, handler ){
+	removeRuledMapping : function( eventType, key, handler ){
 		var mappingsListForEvent = this._mappingsByEventType[ eventType ];
-		var index = this._getMappingIndex( mappingsListForEvent, clazz, handler );
+		var index = this._getMappingIndex( mappingsListForEvent, key, handler );
 		if( index >= 0 ){
 			/* DO NOT CLEAN UP MAPPING DEPENDENCIES, mapping maybe still in use */
 			/*
 			var mapping = mappingsListForEvent[ index ];
-			delete mapping.clazz;
+			delete mapping.key;
 			delete mapping.handler;
 			mapping = null;
 			*/
 			mappingsListForEvent.splice( index, 1 );
 			if( mappingsListForEvent.length <= 0 )
 				delete mappingsListForEvent[ eventType ];
-			var mappingsNum = this._mappingsNumByClazz[ clazz ] || 0;
+			var mappingsNum = this._mappingsNumByKey[ key ] || 0;
 			if( mappingsNum <= 0 ){
-				delete this._mappingsNumByClazz[ clazz ];
+				delete this._mappingsNumByKey[ key ];
 			}else{
-				this._mappingsNumByClazz[ clazz ] = --mappingsNum;
+				this._mappingsNumByKey[ key ] = --mappingsNum;
 			}
 			return true;
 
@@ -706,19 +708,19 @@ dijon.EventMap.prototype = {
 	},
 
 	/**
-	 * Checks whether a mapping exists. The combination of <code>eventType, clazz, handler</code> must be identical
-	 * to what was mapped for this to return true. If <code>clazz</code> was mapped for <code>eventType</code> <strong>with</strong>
+	 * Checks whether a mapping exists. The combination of <code>eventType, key, handler</code> must be identical
+	 * to what was mapped for this to return true. If <code>key</code> was mapped for <code>eventType</code> <strong>with</strong>
 	 * a <code>handler</code> then <code>hasMapping</code> will return <code>false</code> if only invoked with parameters
-	 * <code>eventType</code> and <code>clazz</code>
+	 * <code>eventType</code> and <code>key</code>
 	 * @param {String} eventType
-	 * @param {Class} clazz
+	 * @param {Object} key
 	 * @param {Function} [handler=null]
 	 * @return {Boolean}
 	 */
-	hasMapping : function( eventType, clazz, handler ){
+	hasMapping : function( eventType, key, handler ){
 		if( handler == undefined )
 			handler = null;
-		return this._getMappingIndex( this._mappingsByEventType[ eventType ], clazz, handler ) >= 0 ;
+		return this._getMappingIndex( this._mappingsByEventType[ eventType ], key, handler ) >= 0 ;
 	}
 
 
