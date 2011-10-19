@@ -9,7 +9,7 @@ var dijon = {
 	 * @constant
 	 * @type String
 	 */
-	VERSION : '0.3.2'
+	VERSION : '0.4.0'
 };//dijon
 
   //======================================//
@@ -313,7 +313,7 @@ dijon.Injector = function(){
 	this._mappingsByClassOrObject = new dijon.Dictionary();
 
 	/** @private */
-	this._injectionPoints = [];
+	this._outlets = [];
 };//dijon.Injector
 
 dijon.Injector.prototype = {
@@ -367,9 +367,10 @@ dijon.Injector.prototype = {
 	 * @param {String} propertyName the <strong>name</strong> of the property used as an injection point.<br/>
 	 * [!] MUST BE STRING
 	 * @param {Object} sourceKey the key to the value that will be injected
+     * @see dijon.Injector#removeOutlet
 	 */
-	addInjectionPoint : function( targetKey, propertyName, sourceKey ){
-		this._injectionPoints.push( {
+	addOutlet : function( targetKey, propertyName, sourceKey ){
+		this._outlets.push( {
 			target : targetKey,
 			property : propertyName,
 			source : sourceKey
@@ -477,8 +478,8 @@ dijon.Injector.prototype = {
 	 * @param {Object} instance
 	 */
 	injectInto : function( instance ){
-		for( var i = 0, n = this._injectionPoints.length ; i < n ; i++ ){
-			var mapping = this._injectionPoints[ i ];
+		for( var i = 0, n = this._outlets.length ; i < n ; i++ ){
+			var mapping = this._outlets[ i ];
 			if( instance && instance instanceof mapping.target && mapping.property in instance )
 				instance[ mapping.property ] = this.getInstance( mapping.source );
 		}
@@ -496,13 +497,13 @@ dijon.Injector.prototype = {
 	 * removes an injection point mapping for a given class mapped to <code>key</code>
 	 * @param {Object} key
 	 * @param {String} propertyName MUST BE STRING
-	 * @see dijon.Injector#addInjectionPoint
+	 * @see dijon.Injector#addOutlet
 	 */
-	removeInjectionPoint : function( key, propertyName ){
-		for( var i = 0, n = this._injectionPoints.length ; i < n ; i++ ){
-			var point = this._injectionPoints[ i ];
+	removeOutlet : function( key, propertyName ){
+		for( var i = 0, n = this._outlets.length ; i < n ; i++ ){
+			var point = this._outlets[ i ];
 			if( point.target == key && point.property == propertyName ) {
-				this._injectionPoints.splice( i, 1 );
+				this._outlets.splice( i, 1 );
 				return;
 			}
 		}
@@ -812,7 +813,7 @@ dijon.Context.prototype.parseConfig = function( configList ){
 		}
 		for( var outletName in configObj.outlets ){
 			var outletWiring = configObj.outlets[ outletName ];
-			this.injector.addInjectionPoint( configObj.impl, outletName, outletWiring );
+			this.injector.addOutlet( configObj.impl, outletName, outletWiring );
 		}
 		for( var i in configObj.handlers ){
 			var handlerConfig = configObj.handlers[ i ];

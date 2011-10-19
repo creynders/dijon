@@ -106,19 +106,19 @@ test( 'unnamed unmap', function(){
 	ok( ! injector.hasMapping( TestClassA ) );
 })
 
-test( 'addInjectionPoint', function(){
+test( 'addOutlet', function(){
 	injector.mapSingleton( TestClassA );
 	injector.mapSingleton( TestClassB );
-	injector.addInjectionPoint( TestClassB, 'bar', TestClassA );
+	injector.addOutlet( TestClassB, 'bar', TestClassA );
 	var b = injector.getInstance( TestClassB );
 	ok( b.bar instanceof TestClassA );
 })
 
-test( 'removeInjectionPoint', function() {
+test( 'removeOutlet', function() {
 	injector.mapSingleton( TestClassA );
 	injector.mapSingleton( TestClassB );
-	injector.addInjectionPoint( TestClassB, 'bar', TestClassA );
-	injector.removeInjectionPoint( TestClassB, 'bar' );
+	injector.addOutlet( TestClassB, 'bar', TestClassA );
+	injector.removeOutlet( TestClassB, 'bar' );
 	var b = injector.getInstance( TestClassB );
 	strictEqual( b.bar, undefined );
 })
@@ -143,7 +143,7 @@ test( 'covariant injection', function(){
 	}
 	TestActor.prototype = new TestClassB();
 	TestActor.prototype.constructor = TestActor;
-	injector.addInjectionPoint( TestClassB, 'bar', TestClassA );
+	injector.addOutlet( TestClassB, 'bar', TestClassA );
 	injector.mapSingleton( TestClassA );
 	injector.mapSingleton( TestActor );
 	var a = injector.getInstance( TestActor );

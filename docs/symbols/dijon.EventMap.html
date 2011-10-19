@@ -195,10 +195,6 @@ ul.inheritsList
 	
 	<li><a href="../symbols/dijon.Actor.html">dijon.Actor</a></li>
 	
-	<li><a href="../symbols/dijon.Command.html">dijon.Command</a></li>
-	
-	<li><a href="../symbols/dijon.CommandMap.html">dijon.CommandMap</a></li>
-	
 	<li><a href="../symbols/dijon.Context.html">dijon.Context</a></li>
 	
 	<li><a href="../symbols/dijon.Dictionary.html">dijon.Dictionary</a></li>
@@ -287,9 +283,9 @@ instance.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/dijon.EventMap.html#addRuledMapping">addRuledMapping</a></b>(eventType, clazz, handler, oneShot, passEvent)
+								<div class="fixedFont"><b><a href="../symbols/dijon.EventMap.html#addRuledMapping">addRuledMapping</a></b>(eventType, key, handler, oneShot, passEvent)
 								</div>
-								<div class="description">maps <code>handler</code> as a listener for <code>eventType</code> to be called as a member of a <code>clazz</code>
+								<div class="description">maps <code>handler</code> as a listener for <code>eventType</code> to be called as an instance member of the class mapped to <code>key</code>
 instance.</div>
 							</td>
 						</tr>
@@ -297,7 +293,7 @@ instance.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/dijon.EventMap.html#hasMapping">hasMapping</a></b>(eventType, clazz, handler)
+								<div class="fixedFont"><b><a href="../symbols/dijon.EventMap.html#hasMapping">hasMapping</a></b>(eventType, key, handler)
 								</div>
 								<div class="description">Checks whether a mapping exists.</div>
 							</td>
@@ -315,9 +311,9 @@ instance.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/dijon.EventMap.html#removeRuledMapping">removeRuledMapping</a></b>(eventType, clazz, handler)
+								<div class="fixedFont"><b><a href="../symbols/dijon.EventMap.html#removeRuledMapping">removeRuledMapping</a></b>(eventType, key, handler)
 								</div>
-								<div class="description">Removes the mapping for <code>clazz</code></div>
+								<div class="description">Removes the mapping for <code>key</code></div>
 							</td>
 						</tr>
 					
@@ -438,13 +434,13 @@ In that case the dispatched payload will not be passed. (no constructor injectio
 					<div class="fixedFont">
 					
 					
-					<b>addRuledMapping</b>(eventType, clazz, handler, oneShot, passEvent)
+					<b>addRuledMapping</b>(eventType, key, handler, oneShot, passEvent)
 					
 					</div>
 					<div class="description">
-						maps <code>handler</code> as a listener for <code>eventType</code> to be called as a member of a <code>clazz</code>
-instance. The instance will be created according to the rule defined for <code>clazz</code> in injector.
-<br/>[!] requires <code>clazz</code> is already ruled by the injector
+						maps <code>handler</code> as a listener for <code>eventType</code> to be called as an instance member of the class mapped to <code>key</code>
+instance. The instance will be created according to the rule defined for <code>key</code> in injector.
+<br/>[!] requires <code>key</code> is already ruled by the injector
 						
 						
 					</div>
@@ -462,7 +458,7 @@ instance. The instance will be created according to the rule defined for <code>c
 								<dd>The name of the event to be listened to</dd>
 							
 								<dt>
-									<span class="light fixedFont">{Class}</span> <b>clazz</b>
+									<span class="light fixedFont">{Object}</span> <b>key</b>
 									
 								</dt>
 								<dd></dd>
@@ -509,14 +505,14 @@ the event object</dd>
 					<div class="fixedFont">
 					
 					<span class="light">{Boolean}</span>
-					<b>hasMapping</b>(eventType, clazz, handler)
+					<b>hasMapping</b>(eventType, key, handler)
 					
 					</div>
 					<div class="description">
-						Checks whether a mapping exists. The combination of <code>eventType, clazz, handler</code> must be identical
-to what was mapped for this to return true. If <code>clazz</code> was mapped for <code>eventType</code> <strong>with</strong>
+						Checks whether a mapping exists. The combination of <code>eventType, key, handler</code> must be identical
+to what was mapped for this to return true. If <code>key</code> was mapped for <code>eventType</code> <strong>with</strong>
 a <code>handler</code> then <code>hasMapping</code> will return <code>false</code> if only invoked with parameters
-<code>eventType</code> and <code>clazz</code>
+<code>eventType</code> and <code>key</code>
 						
 						
 					</div>
@@ -534,7 +530,7 @@ a <code>handler</code> then <code>hasMapping</code> will return <code>false</cod
 								<dd></dd>
 							
 								<dt>
-									<span class="light fixedFont">{Class}</span> <b>clazz</b>
+									<span class="light fixedFont">{Object}</span> <b>key</b>
 									
 								</dt>
 								<dd></dd>
@@ -622,11 +618,11 @@ a <code>handler</code> then <code>hasMapping</code> will return <code>false</cod
 					<div class="fixedFont">
 					
 					
-					<b>removeRuledMapping</b>(eventType, clazz, handler)
+					<b>removeRuledMapping</b>(eventType, key, handler)
 					
 					</div>
 					<div class="description">
-						Removes the mapping for <code>clazz</code>
+						Removes the mapping for <code>key</code>
 						
 						
 					</div>
@@ -644,7 +640,7 @@ a <code>handler</code> then <code>hasMapping</code> will return <code>false</cod
 								<dd>The name of the event to be listened to</dd>
 							
 								<dt>
-									<span class="light fixedFont">{Class}</span> <b>clazz</b>
+									<span class="light fixedFont">{Class}</span> <b>key</b>
 									
 								</dt>
 								<dd></dd>
@@ -685,7 +681,7 @@ a <code>handler</code> then <code>hasMapping</code> will return <code>false</cod
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Thu Sep 29 2011 13:05:25 GMT+0200 (CEST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Wed Oct 19 2011 10:16:19 GMT+0200 (CEST)
 		</div>
 	</body>
 </html>
