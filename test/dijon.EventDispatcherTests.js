@@ -241,3 +241,22 @@ test( 'dispatch with payload including event', function(){
 	strictEqual( payloadA, passedA );
 	strictEqual( payloadB, passedB );
 })
+
+test( 'dispatch with listeners with different passEvent values ', function(){
+    var eventType = 'start';
+    var payload = {}
+    var passedA, passedB, passedEvent ;
+    var listenerA = function( event, foo ){
+        passedEvent = event;
+        passedA = foo;
+    };
+    var listenerB = function( bar ){
+        passedB = bar;
+    };
+    dispatcher.addListener( eventType, listenerA, false, true );
+    dispatcher.addListener( eventType, listenerB, false, false );
+    dispatcher.dispatchEvent( eventType, payload );
+    strictEqual( eventType, passedEvent.type )
+    strictEqual( payload, passedA );
+    strictEqual( payload, passedB );
+})
