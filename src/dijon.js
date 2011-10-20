@@ -164,6 +164,7 @@ dijon.EventDispatcher.prototype = {
 		for( var i = 1, n = arguments.length; i < n ; i++ ){
 			args.push( arguments[ i ] );
 		}
+        var argsWithEvent = [ event ].concat( args );
 
 		if( this._listeners[ event.type ] ){
 			for( var i = 0 ; this._listeners[ event.type ] && i < this._listeners[ event.type ].length ;  ){
@@ -173,10 +174,9 @@ dijon.EventDispatcher.prototype = {
 				}else{
 					i++;
 				}
-				if( obj.passEvent ){
-					args.unshift( event );
-				}
-				obj.listener.apply( obj.scope, args );
+                var payload = ( obj.passEvent ) ? argsWithEvent : args;
+				obj.listener.apply( obj.scope, payload );
+
 			}
 		}
 
