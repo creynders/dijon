@@ -583,16 +583,19 @@ dijon.EventMap.prototype = {
 		for( var i = 1, n = arguments.length; i < n ; i++ ){
 			args.push( arguments[ i ] );
 		}
-		for( var i = 0, n = mappingsListForEvent.length; i < n; i++ ){
-			var obj = mappingsListForEvent[i];
+
+        var argsWithEvent = [ event ].concat( args );
+        var toBeRemoved = [];
+        var i, n, obj;
+		for( i = 0, n = mappingsListForEvent.length; i < n; i++ ){
+			obj = mappingsListForEvent[i];
 			if( this.injector.hasMapping( obj.key ) ){
 				var instance = this.injector.getInstance( obj.key );
 				if( obj.oneShot )
-					this.removeRuledMapping( event.type, obj.key, obj.handler );
-				if( obj.passEvent )
-					args.unshift( event );
+                    toBeRemoved.push( obj );
 				if( obj.handler != null )
-					instance[ obj.handler ].apply( instance, args );
+                    var payload = ( obj.passEvent ) ? argsWithEvent : args;
+					instance[ obj.handler ].apply( instance, payload );
 					//obj.handler.apply( instance, args );
 			}else{
 				//injector mapping has been deleted, but
@@ -600,6 +603,11 @@ dijon.EventMap.prototype = {
 				//TODO: remove or throw error?
 			}
 		}
+
+        for( i = 0, n = toBeRemoved.length; i < n; i++ ){
+            var obj = toBeRemoved[ i ];
+            this.removeRuledMapping( event.type, obj.key, obj.handler );
+        }
 	},
 
 	/**
