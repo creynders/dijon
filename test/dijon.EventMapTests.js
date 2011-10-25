@@ -12,6 +12,8 @@ var injector;
 var started = 'started';
 var isExecuted = 0;
 var scope;
+var passedValue;
+var passedEvent;
 
 Test1 = function(){
 };
@@ -25,7 +27,6 @@ Test1.prototype = {
 Test2 = function(){
 	isExecuted++;
 }
-
 
 module( 'dijon.EventMap', {
 		setup : function(){
@@ -43,6 +44,8 @@ module( 'dijon.EventMap', {
 			eventMap = null;
 			dispatcher = null;
 			injector = null;
+            passedValue = null;
+            passedEvent = null;
 		}
 	}
 )
@@ -87,13 +90,64 @@ test( 'optional handler for addClassMapping', function(){
 })
 
 test( 'hasMapping', function(){
-	eventMap.addClassMapping( started, Test1, Test1.prototype.handler );
-	ok( eventMap.hasMapping( started, Test1, Test1.prototype.handler ));
+	eventMap.addClassMapping( started, Test1, "handler" );
+	ok( eventMap.hasMapping( started, Test1, "handler" ));
 	ok( ! eventMap.hasMapping( started, Test1 ));
 })
 
 test( 'hasMapping with optional handler', function(){
 	eventMap.addClassMapping( started, Test1 );
 	ok( eventMap.hasMapping( started, Test1 ));
-	ok( ! eventMap.hasMapping( started, Test1, Test1.prototype.handler ));
+	ok( ! eventMap.hasMapping( started, Test1, "handler" ));
+});
+
+test( 'event object passing to listeners', function(){
+    var passedValue;
+    var passedEvent;
+    var payload = {};
+    var TestClass = function(){
+        this.handler = function( event, foo ){
+            passedValue = foo;
+            passedEvent = event;
+        }
+    };
+    eventMap.addClassMapping( started, TestClass, "handler", true, true );
+    dispatcher.dispatchEvent( started, payload);
+    strictEqual( passedEvent.type, started );
+    strictEqual( payload, passedValue )
+})
+
+test( 'differentiation of passed values to listeners with different values for passEvent', function(){
+    var passedValue1, passedValue2, passedEvent;
+    var payload = {};
+    var TestClass = function(){
+        this.handler1 = function( event, foo ){
+            passedValue1 = foo;
+            passedEvent = event;
+        }
+        this.handler2 = function( bar ){
+            passedValue2 = bar;
+        }
+    }
+    eventMap.addClassMapping( started, TestClass, "handler1", true, true );
+    eventMap.addClassMapping( started, TestClass, "handler2", true, false );
+    dispatcher.dispatchEvent( started, payload);
+
+    strictEqual( passedEvent.type, started );
+    strictEqual( payload, passedValue1 );
+    strictEqual( payload, passedValue2 );
+})
+
+test( 'oneShot listener gets removed', function(){
+    eventMap.addClassMapping( started, Test2, null, true );
+    dispatcher.dispatchEvent( started);
+    ok( ! eventMap.hasMapping( started, Test2 ) );
+})
+
+test( 'oneShot doesnt prevent next listener to be called', function(){
+    eventMap.addClassMapping( started, Test1, "handler", true );
+    eventMap.addClassMapping( started, Test2, null, false );
+
+    dispatcher.dispatchEvent( started);
+    equal( isExecuted, 2 );
 })
