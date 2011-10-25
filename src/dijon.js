@@ -593,10 +593,10 @@ dijon.EventMap.prototype = {
 				var instance = this.injector.getInstance( obj.key );
 				if( obj.oneShot )
                     toBeRemoved.push( obj );
-				if( obj.handler != null )
+				if( obj.handler != null ){
                     var payload = ( obj.passEvent ) ? argsWithEvent : args;
 					instance[ obj.handler ].apply( instance, payload );
-					//obj.handler.apply( instance, args );
+                }
 			}else{
 				//injector mapping has been deleted, but
 				//eventMap mapping not
