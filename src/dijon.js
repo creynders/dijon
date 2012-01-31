@@ -31,6 +31,9 @@ dijon.System = function(){
     /** @private */
     this._handlers = {};
 
+    /** @private */
+    this._callbacks = {};
+
     this.strictInjections = true;
 };//dijon.System
 
@@ -199,8 +202,9 @@ dijon.System.prototype = {
      * @param {String} key
      * @param {String} eventName
      * @param {String|Function} [handler=eventName]
+     * @param {Boolean} [oneShot=false]
      */
-    addHandler : function( key, eventName, handler, oneShot ){
+    mapHandler : function( key, eventName, handler, oneShot ){
         if( handler == undefined ) handler = eventName;
         if( oneShot == undefined ) oneShot = false;
         if( ! this._handlers.hasOwnProperty( eventName ) ){
@@ -217,9 +221,41 @@ dijon.System.prototype = {
      * @param {String} key
      * @param {String} eventName
      */
-    removeHandler : function( key, eventName ){
+    unmapHandler : function( key, eventName ){
         if( this._handlers.hasOwnProperty( eventName ) && this._handlers[ eventName ].hasOwnProperty( key ) ){
             delete this._handlers[ eventName ][ key ];
+        }
+    },
+
+    /**
+     *
+     * @param {String} eventName
+     * @param {Function} callback
+     * @param {Boolean} [oneShot=false]
+     */
+    addCallback : function( eventName, callback, oneShot ){
+        if( oneShot == undefined ) oneShot = false;
+        if( ! this._callbacks.hasOwnProperty( eventName ) ){
+            this._callbacks[ eventName ] = [];
+        }
+        this._callbacks[ eventName ].push( {
+            callback : callback,
+            oneShot : oneShot
+        } );
+    },
+
+    /**
+     *
+     * @param {String} eventName
+     * @param {Function} callback
+     */
+    removeCallback : function( eventName, callback ){
+        if( this._callbacks.hasOwnProperty( eventName ) ){
+            var configs = this._callbacks[ eventName ];
+            for( var i in configs ){
+                var config = configs[ i ];
+                if( config.callback === callback ) configs.splice( i, 1 );
+            }
         }
     },
 
@@ -235,13 +271,21 @@ dijon.System.prototype = {
                 var config = handlers[ key ];
                 var instance = this.getInstance( key );
                 var handler;
-                if( typeof handler == "string" ){
+                if( typeof config.handler == "string" ){
                     handler = instance[ config.handler ];
                 }else{
                     handler = config.handler;
                 }
-                if( config.oneShot ) this.removeHandler( key, eventName );
+                if( config.oneShot ) this.unmapHandler( key, eventName );
                 handler.apply( instance, args );
+            }
+        }
+        if( this._callbacks.hasOwnProperty( eventName ) ){
+            var callbacks = this._callbacks[ eventName ];
+            for( var i in callbacks ){
+                var config = callbacks[ i ];
+                if( config.oneShot ) callbacks.splice( i, 1 );
+                config.callback.apply( null, args );
             }
         }
     }
