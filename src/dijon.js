@@ -14,14 +14,14 @@ var dijon = {
 
 
   //======================================//
- // dijon.Injector
+ // dijon.System
 //======================================//
 
 /**
- * @class dijon.Injector
+ * @class dijon.System
  * @constructor
 */
-dijon.Injector = function(){
+dijon.System = function(){
 	/** @private */
 	this._mappings = {};
 
@@ -29,9 +29,9 @@ dijon.Injector = function(){
 	this._outlets = [];
 
     this.strictInjections = true;
-};//dijon.Injector
+};//dijon.System
 
-dijon.Injector.prototype = {
+dijon.System.prototype = {
 
 	/**
 	 * @private
@@ -77,7 +77,7 @@ dijon.Injector.prototype = {
 	 * @param {String} outlet the <strong>name</strong> of the property used as an injection point.<br/>
 	 * [!] MUST BE STRING
 	 * @param {String} source the key to the value that will be injected
-     * @see dijon.Injector#removeOutlet
+     * @see dijon.System#removeOutlet
 	 */
 	addOutlet : function( source, target, outlet ){
         if( target == undefined ) target = "global";
@@ -174,7 +174,7 @@ dijon.Injector.prototype = {
 	},
 
 	/**
-	 * Remove a rule from the injector
+	 * Remove a rule from the System
 	 * @param {String} key
 	 */
 	unmap : function( key ){
@@ -185,11 +185,11 @@ dijon.Injector.prototype = {
 	 * removes an injection point mapping for a given class mapped to <code>key</code>
 	 * @param {Object} key
 	 * @param {String} propertyName MUST BE STRING
-	 * @see dijon.Injector#addOutlet
+	 * @see dijon.System#addOutlet
 	 */
 	removeOutlet : function( target, outlet ){
 		delete this._outlets[ target ][ outlet ];
 	}
 
-};//dijon.Injector.prototype
+};//dijon.System.prototype
 
