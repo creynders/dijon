@@ -114,7 +114,7 @@
             }
         }
         injector.mapSingleton( 'a', c );
-        injector.mapHandler( 'a', 'loginStart' )
+        injector.mapHandler( 'loginStart', 'a' )
         injector.notify( 'loginStart' );
         ok( hasExecuted );
     })
@@ -127,7 +127,7 @@
             }
         }
         injector.mapSingleton( 'a', c );
-        injector.mapHandler( 'a', 'loginStart', null, true );
+        injector.mapHandler( 'loginStart', 'a', null, true );
         injector.notify( 'loginStart' );
         injector.notify( 'loginStart' );
         injector.notify( 'loginStart' );
@@ -144,7 +144,7 @@
              }
          }
          injector.mapSingleton( 'a', c );
-         injector.mapHandler( 'a', 'loginStart', 'onLoginStart' )
+         injector.mapHandler( 'loginStart', 'a', 'onLoginStart' )
          injector.notify( 'loginStart' );
          ok( hasExecuted );
      })
@@ -158,10 +158,10 @@
             }
         }
         injector.mapSingleton( 'a', c );
-        injector.mapHandler( 'a', 'loginStart' );
+        injector.mapHandler( 'loginStart', 'a' );
         injector.notify( 'loginStart' );
         injector.notify( 'loginStart' );
-        injector.unmapHandler( 'a', 'loginStart' );
+        injector.unmapHandler( 'loginStart', 'a' );
         injector.notify( 'loginStart' );
         ok( hasExecuted == 2 );
     })

@@ -199,12 +199,12 @@ dijon.System.prototype = {
 
     /**
      *
-     * @param {String} key
      * @param {String} eventName
+     * @param {String} key
      * @param {String|Function} [handler=eventName]
      * @param {Boolean} [oneShot=false]
      */
-    mapHandler : function( key, eventName, handler, oneShot ){
+    mapHandler : function( eventName, key, handler, oneShot ){
         if( handler == undefined ) handler = eventName;
         if( oneShot == undefined ) oneShot = false;
         if( ! this._handlers.hasOwnProperty( eventName ) ){
@@ -218,10 +218,10 @@ dijon.System.prototype = {
 
     /**
      *
-     * @param {String} key
      * @param {String} eventName
+     * @param {String} key
      */
-    unmapHandler : function( key, eventName ){
+    unmapHandler : function( eventName, key  ){
         if( this._handlers.hasOwnProperty( eventName ) && this._handlers[ eventName ].hasOwnProperty( key ) ){
             delete this._handlers[ eventName ][ key ];
         }
