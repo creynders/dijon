@@ -85,7 +85,7 @@ dijon.System.prototype = {
 	 * @param {String} source the key to the value that will be injected
      * @see dijon.System#removeOutlet
 	 */
-	addOutlet : function( source, target, outlet ){
+	mapOutlet : function( source, target, outlet ){
         if( target == undefined ) target = "global";
         if( outlet == undefined ) outlet = source;
         if( ! this._outlets.hasOwnProperty( target ) ) this._outlets[ target ] = {};
@@ -165,7 +165,8 @@ dijon.System.prototype = {
 	 * @param {Object} instance
 	 */
 	injectInto : function( key, instance ){
-        var o = [ this._outlets[ 'global' ] ];
+        var o = [];
+        if( this._outlets.hasOwnProperty( 'global' ) ) o.push( this._outlets[ 'global' ] );
         if( this._outlets.hasOwnProperty( key ) ) o.push( this._outlets[ key ] );
         for( var i in o ){
             var l = o [ i ];
@@ -193,7 +194,7 @@ dijon.System.prototype = {
 	 * @param {String} propertyName MUST BE STRING
 	 * @see dijon.System#addOutlet
 	 */
-	removeOutlet : function( target, outlet ){
+	unmapOutlet : function( target, outlet ){
 		delete this._outlets[ target ][ outlet ];
 	},
 
