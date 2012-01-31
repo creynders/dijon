@@ -26,7 +26,10 @@ dijon.System = function(){
 	this._mappings = {};
 
 	/** @private */
-	this._outlets = [];
+	this._outlets = {};
+
+    /** @private */
+    this._handlers = {};
 
     this.strictInjections = true;
 };//dijon.System
@@ -46,7 +49,7 @@ dijon.System.prototype = {
 
 	/**
 	 * @private
-	 * @param {Stirng} key
+	 * @param {String} key
 	 * @param {Boolean} overrideRules
 	 * @return {Object}
 	 */
@@ -189,7 +192,63 @@ dijon.System.prototype = {
 	 */
 	removeOutlet : function( target, outlet ){
 		delete this._outlets[ target ][ outlet ];
-	}
+	},
+
+    /**
+     *
+     * @param {String} key
+     * @param {String} eventName
+     * @param {String|Function} [handler=eventName]
+     */
+    addHandler : function( key, eventName, handler, oneShot ){
+        if( handler == undefined ) handler = eventName;
+        if( oneShot == undefined ) oneShot = false;
+        if( ! this._handlers.hasOwnProperty( eventName ) ){
+            this._handlers[ eventName ] = {};
+        }
+        this._handlers[ eventName ][ key ] = {
+            handler : handler,
+            oneShot: oneShot
+        };
+    },
+
+    /**
+     *
+     * @param {String} key
+     * @param {String} eventName
+     */
+    removeHandler : function( key, eventName ){
+        if( this._handlers.hasOwnProperty( eventName ) && this._handlers[ eventName ].hasOwnProperty( key ) ){
+            delete this._handlers[ eventName ][ key ];
+        }
+    },
+
+    /**
+     *
+     * @param {String} eventName
+     */
+    notify : function( eventName ){
+        var args = Array.prototype.slice( arguments );
+        if( this._handlers.hasOwnProperty( eventName ) ){
+            var handlers = this._handlers[ eventName ];
+            for( var key in handlers ){
+                var config = handlers[ key ];
+                var instance = this.getInstance( key );
+                var handler;
+                if( typeof handler == "string" ){
+                    handler = instance[ config.handler ];
+                }else{
+                    handler = config.handler;
+                }
+                if( config.oneShot ) this.removeHandler( key, eventName );
+                handler.apply( instance, args );
+            }
+        }
+    }
 
 };//dijon.System.prototype
 
+/*
+    system.addHandler( 'userController', 'loginStart' );
+    system.notify( 'loginStart' );
+ */
