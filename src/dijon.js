@@ -1,6 +1,5 @@
 /**
  * @author <a href="http://www.creynders.be">Camille Reynders</a>
- * @version 0.2.0
  * @namespace
  */
 var dijon = {
@@ -34,7 +33,46 @@ dijon.System = function(){
     /** @private */
     this._callbacks = {};
 
+    /**
+     * When <code>true</code> injections are made only if an object has a property with the mapped outlet name.<br/>
+     * <strong>Set to <code>false</code> at own risk</strong>, may have quite undesired side effects.
+     * @example
+     * system.strictInjections = true
+     * var o = {};
+     * system.mapSingleton( 'userModel', UserModel );
+     * system.mapOutlet( 'userModel' );
+     * system.injectInto( o );
+     *
+     * //o is unchanged
+     *
+     * system.strictInjections = false;
+     * system.injectInto( o );
+     *
+     * //o now has a member 'userModel' which holds a reference to the singleton instance
+     * //of UserModel
+     * @property
+     * @type Boolean
+     * @default true
+     */
     this.strictInjections = true;
+
+    /**
+     * Enables the automatic mapping of outlets for mapped values, singletons and classes
+     * When this is true any value, singleton or class that is mapped will automatically be mapped as a global outlet
+     * using the value of <code>key</code> as outlet name
+     *
+     * @example
+     * var o = {
+     *     userModel : undefined; //inject
+     * }
+     * system.mapSingleton( 'userModel', UserModel );
+     * system.injectInto( o ):
+     * //o.userModel now holds a reference to the singleton instance of UserModel
+     * @property
+     * @type Boolean
+     * @default false
+     */
+    this.autoMapOutlets = false;
 };//dijon.System
 
 dijon.System.prototype = {
@@ -45,7 +83,7 @@ dijon.System.prototype = {
 	 */
 	_createAndSetupInstance : function( key, clazz ){
 		var instance = new clazz();
-		this.injectInto( key, instance );
+		this.injectInto( instance, key );
 		if( "setup" in instance ) instance.setup.call( instance );
 		return instance;
 	},
@@ -68,6 +106,9 @@ dijon.System.prototype = {
                 output = config.object;
             }else{
                 if( config.clazz ) output = this._createAndSetupInstance( key, config.clazz );
+                else{
+
+                }
             }
         }else{
             throw new Error( this.fqn + " is missing a rule for " + key );
@@ -77,32 +118,71 @@ dijon.System.prototype = {
 
 
 	/**
-	 * defines <code>propertyName</code> as an injection point for the class mapped to <code>targetKey</code> to be injected with an instance
-	 * of the class mapped to <code>sourceKey</code>.
-	 * @param {String} target the class the injection point is applied to.
-	 * @param {String} outlet the <strong>name</strong> of the property used as an injection point.<br/>
-	 * [!] MUST BE STRING
-	 * @param {String} source the key to the value that will be injected
-     * @see dijon.System#removeOutlet
+	 * defines <code>outletName</code> as an injection point in <code>targetKey</code>for the object mapped to <code>sourceKey</code>
+     * @example
+     * var o = {
+     *     user : undefined //inject
+     * }
+     * system.mapValue( 'o', o );
+     * system.mapSingleton( 'userModel', UserModel );
+     * system.mapOutlet( 'userModel', 'o', 'user' );
+     *
+     * var obj = system.getInstance( 'o' );
+     * //obj.user holds a reference to the singleton instance of UserModel
+     *
+     * @example
+     * var o = {
+     *      userModel : undefined //inject
+     * }
+     * system.mapValue( 'o', o );
+     * system.mapSingleton( 'userModel', UserModel );
+     * system.mapOutlet( 'userModel', 'o' );
+     *
+     * var obj = system.getInstance( 'o' );
+     * //obj.userModel holds a reference to the singleton instance of UserModel
+     *
+     * @example
+     *
+     * var o = {
+     *      userModel : undefined
+     * }
+     *
+     * system.mapSingleton( 'userModel', UserModel );
+     * system.mapOutlet( 'userModel' );
+     *
+     * system.injectInto( o );
+     *
+     * //o.userModel holds a reference to the singleton instance of userModel
+     *
+     * @param {String} sourceKey the key mapped to the object that will be injected
+     * @param {String} [targetKey='global'] the key the outlet is assigned to.
+	 * @param {String} [outletName=sourceKey] the name of the property used as an outlet.<br/>
+     * @see dijon.System#unmapOutlet
 	 */
-	mapOutlet : function( source, target, outlet ){
-        if( target == undefined ) target = "global";
-        if( outlet == undefined ) outlet = source;
-        if( ! this._outlets.hasOwnProperty( target ) ) this._outlets[ target ] = {};
-		this._outlets[ target ][ outlet ] = source
+	mapOutlet : function( sourceKey, targetKey, outletName ){
+        if( targetKey == undefined ) targetKey = "global";
+        if( outletName == undefined ) outletName = source;
+        if( ! this._outlets.hasOwnProperty( targetKey ) ) this._outlets[ targetKey ] = {};
+		this._outlets[ targetKey ][ outletName ] = sourceKey
 	},
 
 	/**
-	 * Create (if possible) or retrieve an instance of the class mapped to <code>key</code>
+	 * Retrieve (or create) the object mapped to <code>key</code>
+     * @example
+     * system.mapValue( 'foo', 'bar' );
+     * var b = system.getObject( 'foo' ); //now contains 'bar'
 	 * @param {Object} key
 	 * @return {Object}
 	 */
-	getInstance : function( key ){
+	getObject : function( key ){
 		return this._retrieveFromCacheOrCreate( key );
 	},
 
 	/**
-	 * When asked for an instance of the class <code>whenAskedFor</code> or object <code>whenAskedFor</code> inject the instance <code>useValue</code>.
+	 * Maps <code>useValue</code> to <code>key</code>
+     * @example
+     * system.mapValue( 'foo', 'bar' );
+     * var b = system.getObject( 'foo' ); //now contains 'bar'
 	 * @param {String} key
 	 * @param {Object} useValue
 	 */
@@ -112,10 +192,14 @@ dijon.System.prototype = {
             object : useValue,
             isSingleton : true
 		}
+        if( this.autoMapOutlets ) this.mapOutlet( key );
 	},
 
 	/**
-	 * Does a rule exist to satsify such a request?
+	 * Returns whether the key is mapped to an object
+     * @example
+     * system.mapValue( 'foo', 'bar' );
+     * var isMapped = system.hasMapping( 'foo' );
 	 * @param {String} key
 	 * @return {Boolean}
 	 */
@@ -124,9 +208,19 @@ dijon.System.prototype = {
 	},
 
 	/**
-	 * When asked for an instance of the class <code>whenAskedFor</code> or for object <code>whenAskedFor</code> inject a <strong>new</strong> instance of <code>instantiateClass</code>.
+     * Maps <code>clazz</code> as a factory to <code>key</code>
+     * @example
+     * var SomeClass = function(){
+     * }
+     * system.mapClass( 'o', SomeClass );
+     *
+     * var s1 = system.getInstance( 'o' );
+     * var s2 = system.getInstance( 'o' );
+     *
+     * //s1 and s2 reference two different instances of SomeClass
+     *
 	 * @param {String} key
-	 * @param {Class} clazz
+	 * @param {Function} clazz
 	 */
 	mapClass : function( key, clazz ){
 		this._mappings[ key ]= {
@@ -134,12 +228,23 @@ dijon.System.prototype = {
 				object : null,
 				isSingleton : false
         }
+        if( this.autoMapOutlets ) this.mapOutlet( key );
 	},
 
     /**
-     * When asked for an instance of the class <code>whenAskedFor</code> or object <code>whenAskedFor</code> inject an instance of <code>useSingletonOf</code>.
+     * Maps <code>clazz</code> as a singleton factory to <code>key</code>
+     * @example
+     * var SomeClass = function(){
+     * }
+     * system.mapSingleton( 'o', SomeClass );
+     *
+     * var s1 = system.getInstance( 'o' );
+     * var s2 = system.getInstance( 'o' );
+     *
+     * //s1 and s2 reference the same instance of SomeClass
+     *
      * @param {String} key
-     * @param {Class} clazz
+     * @param {Function} clazz
      */
     mapSingleton : function( key, clazz ){
         this._mappings[ key ] = {
@@ -147,12 +252,11 @@ dijon.System.prototype = {
             object : null,
             isSingleton : true
         }
+        if( this.autoMapOutlets ) this.mapOutlet( key );
     },
 
 	/**
-	 * create an instance of the class mapped to <code>keyOrClass</code> and fulfill it's mapped dependencies<br/>
-	 * <strong>WILL ALWAYS CREATE A NEW INSTANCE</strong>, even if <code>keyOrClass</code> was mapped otherwise or
-	 * <strong>even when <code>keyOrClass</code> was not mapped</code>.
+     * Force instantiation of the object mapped to <code>key</code>, whether it was mapped as a singleton or not.
 	 * @param {Class} keyOrClass
 	 * @return {Object}
 	 */
@@ -161,19 +265,21 @@ dijon.System.prototype = {
 	},
 
 	/**
-	 * Perform an injection into an object, satisfying all it's dependencies
+	 * Perform an injection into an object, satisfying all it's dependencies, using the outlets as configured for
+     * <code>key</code>
 	 * @param {Object} instance
+     * @param {String} [key]
 	 */
-	injectInto : function( key, instance ){
+	injectInto : function( instance, key ){
         var o = [];
         if( this._outlets.hasOwnProperty( 'global' ) ) o.push( this._outlets[ 'global' ] );
-        if( this._outlets.hasOwnProperty( key ) ) o.push( this._outlets[ key ] );
+        if( key != undefined && this._outlets.hasOwnProperty( key ) ) o.push( this._outlets[ key ] );
         for( var i in o ){
             var l = o [ i ];
             for( var outlet in l ){
                 var source = l[ outlet ];
                 //must be "in" [!]
-                if( ! this.strictInjections || outlet in instance ) instance[ outlet ] = this.getInstance( source );
+                if( ! this.strictInjections || outlet in instance ) instance[ outlet ] = this.getObject( source );
             }
         }
 
@@ -204,16 +310,19 @@ dijon.System.prototype = {
      * @param {String} key
      * @param {String|Function} [handler=eventName]
      * @param {Boolean} [oneShot=false]
+     * @param {Boolean} [passEvent=false]
      */
-    mapHandler : function( eventName, key, handler, oneShot ){
+    mapHandler : function( eventName, key, handler, oneShot, passEvent ){
         if( handler == undefined ) handler = eventName;
         if( oneShot == undefined ) oneShot = false;
+        if( passEvent == undefined ) passEvent = false;
         if( ! this._handlers.hasOwnProperty( eventName ) ){
             this._handlers[ eventName ] = {};
         }
         this._handlers[ eventName ][ key ] = {
             handler : handler,
-            oneShot: oneShot
+            oneShot: oneShot,
+            passEvent: passEvent
         };
     },
 
@@ -233,15 +342,17 @@ dijon.System.prototype = {
      * @param {String} eventName
      * @param {Function} callback
      * @param {Boolean} [oneShot=false]
+     * @param {Boolean} [passEvent=false]
      */
-    addCallback : function( eventName, callback, oneShot ){
+    addCallback : function( eventName, callback, oneShot, passEvent ){
         if( oneShot == undefined ) oneShot = false;
         if( ! this._callbacks.hasOwnProperty( eventName ) ){
             this._callbacks[ eventName ] = [];
         }
         this._callbacks[ eventName ].push( {
             callback : callback,
-            oneShot : oneShot
+            oneShot : oneShot,
+            passEvent: passEvent
         } );
     },
 
@@ -265,20 +376,23 @@ dijon.System.prototype = {
      * @param {String} eventName
      */
     notify : function( eventName ){
-        var args = Array.prototype.slice( arguments );
+        var argsWithEvent = Array.prototype.slice.call( arguments );
+        var argsClean = argsWithEvent.slice(1);
         if( this._handlers.hasOwnProperty( eventName ) ){
             var handlers = this._handlers[ eventName ];
             for( var key in handlers ){
                 var config = handlers[ key ];
-                var instance = this.getInstance( key );
+                var instance = this.getObject( key );
                 var handler;
                 if( typeof config.handler == "string" ){
                     handler = instance[ config.handler ];
                 }else{
                     handler = config.handler;
                 }
-                if( config.oneShot ) this.unmapHandler( key, eventName );
-                handler.apply( instance, args );
+                if( config.oneShot ) this.unmapHandler( eventName, key );
+
+                if( config.passEvent ) handler.apply( instance, argsWithEvent );
+                else handler.apply( instance, argsClean );
             }
         }
         if( this._callbacks.hasOwnProperty( eventName ) ){
@@ -286,7 +400,9 @@ dijon.System.prototype = {
             for( var i in callbacks ){
                 var config = callbacks[ i ];
                 if( config.oneShot ) callbacks.splice( i, 1 );
-                config.callback.apply( null, args );
+
+                if( config.passEvent ) config.callback.apply( null, argsWithEvent );
+                else config.callback.apply( null, argsClean );
             }
         }
     }

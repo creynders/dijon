@@ -44,37 +44,37 @@
         ok( injector.hasMapping( 'a' ) );
     })
 
-    test( 'getInstance for mapSingleton', function(){
+    test( 'getObject for mapSingleton', function(){
         injector.mapSingleton( 'a', TestClassA );
         var inj = injector;
-        var a = injector.getInstance( 'a' );
+        var a = injector.getObject( 'a' );
         ok( a instanceof TestClassA, 'must be instance of TestClassA' );
-        strictEqual( injector.getInstance( 'a' ), a, 'must be single instance' );
+        strictEqual( injector.getObject( 'a' ), a, 'must be single instance' );
     })
 
-    test( 'getInstance for mapClass', function(){
+    test( 'getObject for mapClass', function(){
         injector.mapClass( 'a', TestClassA );
-        var a = injector.getInstance( 'a' );
+        var a = injector.getObject( 'a' );
         ok( a instanceof TestClassA );
-        notStrictEqual( injector.getInstance( 'a' ), a );
+        notStrictEqual( injector.getObject( 'a' ), a );
     })
 
-    test( 'getInstance for mapValue', function(){
+    test( 'getObject for mapValue', function(){
         var a = new TestClassA();
         injector.mapValue( 'a', a );
-        strictEqual( injector.getInstance( 'a' ), a );
+        strictEqual( injector.getObject( 'a' ), a );
     })
 
     test( 'instantiate for mapSingleton', function(){
         injector.mapSingleton( 'a', TestClassA );
-        var a = injector.getInstance( 'a' );
+        var a = injector.getObject( 'a' );
         notStrictEqual( injector.instantiate( 'a' ), a, 'instantiate must always provide a new instance regardless of rules' );
     })
 
 
     test( 'instantiate for mapClass', function(){
         injector.mapClass( 'a', TestClassA );
-        var a = injector.getInstance( 'a' );
+        var a = injector.getObject( 'a' );
         notStrictEqual( injector.instantiate( 'a' ), a );
     })
 
@@ -93,17 +93,17 @@
     test( 'addOutlet', function(){
         injector.mapSingleton( 'a', TestClassA );
         injector.mapSingleton( 'b', TestClassB );
-        injector.addOutlet( 'a', 'b', 'bar' );
-        var b = injector.getInstance( 'b' );
+        injector.mapOutlet( 'a', 'b', 'bar' );
+        var b = injector.getObject( 'b' );
         ok( b.bar instanceof TestClassA );
     })
 
     test( 'removeOutlet', function() {
         injector.mapSingleton( 'a', TestClassA );
         injector.mapSingleton( 'b', TestClassB );
-        injector.addOutlet( 'a', 'b', 'bar' );
-        injector.removeOutlet( 'b', 'bar' );
-        var b = injector.getInstance( 'b' );
+        injector.mapOutlet( 'a', 'b', 'bar' );
+        injector.unmapOutlet( 'b', 'bar' );
+        var b = injector.getObject( 'b' );
         strictEqual( b.bar, undefined );
     })
     test( 'addHandler: simple use', function(){
@@ -191,4 +191,44 @@
         injector.notify( 'loginStart' );
         injector.removeCallback( 'loginStart', o.loginStart );
         ok( hasExecuted==2 );
+    })
+
+    test( 'notify: payload passing to callbacks', function(){
+        var a = 'a';
+        var b = {
+            name : 'b'
+        }
+        var passed1;
+        var passed2;
+        var o = {
+            foo : function( e, p1, p2 ){
+                passed1 = p1;
+                passed2 = p2;
+            }
+        }
+
+        injector.addCallback( 'mofo', o.foo, true, true );
+        injector.notify( 'mofo', a, b );
+        equal( passed1, a );
+        equal( passed2, b );
+    })
+
+    test( 'instantiate value', function(){
+        var a = {
+            name : 'a'
+        }
+
+        injector.mapValue( 'a', a );
+        var inst  = injector.instantiate( 'a' );
+        ok( inst !== a );
+    })
+
+    test( 'getInstance value', function(){
+        var a = {
+            name : 'a'
+        }
+
+        injector.mapValue( 'a', a );
+        var inst  = injector.getObject( 'a' );
+        ok( inst === a );
     })
