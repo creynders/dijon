@@ -160,9 +160,9 @@ dijon.System.prototype = {
      * @see dijon.System#unmapOutlet
 	 */
 	mapOutlet : function( sourceKey, targetKey, outletName ){
-	    if( source == undefined ) throw new Error( 1010 );
+	    if( sourceKey == undefined ) throw new Error( 1010 );
         if( targetKey == undefined ) targetKey = "global";
-        if( outletName == undefined ) outletName = source;
+        if( outletName == undefined ) outletName = sourceKey;
         if( ! this._outlets.hasOwnProperty( targetKey ) ) this._outlets[ targetKey ] = {};
 		this._outlets[ targetKey ][ outletName ] = sourceKey
 	},
@@ -339,7 +339,7 @@ dijon.System.prototype = {
         }
         this._handlers[ eventName ][ key ].push( {
             handler : handler,
-            oneShot: oneShot
+            oneShot: oneShot,
             passEvent: passEvent
         } );
     },
@@ -357,7 +357,8 @@ dijon.System.prototype = {
         if( this._handlers.hasOwnProperty( eventName ) && this._handlers[ eventName ].hasOwnProperty( key ) ){
             var handlers = this._handlers[ eventName ][ key ];
             for( var i in handlers ){
-                if( handlers[ i ] == handler ){
+                var config = handlers[ i ];
+                if( config.handler == handler ){
                     handlers.splice( i, 1 );
                     return;
                 }
@@ -413,31 +414,48 @@ dijon.System.prototype = {
         if( this._handlers.hasOwnProperty( eventName ) ){
             var handlers = this._handlers[ eventName ];
             for( var key in handlers ){
-                var config = handlers[ key ];
+                var configs = handlers[ key ];
                 var instance = this.getObject( key );
-                for( var i in configs ){
-                var handler;
+                var toBeDeleted = [];
+                for( var i = 0, n = configs.length; i < n; i++ ){
+                    var handler;
                     var config = configs[ i ];
-                if( typeof config.handler == "string" ){
-                    handler = instance[ config.handler ];
-                }else{
-                    handler = config.handler;
-                }
-                if( config.oneShot ) this.unmapHandler( eventName, key );
+                    if( typeof config.handler == "string" ){
+                        handler = instance[ config.handler ];
+                    }else{
+                        handler = config.handler;
+                    }
 
-                if( config.passEvent ) handler.apply( instance, argsWithEvent );
-                else handler.apply( instance, argsClean );
+                    //see deletion below
+                    if( config.oneShot ) toBeDeleted.unshift( i );
+
+                    if( config.passEvent ) handler.apply( instance, argsWithEvent );
+                    else handler.apply( instance, argsClean );
+                }
+
+                //items should be deleted in reverse order
+                //either use push above and decrement here
+                //or use unshift above and increment here
+                for( var i = 0, n = toBeDeleted.length; i < n; i++ ){
+                    configs.splice( toBeDeleted[ i ], 1 );
                 }
             }
         }
         if( this._callbacks.hasOwnProperty( eventName ) ){
-            var callbacks = this._callbacks[ eventName ];
-            for( var i in callbacks ){
-                var config = callbacks[ i ];
-                if( config.oneShot ) callbacks.splice( i, 1 );
+            var configs = this._callbacks[ eventName ];
+            var toBeDeleted = [];
+            for( var i in configs ){
+                var config = configs[ i ];
+                if( config.oneShot ) toBeDeleted.unshift( i );
 
                 if( config.passEvent ) config.callback.apply( null, argsWithEvent );
                 else config.callback.apply( null, argsClean );
+            }
+            //items should be deleted in reverse order
+            //either use push above and decrement here
+            //or use unshift above and increment here
+            for( var i = 0, n = toBeDeleted.length; i < n; i++ ){
+                configs.splice( toBeDeleted[ i ], 1 );
             }
         }
     }
