@@ -149,7 +149,7 @@ dijon.System.prototype = {
      */
     mapSingleton : function( key, clazz ){
         if( key == undefined ) throw new Error( 1010 );
-        if( key == undefined ) throw new Error( 1010 );
+        if( clazz == undefined ) throw new Error( 1010 );
         this._mappings[ key ] = {
             clazz : clazz,
             object : null,
