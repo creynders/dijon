@@ -111,7 +111,7 @@ dijon.System.prototype = {
                 }
             }
         }else{
-            throw new Error( this.fqn + " is missing a rule for " + key );
+            throw new Error( 1020 );
         }
 		return output
 	},
@@ -160,6 +160,7 @@ dijon.System.prototype = {
      * @see dijon.System#unmapOutlet
 	 */
 	mapOutlet : function( sourceKey, targetKey, outletName ){
+	    if( source == undefined ) throw new Error( 1010 );
         if( targetKey == undefined ) targetKey = "global";
         if( outletName == undefined ) outletName = source;
         if( ! this._outlets.hasOwnProperty( targetKey ) ) this._outlets[ targetKey ] = {};
@@ -175,6 +176,7 @@ dijon.System.prototype = {
 	 * @return {Object}
 	 */
 	getObject : function( key ){
+	    if( key == undefined ) throw new Error( 1010 )
 		return this._retrieveFromCacheOrCreate( key );
 	},
 
@@ -187,6 +189,7 @@ dijon.System.prototype = {
 	 * @param {Object} useValue
 	 */
 	mapValue : function( key, useValue ){
+	    if( key == undefined ) throw new Error( 1010 );
 		this._mappings[ key ]= {
             clazz : null,
             object : useValue,
@@ -204,6 +207,7 @@ dijon.System.prototype = {
 	 * @return {Boolean}
 	 */
 	hasMapping : function( key ){
+	    if( key == undefined ) throw new Error( 1010 );
 		return this._mappings.hasOwnProperty( key );
 	},
 
@@ -223,6 +227,8 @@ dijon.System.prototype = {
 	 * @param {Function} clazz
 	 */
 	mapClass : function( key, clazz ){
+	    if( key == undefined ) throw new Error( 1010 );
+	    if( key == undefined ) throw new Error( 1010 );
 		this._mappings[ key ]= {
 				clazz : clazz,
 				object : null,
@@ -247,6 +253,8 @@ dijon.System.prototype = {
      * @param {Function} clazz
      */
     mapSingleton : function( key, clazz ){
+        if( key == undefined ) throw new Error( 1010 );
+        if( clazz == undefined ) throw new Error( 1010 );
         this._mappings[ key ] = {
             clazz : clazz,
             object : null,
@@ -261,16 +269,18 @@ dijon.System.prototype = {
 	 * @return {Object}
 	 */
 	instantiate : function( key ){
+        if( key == undefined ) throw new Error( 1010 );
 		return this._retrieveFromCacheOrCreate( key, true );
 	},
 
 	/**
-	 * Perform an injection into an object, satisfying all it's dependencies, using the outlets as configured for
-     * <code>key</code>
+	 * Perform an injection into an object, satisfying all it's dependencies
 	 * @param {Object} instance
      * @param {String} [key]
 	 */
 	injectInto : function( instance, key ){
+        if( key == undefined ) throw new Error( 1010 );
+        if( instance == undefined ) throw new Error( 1010 );
         var o = [];
         if( this._outlets.hasOwnProperty( 'global' ) ) o.push( this._outlets[ 'global' ] );
         if( key != undefined && this._outlets.hasOwnProperty( key ) ) o.push( this._outlets[ key ] );
@@ -291,16 +301,19 @@ dijon.System.prototype = {
 	 * @param {String} key
 	 */
 	unmap : function( key ){
+        if( key == undefined ) throw new Error( 1010 );
 		delete this._mappings[ key ];
 	},
 
 	/**
 	 * removes an injection point mapping for a given class mapped to <code>key</code>
-	 * @param {Object} key
-	 * @param {String} propertyName MUST BE STRING
+	 * @param {String} target
+	 * @param {String} outlet
 	 * @see dijon.System#addOutlet
 	 */
 	unmapOutlet : function( target, outlet ){
+        if( target == undefined ) throw new Error( 1010 );
+        if( outlet == undefined ) throw new Error( 1010 );
 		delete this._outlets[ target ][ outlet ];
 	},
 
@@ -313,27 +326,42 @@ dijon.System.prototype = {
      * @param {Boolean} [passEvent=false]
      */
     mapHandler : function( eventName, key, handler, oneShot, passEvent ){
+        if( eventName == undefined ) throw new Error( 1010 );
+        if( key == undefined ) throw new Error( 1010 );
         if( handler == undefined ) handler = eventName;
         if( oneShot == undefined ) oneShot = false;
         if( passEvent == undefined ) passEvent = false;
         if( ! this._handlers.hasOwnProperty( eventName ) ){
             this._handlers[ eventName ] = {};
         }
-        this._handlers[ eventName ][ key ] = {
+        if( ! this._handlers[eventName].hasOwnProperty( key ) ){
+            this._handlers[eventName][key] = [];
+        }
+        this._handlers[ eventName ][ key ].push( {
             handler : handler,
-            oneShot: oneShot,
+            oneShot: oneShot
             passEvent: passEvent
-        };
+        } );
     },
 
     /**
      *
      * @param {String} eventName
      * @param {String} key
+     * @param {String | Function} [handler=eventName]
      */
-    unmapHandler : function( eventName, key  ){
+    unmapHandler : function( eventName, key, handler  ){
+        if( eventName == undefined ) throw new Error( 1010 );
+        if( key == undefined ) throw new Error( 1010 );
+        if( handler == undefined ) handler = eventName;
         if( this._handlers.hasOwnProperty( eventName ) && this._handlers[ eventName ].hasOwnProperty( key ) ){
-            delete this._handlers[ eventName ][ key ];
+            var handlers = this._handlers[ eventName ][ key ];
+            for( var i in handlers ){
+                if( handlers[ i ] == handler ){
+                    handlers.splice( i, 1 );
+                    return;
+                }
+            }
         }
     },
 
@@ -345,6 +373,8 @@ dijon.System.prototype = {
      * @param {Boolean} [passEvent=false]
      */
     addCallback : function( eventName, callback, oneShot, passEvent ){
+        if( eventName == undefined ) throw new Error( 1010 );
+        if( callback == undefined ) throw new Error( 1010 );
         if( oneShot == undefined ) oneShot = false;
         if( ! this._callbacks.hasOwnProperty( eventName ) ){
             this._callbacks[ eventName ] = [];
@@ -362,6 +392,8 @@ dijon.System.prototype = {
      * @param {Function} callback
      */
     removeCallback : function( eventName, callback ){
+        if( eventName == undefined ) throw new Error( 1010 );
+        if( callback == undefined ) throw new Error( 1010 );
         if( this._callbacks.hasOwnProperty( eventName ) ){
             var configs = this._callbacks[ eventName ];
             for( var i in configs ){
@@ -383,7 +415,9 @@ dijon.System.prototype = {
             for( var key in handlers ){
                 var config = handlers[ key ];
                 var instance = this.getObject( key );
+                for( var i in configs ){
                 var handler;
+                    var config = configs[ i ];
                 if( typeof config.handler == "string" ){
                     handler = instance[ config.handler ];
                 }else{
@@ -393,6 +427,7 @@ dijon.System.prototype = {
 
                 if( config.passEvent ) handler.apply( instance, argsWithEvent );
                 else handler.apply( instance, argsClean );
+                }
             }
         }
         if( this._callbacks.hasOwnProperty( eventName ) ){
