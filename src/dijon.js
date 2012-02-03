@@ -30,9 +30,6 @@ dijon.System = function(){
     /** @private */
     this._handlers = {};
 
-    /** @private */
-    this._callbacks = {};
-
     /**
      * When <code>true</code> injections are made only if an object has a property with the mapped outlet name.<br/>
      * <strong>Set to <code>false</code> at own risk</strong>, may have quite undesired side effects.
@@ -320,14 +317,14 @@ dijon.System.prototype = {
     /**
      *
      * @param {String} eventName
-     * @param {String} key
+     * @param {String} [key=undefined]
      * @param {String|Function} [handler=eventName]
      * @param {Boolean} [oneShot=false]
      * @param {Boolean} [passEvent=false]
      */
     mapHandler : function( eventName, key, handler, oneShot, passEvent ){
         if( eventName == undefined ) throw new Error( 1010 );
-        if( key == undefined ) throw new Error( 1010 );
+        if( key == undefined ) key = 'global';
         if( handler == undefined ) handler = eventName;
         if( oneShot == undefined ) oneShot = false;
         if( passEvent == undefined ) passEvent = false;
@@ -347,12 +344,12 @@ dijon.System.prototype = {
     /**
      *
      * @param {String} eventName
-     * @param {String} key
+     * @param {String} [key=undefined]
      * @param {String | Function} [handler=eventName]
      */
     unmapHandler : function( eventName, key, handler  ){
         if( eventName == undefined ) throw new Error( 1010 );
-        if( key == undefined ) throw new Error( 1010 );
+        if( key == undefined ) key = 'global';
         if( handler == undefined ) handler = eventName;
         if( this._handlers.hasOwnProperty( eventName ) && this._handlers[ eventName ].hasOwnProperty( key ) ){
             var handlers = this._handlers[ eventName ][ key ];
@@ -369,44 +366,6 @@ dijon.System.prototype = {
     /**
      *
      * @param {String} eventName
-     * @param {Function} callback
-     * @param {Boolean} [oneShot=false]
-     * @param {Boolean} [passEvent=false]
-     */
-    addCallback : function( eventName, callback, oneShot, passEvent ){
-        if( eventName == undefined ) throw new Error( 1010 );
-        if( callback == undefined ) throw new Error( 1010 );
-        if( oneShot == undefined ) oneShot = false;
-        if( ! this._callbacks.hasOwnProperty( eventName ) ){
-            this._callbacks[ eventName ] = [];
-        }
-        this._callbacks[ eventName ].push( {
-            callback : callback,
-            oneShot : oneShot,
-            passEvent: passEvent
-        } );
-    },
-
-    /**
-     *
-     * @param {String} eventName
-     * @param {Function} callback
-     */
-    removeCallback : function( eventName, callback ){
-        if( eventName == undefined ) throw new Error( 1010 );
-        if( callback == undefined ) throw new Error( 1010 );
-        if( this._callbacks.hasOwnProperty( eventName ) ){
-            var configs = this._callbacks[ eventName ];
-            for( var i in configs ){
-                var config = configs[ i ];
-                if( config.callback === callback ) configs.splice( i, 1 );
-            }
-        }
-    },
-
-    /**
-     *
-     * @param {String} eventName
      */
     notify : function( eventName ){
         var argsWithEvent = Array.prototype.slice.call( arguments );
@@ -415,12 +374,13 @@ dijon.System.prototype = {
             var handlers = this._handlers[ eventName ];
             for( var key in handlers ){
                 var configs = handlers[ key ];
-                var instance = this.getObject( key );
+                var instance;
+                if( key != 'global' ) instance = this.getObject( key );
                 var toBeDeleted = [];
                 for( var i = 0, n = configs.length; i < n; i++ ){
                     var handler;
                     var config = configs[ i ];
-                    if( typeof config.handler == "string" ){
+                    if( instance && typeof config.handler == "string" ){
                         handler = instance[ config.handler ];
                     }else{
                         handler = config.handler;
@@ -441,28 +401,6 @@ dijon.System.prototype = {
                 }
             }
         }
-        if( this._callbacks.hasOwnProperty( eventName ) ){
-            var configs = this._callbacks[ eventName ];
-            var toBeDeleted = [];
-            for( var i in configs ){
-                var config = configs[ i ];
-                if( config.oneShot ) toBeDeleted.unshift( i );
-
-                if( config.passEvent ) config.callback.apply( null, argsWithEvent );
-                else config.callback.apply( null, argsClean );
-            }
-            //items should be deleted in reverse order
-            //either use push above and decrement here
-            //or use unshift above and increment here
-            for( var i = 0, n = toBeDeleted.length; i < n; i++ ){
-                configs.splice( toBeDeleted[ i ], 1 );
-            }
-        }
     }
 
 };//dijon.System.prototype
-
-/*
-    system.addHandler( 'userController', 'loginStart' );
-    system.notify( 'loginStart' );
- */

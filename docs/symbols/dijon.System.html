@@ -312,9 +312,9 @@ using the value of <code>key</code> as outlet name</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#getInstance">getInstance</a></b>(key)
+								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#getObject">getObject</a></b>(key)
 								</div>
-								<div class="description">Create (if possible) or retrieve an instance of the class mapped to <code>key</code></div>
+								<div class="description">Retrieve (or create) the object mapped to <code>key</code></div>
 							</td>
 						</tr>
 					
@@ -323,7 +323,7 @@ using the value of <code>key</code> as outlet name</div>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#hasMapping">hasMapping</a></b>(key)
 								</div>
-								<div class="description">Does a rule exist to satsify such a request?</div>
+								<div class="description">Returns whether the key is mapped to an object</div>
 							</td>
 						</tr>
 					
@@ -332,8 +332,7 @@ using the value of <code>key</code> as outlet name</div>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#injectInto">injectInto</a></b>(instance, key)
 								</div>
-								<div class="description">Perform an injection into an object, satisfying all it's dependencies, using the outlets as configured for
-<code>key</code></div>
+								<div class="description">Perform an injection into an object, satisfying all it's dependencies</div>
 							</td>
 						</tr>
 					
@@ -342,9 +341,7 @@ using the value of <code>key</code> as outlet name</div>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#instantiate">instantiate</a></b>(keyOrClass)
 								</div>
-								<div class="description">create an instance of the class mapped to <code>keyOrClass</code> and fulfill it's mapped dependencies<br/>
-<strong>WILL ALWAYS CREATE A NEW INSTANCE</strong>, even if <code>keyOrClass</code> was mapped otherwise or
-<strong>even when <code>keyOrClass</code> was not mapped</code></strong>.</div>
+								<div class="description">Force instantiation of the object mapped to <code>key</code>, whether it was mapped as a singleton or not.</div>
 							</td>
 						</tr>
 					
@@ -353,7 +350,7 @@ using the value of <code>key</code> as outlet name</div>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#mapClass">mapClass</a></b>(key, clazz)
 								</div>
-								<div class="description">When asked for an instance of the class <code>whenAskedFor</code> or for object <code>whenAskedFor</code> inject a <strong>new</strong> instance of <code>instantiateClass</code>.</div>
+								<div class="description">Maps <code>clazz</code> as a factory to <code>key</code></div>
 							</td>
 						</tr>
 					
@@ -380,7 +377,7 @@ using the value of <code>key</code> as outlet name</div>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#mapSingleton">mapSingleton</a></b>(key, clazz)
 								</div>
-								<div class="description">When asked for an instance of the class <code>whenAskedFor</code> or object <code>whenAskedFor</code> inject an instance of <code>useSingletonOf</code>.</div>
+								<div class="description">Maps <code>clazz</code> as a singleton factory to <code>key</code></div>
 							</td>
 						</tr>
 					
@@ -389,7 +386,7 @@ using the value of <code>key</code> as outlet name</div>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#mapValue">mapValue</a></b>(key, useValue)
 								</div>
-								<div class="description">When asked for an instance of the class <code>whenAskedFor</code> or object <code>whenAskedFor</code> inject the instance <code>useValue</code>.</div>
+								<div class="description">Maps <code>useValue</code> to <code>key</code></div>
 							</td>
 						</tr>
 					
@@ -423,7 +420,7 @@ using the value of <code>key</code> as outlet name</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#unmapHandler">unmapHandler</a></b>(eventName, key)
+								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#unmapHandler">unmapHandler</a></b>(eventName, key, handler)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -432,7 +429,7 @@ using the value of <code>key</code> as outlet name</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#unmapOutlet">unmapOutlet</a></b>(key, propertyName)
+								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#unmapOutlet">unmapOutlet</a></b>(target, outlet)
 								</div>
 								<div class="description">removes an injection point mapping for a given class mapped to <code>key</code></div>
 							</td>
@@ -631,18 +628,23 @@ system.injectInto( o );
 
 					<hr />
 				
-					<a name="getInstance"> </a>
+					<a name="getObject"> </a>
 					<div class="fixedFont">
 					
 					<span class="light">{Object}</span>
-					<b>getInstance</b>(key)
+					<b>getObject</b>(key)
 					
 					</div>
 					<div class="description">
-						Create (if possible) or retrieve an instance of the class mapped to <code>key</code>
+						Retrieve (or create) the object mapped to <code>key</code>
 						
 						
 					</div>
+					
+					
+					
+					<pre class="code">system.mapValue( 'foo', 'bar' );
+var b = system.getObject( 'foo' ); //now contains 'bar'</pre>
 					
 					
 					
@@ -682,10 +684,15 @@ system.injectInto( o );
 					
 					</div>
 					<div class="description">
-						Does a rule exist to satsify such a request?
+						Returns whether the key is mapped to an object
 						
 						
 					</div>
+					
+					
+					
+					<pre class="code">system.mapValue( 'foo', 'bar' );
+var isMapped = system.hasMapping( 'foo' );</pre>
 					
 					
 					
@@ -725,8 +732,7 @@ system.injectInto( o );
 					
 					</div>
 					<div class="description">
-						Perform an injection into an object, satisfying all it's dependencies, using the outlets as configured for
-<code>key</code>
+						Perform an injection into an object, satisfying all it's dependencies
 						
 						
 					</div>
@@ -768,9 +774,7 @@ system.injectInto( o );
 					
 					</div>
 					<div class="description">
-						create an instance of the class mapped to <code>keyOrClass</code> and fulfill it's mapped dependencies<br/>
-<strong>WILL ALWAYS CREATE A NEW INSTANCE</strong>, even if <code>keyOrClass</code> was mapped otherwise or
-<strong>even when <code>keyOrClass</code> was not mapped</code></strong>.
+						Force instantiation of the object mapped to <code>key</code>, whether it was mapped as a singleton or not.
 						
 						
 					</div>
@@ -813,10 +817,21 @@ system.injectInto( o );
 					
 					</div>
 					<div class="description">
-						When asked for an instance of the class <code>whenAskedFor</code> or for object <code>whenAskedFor</code> inject a <strong>new</strong> instance of <code>instantiateClass</code>.
+						Maps <code>clazz</code> as a factory to <code>key</code>
 						
 						
 					</div>
+					
+					
+					
+					<pre class="code">var SomeClass = function(){
+}
+system.mapClass( 'o', SomeClass );
+
+var s1 = system.getInstance( 'o' );
+var s2 = system.getInstance( 'o' );
+
+//s1 and s2 reference two different instances of SomeClass</pre>
 					
 					
 					
@@ -831,7 +846,7 @@ system.injectInto( o );
 								<dd></dd>
 							
 								<dt>
-									<span class="light fixedFont">{Class}</span> <b>clazz</b>
+									<span class="light fixedFont">{Function}</span> <b>clazz</b>
 									
 								</dt>
 								<dd></dd>
@@ -974,7 +989,7 @@ system.injectInto( o );
 							
 								<dt>
 									<span class="light fixedFont">{String}</span> <b>outletName</b>
-									<i>Optional, Default: source</i>
+									<i>Optional, Default: sourceKey</i>
 								</dt>
 								<dd>the name of the property used as an outlet.<br/></dd>
 							
@@ -1004,10 +1019,21 @@ system.injectInto( o );
 					
 					</div>
 					<div class="description">
-						When asked for an instance of the class <code>whenAskedFor</code> or object <code>whenAskedFor</code> inject an instance of <code>useSingletonOf</code>.
+						Maps <code>clazz</code> as a singleton factory to <code>key</code>
 						
 						
 					</div>
+					
+					
+					
+					<pre class="code">var SomeClass = function(){
+}
+system.mapSingleton( 'o', SomeClass );
+
+var s1 = system.getInstance( 'o' );
+var s2 = system.getInstance( 'o' );
+
+//s1 and s2 reference the same instance of SomeClass</pre>
 					
 					
 					
@@ -1022,7 +1048,7 @@ system.injectInto( o );
 								<dd></dd>
 							
 								<dt>
-									<span class="light fixedFont">{Class}</span> <b>clazz</b>
+									<span class="light fixedFont">{Function}</span> <b>clazz</b>
 									
 								</dt>
 								<dd></dd>
@@ -1046,10 +1072,15 @@ system.injectInto( o );
 					
 					</div>
 					<div class="description">
-						When asked for an instance of the class <code>whenAskedFor</code> or object <code>whenAskedFor</code> inject the instance <code>useValue</code>.
+						Maps <code>useValue</code> to <code>key</code>
 						
 						
 					</div>
+					
+					
+					
+					<pre class="code">system.mapValue( 'foo', 'bar' );
+var b = system.getObject( 'foo' ); //now contains 'bar'</pre>
 					
 					
 					
@@ -1198,7 +1229,7 @@ system.injectInto( o );
 					<div class="fixedFont">
 					
 					
-					<b>unmapHandler</b>(eventName, key)
+					<b>unmapHandler</b>(eventName, key, handler)
 					
 					</div>
 					<div class="description">
@@ -1225,6 +1256,12 @@ system.injectInto( o );
 								</dt>
 								<dd></dd>
 							
+								<dt>
+									<span class="light fixedFont">{String | Function}</span> <b>handler</b>
+									<i>Optional, Default: eventName</i>
+								</dt>
+								<dd></dd>
+							
 							</dl>
 						
 						
@@ -1240,7 +1277,7 @@ system.injectInto( o );
 					<div class="fixedFont">
 					
 					
-					<b>unmapOutlet</b>(key, propertyName)
+					<b>unmapOutlet</b>(target, outlet)
 					
 					</div>
 					<div class="description">
@@ -1256,16 +1293,16 @@ system.injectInto( o );
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{Object}</span> <b>key</b>
+									<span class="light fixedFont">{String}</span> <b>target</b>
 									
 								</dt>
 								<dd></dd>
 							
 								<dt>
-									<span class="light fixedFont">{String}</span> <b>propertyName</b>
+									<span class="light fixedFont">{String}</span> <b>outlet</b>
 									
 								</dt>
-								<dd>MUST BE STRING</dd>
+								<dd></dd>
 							
 							</dl>
 						
@@ -1297,7 +1334,7 @@ system.injectInto( o );
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Wed Feb 01 2012 16:26:03 GMT+0100 (CET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Fri Feb 03 2012 11:45:57 GMT+0100 (CET)
 		</div>
 	</body>
 </html>

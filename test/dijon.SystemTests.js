@@ -166,52 +166,6 @@
         ok( hasExecuted == 2 );
     })
 
-    test( 'addCallback: simple use', function(){
-        var hasExecuted = false;
-        var o = {
-            loginStart : function(){
-                hasExecuted = true;
-            }
-        }
-        injector.addCallback( 'loginStart', o.loginStart );
-        injector.notify( 'loginStart' );
-        ok( hasExecuted );
-    })
-
-
-    test( 'removeCallback: simple use', function(){
-        var hasExecuted = 0;
-        var o = {
-            loginStart : function(){
-                hasExecuted ++;
-            }
-        }
-        injector.addCallback( 'loginStart', o.loginStart );
-        injector.notify( 'loginStart' );
-        injector.notify( 'loginStart' );
-        injector.removeCallback( 'loginStart', o.loginStart );
-        ok( hasExecuted==2 );
-    })
-
-    test( 'notify: payload passing to callbacks', function(){
-        var a = 'a';
-        var b = {
-            name : 'b'
-        }
-        var passed1;
-        var passed2;
-        var o = {
-            foo : function( e, p1, p2 ){
-                passed1 = p1;
-                passed2 = p2;
-            }
-        }
-
-        injector.addCallback( 'mofo', o.foo, true, true );
-        injector.notify( 'mofo', a, b );
-        equal( passed1, a );
-        equal( passed2, b );
-    })
 
     test( 'instantiate value', function(){
         var a = {
