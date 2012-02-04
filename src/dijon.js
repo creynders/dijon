@@ -276,7 +276,6 @@ dijon.System.prototype = {
      * @param {String} [key]
 	 */
 	injectInto : function( instance, key ){
-        if( key == undefined ) throw new Error( 1010 );
         if( instance == undefined ) throw new Error( 1010 );
         var o = [];
         if( this._outlets.hasOwnProperty( 'global' ) ) o.push( this._outlets[ 'global' ] );
