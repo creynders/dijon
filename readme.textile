@@ -1,10 +1,13 @@
 h1. DIJON FRAMEWORK
 
-A JS port of RobotLegs. Since it's substantially different from RL, I chose quite a different name.
-"pronunciation":http://www.audioenglish.net/dictionary/dijon.htm
+Dijon is an IOC and DI micro-framework for Javascript. Originally it was meant to be a port of Robotlegs,
+but deviated to something quite different. It remains however heavily inspired by Robotlegs, and more specifically
+Swiftsuspenders.
 
-it's an acronym for: *D* ependency *I* njection for *J* avaScript *O* bjects with *N* otifications ;)
-I know, it's gibberish...
+Basically it's an object registry, that allows you to define how and when objects are instantiated, functions and handlers
+are called and what objects should be passed on to other objects (that's the injection thingy) 
+
+"pronunciation":http://www.audioenglish.net/dictionary/dijon.htm
 
 h2. Contact
 
@@ -15,19 +18,27 @@ info [at] creynders [dot] be
 h2. Resources
 
 "API documentation":http://creynders.github.com/dijon-framework/docs
-"Live demo":http://creynders.github.com/dijon-framework/demo
+"Demo": https://github.com/creynders/todomvc/tree/master/architecture-examples/dijon
 
 h2. FEATURES
 
-* covariant injections (map an injection point for a baseclass and all instances of the mapped subclasses will have that dependency injected)
-* framework independency. Doesn't rely on Prototype, JQuery or anything else.
+* framework independent: doesn't rely on any other 3rd party frameworks.
+* framework integration: easily used on top of other frameworks
+* coding style independent: can be used in class-based or module pattern style.
+* routing: flexible enough to be used as a router
+* MVC: although there are no specific classes or functions that enforce an MVC structure on your code, 
+Dijon was specifically created to facilitate easy MVC(S) structure setup.
+(See Demo)
 
-h2. Coming from RobotLegs?
+h2. Basics
+Dijon consists out of one object: dijon.System. You can call it directly or instantiate it through <code>new</code>,
+whatever rocks your boat.
 
-h3. Differences
+There are three different but closely related entities that can be registered with Dijon:
+- objects, functions and "classes" can be registered to be lazily instantiated or called, either as factory
+or a singleton producer.
+- outlets are injection points, they define what objects should be injected into which receiving objects
+- handlers are callbacks that are registered to be called when a certain event (or route if you prefer) is 
+sent through the system.
 
-Although most of the classes have the same names as in RL, the public API *AND* functionality of all of them differs (drastically) from their original namesakes.
-Some concepts just don't make sense in a dynamic language as JS and therefore I chose to try and cherrypick the parts that do have benefits and cut away stuff that would make it cumbersome to use.
 
-h2. Roadmap
-* improvement of injection point mappings. It is pretty cumbersome at the moment and definitely needs the possibility of easier configuration
