@@ -385,7 +385,7 @@ dijon.System.prototype = {
                 var config = handlers[ i ];
                 if( config.handler == handler ){
                     handlers.splice( i, 1 );
-                    return;
+                    break;
                 }
             }
         }
