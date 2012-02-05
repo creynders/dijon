@@ -323,14 +323,14 @@ using the value of <code>key</code> as outlet name</div>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#injectInto">injectInto</a></b>(instance, key)
 								</div>
-								<div class="description">Perform an injection into an object, satisfying all it's dependencies</div>
+								<div class="description">Perform an injection into an object's mapped outlets, satisfying all it's dependencies</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#instantiate">instantiate</a></b>(keyOrClass)
+								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#instantiate">instantiate</a></b>(key)
 								</div>
 								<div class="description">Force instantiation of the object mapped to <code>key</code>, whether it was mapped as a singleton or not.</div>
 							</td>
@@ -348,9 +348,9 @@ using the value of <code>key</code> as outlet name</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#mapHandler">mapHandler</a></b>(eventName, key, handler, oneShot, passEvent)
+								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#mapHandler">mapHandler</a></b>(eventName/route, key, handler, oneShot, passEvent)
 								</div>
-								<div class="description"></div>
+								<div class="description">maps a handler for an event/route.</div>
 							</td>
 						</tr>
 					
@@ -395,7 +395,7 @@ using the value of <code>key</code> as outlet name</div>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#unmap">unmap</a></b>(key)
 								</div>
-								<div class="description">Remove a rule from the System</div>
+								<div class="description">Remove the mapping of <code>key</code> from the system</div>
 							</td>
 						</tr>
 					
@@ -404,7 +404,7 @@ using the value of <code>key</code> as outlet name</div>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#unmapHandler">unmapHandler</a></b>(eventName, key, handler)
 								</div>
-								<div class="description"></div>
+								<div class="description">Unmaps the handler for a specific event/route.</div>
 							</td>
 						</tr>
 					
@@ -413,7 +413,7 @@ using the value of <code>key</code> as outlet name</div>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#unmapOutlet">unmapOutlet</a></b>(target, outlet)
 								</div>
-								<div class="description">removes an injection point mapping for a given class mapped to <code>key</code></div>
+								<div class="description">removes an injection point mapping for a given object mapped to <code>key</code></div>
 							</td>
 						</tr>
 					
@@ -655,12 +655,12 @@ var isMapped = system.hasMapping( 'foo' );</pre>
 					<a name="injectInto"> </a>
 					<div class="fixedFont">
 					
-					
+					<span class="light">{<a href="../symbols/dijon.System.html">dijon.System</a>}</span>
 					<b>injectInto</b>(instance, key)
 					
 					</div>
 					<div class="description">
-						Perform an injection into an object, satisfying all it's dependencies
+						Perform an injection into an object's mapped outlets, satisfying all it's dependencies
 						
 						
 					</div>
@@ -689,6 +689,13 @@ var isMapped = system.hasMapping( 'foo' );</pre>
 						
 						
 						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/dijon.System.html">dijon.System</a>}</span> </dd>
+							
+							</dl>
+						
 						
 						
 
@@ -698,7 +705,7 @@ var isMapped = system.hasMapping( 'foo' );</pre>
 					<div class="fixedFont">
 					
 					<span class="light">{Object}</span>
-					<b>instantiate</b>(keyOrClass)
+					<b>instantiate</b>(key)
 					
 					</div>
 					<div class="description">
@@ -714,7 +721,7 @@ var isMapped = system.hasMapping( 'foo' );</pre>
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{Class}</span> <b>keyOrClass</b>
+									<span class="light fixedFont">{String}</span> <b>key</b>
 									
 								</dt>
 								<dd></dd>
@@ -740,7 +747,7 @@ var isMapped = system.hasMapping( 'foo' );</pre>
 					<a name="mapClass"> </a>
 					<div class="fixedFont">
 					
-					
+					<span class="light">{<a href="../symbols/dijon.System.html">dijon.System</a>}</span>
 					<b>mapClass</b>(key, clazz)
 					
 					</div>
@@ -785,6 +792,13 @@ var s2 = system.getInstance( 'o' );
 						
 						
 						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/dijon.System.html">dijon.System</a>}</span> </dd>
+							
+							</dl>
+						
 						
 						
 
@@ -793,12 +807,12 @@ var s2 = system.getInstance( 'o' );
 					<a name="mapHandler"> </a>
 					<div class="fixedFont">
 					
-					
-					<b>mapHandler</b>(eventName, key, handler, oneShot, passEvent)
+					<span class="light">{<a href="../symbols/dijon.System.html">dijon.System</a>}</span>
+					<b>mapHandler</b>(eventName/route, key, handler, oneShot, passEvent)
 					
 					</div>
 					<div class="description">
-						
+						maps a handler for an event/route.<br/>
 						
 						
 					</div>
@@ -810,7 +824,7 @@ var s2 = system.getInstance( 'o' );
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{String}</span> <b>eventName</b>
+									<span class="light fixedFont">{String}</span> <b>eventName/route</b>
 									
 								</dt>
 								<dd></dd>
@@ -819,25 +833,30 @@ var s2 = system.getInstance( 'o' );
 									<span class="light fixedFont">{String}</span> <b>key</b>
 									<i>Optional, Default: undefined</i>
 								</dt>
-								<dd></dd>
+								<dd>If <code>key</code> is <code>undefined</code> the handler will be mapped for all
+mapped objects.</dd>
 							
 								<dt>
 									<span class="light fixedFont">{String|Function}</span> <b>handler</b>
 									<i>Optional, Default: eventName</i>
 								</dt>
-								<dd></dd>
+								<dd>If <code>handler</code> is <code>undefined</code> the value of
+<code>eventName</code> will be used as the name of the member holding the reference to the to-be-called function.
+<code>handler</code> accepts either a string, which will be used as the name of the member holding the reference
+to the to-be-called function, or a direct function reference.</dd>
 							
 								<dt>
 									<span class="light fixedFont">{Boolean}</span> <b>oneShot</b>
 									<i>Optional, Default: false</i>
 								</dt>
-								<dd></dd>
+								<dd>Defines whether the handler should called exactly ones and then automatically
+unmapped</dd>
 							
 								<dt>
 									<span class="light fixedFont">{Boolean}</span> <b>passEvent</b>
 									<i>Optional, Default: false</i>
 								</dt>
-								<dd></dd>
+								<dd>Defines whether the event object should be passed to the handler or not.</dd>
 							
 							</dl>
 						
@@ -845,7 +864,21 @@ var s2 = system.getInstance( 'o' );
 						
 						
 						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/dijon.System.html">dijon.System</a>}</span> </dd>
+							
+							</dl>
 						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">See:</dt>
+							
+								<dd><a href="../symbols/dijon.System.html#unmapHandler">dijon.System#unmapHandler</a></dd>
+							
+							</dl>
 						
 
 					<hr />
@@ -853,7 +886,7 @@ var s2 = system.getInstance( 'o' );
 					<a name="mapOutlet"> </a>
 					<div class="fixedFont">
 					
-					
+					<span class="light">{<a href="../symbols/dijon.System.html">dijon.System</a>}</span>
 					<b>mapOutlet</b>(sourceKey, targetKey, outletName)
 					
 					</div>
@@ -927,6 +960,13 @@ system.injectInto( o );
 						
 						
 						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/dijon.System.html">dijon.System</a>}</span> </dd>
+							
+							</dl>
+						
 						
 						
 							<dl class="detailList">
@@ -942,7 +982,7 @@ system.injectInto( o );
 					<a name="mapSingleton"> </a>
 					<div class="fixedFont">
 					
-					
+					<span class="light">{<a href="../symbols/dijon.System.html">dijon.System</a>}</span>
 					<b>mapSingleton</b>(key, clazz)
 					
 					</div>
@@ -987,6 +1027,13 @@ var s2 = system.getInstance( 'o' );
 						
 						
 						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/dijon.System.html">dijon.System</a>}</span> </dd>
+							
+							</dl>
+						
 						
 						
 
@@ -995,7 +1042,7 @@ var s2 = system.getInstance( 'o' );
 					<a name="mapValue"> </a>
 					<div class="fixedFont">
 					
-					
+					<span class="light">{<a href="../symbols/dijon.System.html">dijon.System</a>}</span>
 					<b>mapValue</b>(key, useValue)
 					
 					</div>
@@ -1033,6 +1080,13 @@ var b = system.getObject( 'foo' ); //now contains 'bar'</pre>
 						
 						
 						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/dijon.System.html">dijon.System</a>}</span> </dd>
+							
+							</dl>
 						
 						
 						
@@ -1078,12 +1132,12 @@ var b = system.getObject( 'foo' ); //now contains 'bar'</pre>
 					<a name="unmap"> </a>
 					<div class="fixedFont">
 					
-					
+					<span class="light">{<a href="../symbols/dijon.System.html">dijon.System</a>}</span>
 					<b>unmap</b>(key)
 					
 					</div>
 					<div class="description">
-						Remove a rule from the System
+						Remove the mapping of <code>key</code> from the system
 						
 						
 					</div>
@@ -1106,6 +1160,13 @@ var b = system.getObject( 'foo' ); //now contains 'bar'</pre>
 						
 						
 						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/dijon.System.html">dijon.System</a>}</span> </dd>
+							
+							</dl>
+						
 						
 						
 
@@ -1114,12 +1175,12 @@ var b = system.getObject( 'foo' ); //now contains 'bar'</pre>
 					<a name="unmapHandler"> </a>
 					<div class="fixedFont">
 					
-					
+					<span class="light">{<a href="../symbols/dijon.System.html">dijon.System</a>}</span>
 					<b>unmapHandler</b>(eventName, key, handler)
 					
 					</div>
 					<div class="description">
-						
+						Unmaps the handler for a specific event/route.
 						
 						
 					</div>
@@ -1134,13 +1195,15 @@ var b = system.getObject( 'foo' ); //now contains 'bar'</pre>
 									<span class="light fixedFont">{String}</span> <b>eventName</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>Name of the event/route</dd>
 							
 								<dt>
 									<span class="light fixedFont">{String}</span> <b>key</b>
 									<i>Optional, Default: undefined</i>
 								</dt>
-								<dd></dd>
+								<dd>If <code>key</code> is <code>undefined</code> the handler is removed from the
+global mapping space. (If the same event is mapped globally and specifically for an object, then
+only the globally mapped one will be removed)</dd>
 							
 								<dt>
 									<span class="light fixedFont">{String | Function}</span> <b>handler</b>
@@ -1154,7 +1217,21 @@ var b = system.getObject( 'foo' ); //now contains 'bar'</pre>
 						
 						
 						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/dijon.System.html">dijon.System</a>}</span> </dd>
+							
+							</dl>
 						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">See:</dt>
+							
+								<dd><a href="../symbols/dijon.System.html#mapHandler">dijon.System#mapHandler</a></dd>
+							
+							</dl>
 						
 
 					<hr />
@@ -1162,12 +1239,12 @@ var b = system.getObject( 'foo' ); //now contains 'bar'</pre>
 					<a name="unmapOutlet"> </a>
 					<div class="fixedFont">
 					
-					
+					<span class="light">{<a href="../symbols/dijon.System.html">dijon.System</a>}</span>
 					<b>unmapOutlet</b>(target, outlet)
 					
 					</div>
 					<div class="description">
-						removes an injection point mapping for a given class mapped to <code>key</code>
+						removes an injection point mapping for a given object mapped to <code>key</code>
 						
 						
 					</div>
@@ -1196,6 +1273,13 @@ var b = system.getObject( 'foo' ); //now contains 'bar'</pre>
 						
 						
 						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/dijon.System.html">dijon.System</a>}</span> </dd>
+							
+							</dl>
+						
 						
 						
 							<dl class="detailList">
@@ -1220,7 +1304,7 @@ var b = system.getObject( 'foo' ); //now contains 'bar'</pre>
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Fri Feb 03 2012 15:27:08 GMT+0100 (CET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Sun Feb 05 2012 13:17:17 GMT+0100 (CET)
 		</div>
 	</body>
 </html>
