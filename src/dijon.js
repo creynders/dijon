@@ -270,6 +270,16 @@ dijon.System.prototype = {
 
 	/**
      * Force instantiation of the object mapped to <code>key</code>, whether it was mapped as a singleton or not.
+     * @example
+     * var SomeClass = function(){
+     * }
+     * system.mapSingleton( 'o', SomeClass );
+     *
+     * var s1 = system.getInstance( 'o' );
+     * var s2 = system.instantiate( 'o' );
+     *
+     * //s1 and s2 reference different instances of SomeClass
+     *
 	 * @param {String} key
 	 * @return {Object}
 	 */
@@ -280,8 +290,26 @@ dijon.System.prototype = {
 
 	/**
 	 * Perform an injection into an object's mapped outlets, satisfying all it's dependencies
+     * @example
+     * var UserModel = function(){
+     * }
+     * system.mapSingleton( 'userModel', UserModel );
+     * var SomeClass = function(){
+     *      user = undefined; //inject
+     * }
+     * system.mapSingleton( 'o', SomeClass );
+     * system.mapOutlet( 'userModel', 'o', 'user' );
+     *
+     * var foo = {
+     *      user : undefined //inject
+     * }
+     *
+     * system.injectInto( foo, 'o' );
+     *
+     * //foo.user now holds a reference to the singleton instance of UserModel
 	 * @param {Object} instance
-     * @param {String} [key]
+     * @param {String} [key] use the outlet mappings as defined for <code>key</code>, otherwise only the globally
+     * mapped outlets will be used.
      * @return {dijon.System}
 	 */
 	injectInto : function( instance, key ){
@@ -331,17 +359,93 @@ dijon.System.prototype = {
 
     /**
      * maps a handler for an event/route.<br/>
+     * @example
+     * var userView = {
+     *      showUserProfile : function(){
+     *          //do stuff
+     *      }
+     * }
+     * system.mapValue( 'userView', userView );
+     * <strong>system.mapHandler( 'user/profile', 'userView', 'showUserProfile' );</strong>
+     * system.notify( 'user/profile' );
+     *
+     * //userView.showUserProfile is called
+     * @example
+     * var userView = {
+     *      showUserProfile : function(){
+     *          //do stuff
+     *      }
+     * }
+     * system.mapValue( 'userView', userView );
+     * <strong>system.mapHandler( 'showUserProfile', 'userView' );</strong>
+     * system.notify( 'showUserProfile' );
+     *
+     * //userView.showUserProfile is called
+     * @example
+     * var userView = {
+     *      showUserProfile : function(){
+     *          //do stuff
+     *      }
+     * }
+     * system.mapValue( 'userView', userView );
+     * <strong>system.mapHandler( 'showUserProfile' );</strong>
+     * system.notify( 'showUserProfile' );
+     *
+     * //userView.showUserProfile is called
+     * @example
+     * var showUserProfile = function(){
+     *          //do stuff
+     * }
+     * <strong>system.mapHandler( 'user/profile', undefined, showUserProfile );</strong>
+     * system.notify( 'user/profile' );
+     *
+     * //showUserProfile is called
+     * @example
+     * var userView = {};
+     * var showUserProfile = function(){
+     *          //do stuff
+     * }
+     * system.mapValue( 'userView', userView );
+     * <strong>system.mapHandler( 'user/profile', 'userView', showUserProfile );</strong>
+     * system.notify( 'user/profile' );
+     *
+     * //showUserProfile is called within the scope of the userView object
+     * @example
+     * var userView = {
+     *      showUserProfile : function(){
+     *          //do stuff
+     *      }
+     * }
+     * system.mapValue( 'userView', userView );
+     * <strong>system.mapHandler( 'user/profile', 'userView', 'showUserProfile', true );</strong>
+     * system.notify( 'user/profile' );
+     * system.notify( 'user/profile' );
+     * system.notify( 'user/profile' );
+     *
+     * //userView.showUserProfile is called exactly once [!]
+     * @example
+     * var userView = {
+     *      showUserProfile : function( route ){
+     *          //do stuff
+     *      }
+     * }
+     * system.mapValue( 'userView', userView );
+     * <strong>system.mapHandler( 'user/profile', 'userView', 'showUserProfile', false, true );</strong>
+     * system.notify( 'user/profile' );
+     *
+     * //userView.showUserProfile is called and the route/eventName is passed to the handler
      * @param {String} eventName/route
      * @param {String} [key=undefined] If <code>key</code> is <code>undefined</code> the handler will be mapped for all
-     * mapped objects.
+     * mapped objects. <strong>USE WITH EXTREME CAUTION</strong>
      * @param {String|Function} [handler=eventName] If <code>handler</code> is <code>undefined</code> the value of
      * <code>eventName</code> will be used as the name of the member holding the reference to the to-be-called function.
      * <code>handler</code> accepts either a string, which will be used as the name of the member holding the reference
      * to the to-be-called function, or a direct function reference.
-     * @param {Boolean} [oneShot=false] Defines whether the handler should called exactly ones and then automatically
+     * @param {Boolean} [oneShot=false] Defines whether the handler should be called exactly once and then automatically
      * unmapped
      * @param {Boolean} [passEvent=false] Defines whether the event object should be passed to the handler or not.
      * @return {dijon.System}
+     * @see dijon.System#notify
      * @see dijon.System#unmapHandler
      */
     mapHandler : function( eventName, key, handler, oneShot, passEvent ){
@@ -389,12 +493,14 @@ dijon.System.prototype = {
                 }
             }
         }
-        return this
+        return this;
     },
 
     /**
-     *
-     * @param {String} eventName
+     * calls all handlers mapped to <code>eventName/route</code>
+     * @param {String} eventName/route
+     * @return {dijon.System}
+     * @see dijon.System#mapHandler
      */
     notify : function( eventName ){
         var argsWithEvent = Array.prototype.slice.call( arguments );
@@ -430,6 +536,8 @@ dijon.System.prototype = {
                 }
             }
         }
+
+        return this;
     }
 
 };//dijon.System.prototype
