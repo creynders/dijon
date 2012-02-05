@@ -81,7 +81,6 @@ dijon.System.prototype = {
 	_createAndSetupInstance : function( key, clazz ){
 		var instance = new clazz();
 		this.injectInto( instance, key );
-		if( "setup" in instance ) instance.setup.call( instance );
 		return instance;
 	},
 
@@ -154,6 +153,7 @@ dijon.System.prototype = {
      * @param {String} sourceKey the key mapped to the object that will be injected
      * @param {String} [targetKey='global'] the key the outlet is assigned to.
 	 * @param {String} [outletName=sourceKey] the name of the property used as an outlet.<br/>
+     * @return {dijon.System}
      * @see dijon.System#unmapOutlet
 	 */
 	mapOutlet : function( sourceKey, targetKey, outletName ){
@@ -161,7 +161,9 @@ dijon.System.prototype = {
         if( targetKey == undefined ) targetKey = "global";
         if( outletName == undefined ) outletName = sourceKey;
         if( ! this._outlets.hasOwnProperty( targetKey ) ) this._outlets[ targetKey ] = {};
-		this._outlets[ targetKey ][ outletName ] = sourceKey
+		this._outlets[ targetKey ][ outletName ] = sourceKey;
+
+        return this;
 	},
 
 	/**
@@ -184,6 +186,7 @@ dijon.System.prototype = {
      * var b = system.getObject( 'foo' ); //now contains 'bar'
 	 * @param {String} key
 	 * @param {Object} useValue
+     * @return {dijon.System}
 	 */
 	mapValue : function( key, useValue ){
 	    if( key == undefined ) throw new Error( 1010 );
@@ -193,6 +196,7 @@ dijon.System.prototype = {
             isSingleton : true
 		}
         if( this.autoMapOutlets ) this.mapOutlet( key );
+        return this;
 	},
 
 	/**
@@ -222,6 +226,7 @@ dijon.System.prototype = {
      *
 	 * @param {String} key
 	 * @param {Function} clazz
+     * @return {dijon.System}
 	 */
 	mapClass : function( key, clazz ){
 	    if( key == undefined ) throw new Error( 1010 );
@@ -232,6 +237,7 @@ dijon.System.prototype = {
 				isSingleton : false
         }
         if( this.autoMapOutlets ) this.mapOutlet( key );
+        return this;
 	},
 
     /**
@@ -248,6 +254,7 @@ dijon.System.prototype = {
      *
      * @param {String} key
      * @param {Function} clazz
+     * @return {dijon.System}
      */
     mapSingleton : function( key, clazz ){
         if( key == undefined ) throw new Error( 1010 );
@@ -258,11 +265,12 @@ dijon.System.prototype = {
             isSingleton : true
         }
         if( this.autoMapOutlets ) this.mapOutlet( key );
+        return this;
     },
 
 	/**
      * Force instantiation of the object mapped to <code>key</code>, whether it was mapped as a singleton or not.
-	 * @param {Class} keyOrClass
+	 * @param {String} key
 	 * @return {Object}
 	 */
 	instantiate : function( key ){
@@ -271,9 +279,10 @@ dijon.System.prototype = {
 	},
 
 	/**
-	 * Perform an injection into an object, satisfying all it's dependencies
+	 * Perform an injection into an object's mapped outlets, satisfying all it's dependencies
 	 * @param {Object} instance
      * @param {String} [key]
+     * @return {dijon.System}
 	 */
 	injectInto : function( instance, key ){
         if( instance == undefined ) throw new Error( 1010 );
@@ -288,38 +297,52 @@ dijon.System.prototype = {
                 if( ! this.strictInjections || outlet in instance ) instance[ outlet ] = this.getObject( source );
             }
         }
+        if( "setup" in instance ) instance.setup.call( instance );
 
-        return instance;
+        return this;
 	},
 
 	/**
-	 * Remove a rule from the System
+	 * Remove the mapping of <code>key</code> from the system
 	 * @param {String} key
+     * @return {dijon.System}
 	 */
 	unmap : function( key ){
         if( key == undefined ) throw new Error( 1010 );
 		delete this._mappings[ key ];
+
+        return this;
 	},
 
 	/**
-	 * removes an injection point mapping for a given class mapped to <code>key</code>
+	 * removes an injection point mapping for a given object mapped to <code>key</code>
 	 * @param {String} target
 	 * @param {String} outlet
+     * @return {dijon.System}
 	 * @see dijon.System#addOutlet
 	 */
 	unmapOutlet : function( target, outlet ){
         if( target == undefined ) throw new Error( 1010 );
         if( outlet == undefined ) throw new Error( 1010 );
 		delete this._outlets[ target ][ outlet ];
+
+        return this;
 	},
 
     /**
-     *
-     * @param {String} eventName
-     * @param {String} [key=undefined]
-     * @param {String|Function} [handler=eventName]
-     * @param {Boolean} [oneShot=false]
-     * @param {Boolean} [passEvent=false]
+     * maps a handler for an event/route.<br/>
+     * @param {String} eventName/route
+     * @param {String} [key=undefined] If <code>key</code> is <code>undefined</code> the handler will be mapped for all
+     * mapped objects.
+     * @param {String|Function} [handler=eventName] If <code>handler</code> is <code>undefined</code> the value of
+     * <code>eventName</code> will be used as the name of the member holding the reference to the to-be-called function.
+     * <code>handler</code> accepts either a string, which will be used as the name of the member holding the reference
+     * to the to-be-called function, or a direct function reference.
+     * @param {Boolean} [oneShot=false] Defines whether the handler should called exactly ones and then automatically
+     * unmapped
+     * @param {Boolean} [passEvent=false] Defines whether the event object should be passed to the handler or not.
+     * @return {dijon.System}
+     * @see dijon.System#unmapHandler
      */
     mapHandler : function( eventName, key, handler, oneShot, passEvent ){
         if( eventName == undefined ) throw new Error( 1010 );
@@ -338,13 +361,19 @@ dijon.System.prototype = {
             oneShot: oneShot,
             passEvent: passEvent
         } );
+
+        return this;
     },
 
     /**
-     *
-     * @param {String} eventName
-     * @param {String} [key=undefined]
+     * Unmaps the handler for a specific event/route.
+     * @param {String} eventName Name of the event/route
+     * @param {String} [key=undefined] If <code>key</code> is <code>undefined</code> the handler is removed from the
+     * global mapping space. (If the same event is mapped globally and specifically for an object, then
+     * only the globally mapped one will be removed)
      * @param {String | Function} [handler=eventName]
+     * @return {dijon.System}
+     * @see dijon.System#mapHandler
      */
     unmapHandler : function( eventName, key, handler  ){
         if( eventName == undefined ) throw new Error( 1010 );
@@ -360,6 +389,7 @@ dijon.System.prototype = {
                 }
             }
         }
+        return this
     },
 
     /**
