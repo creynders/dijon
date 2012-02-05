@@ -9,6 +9,9 @@ are called and what objects should be passed on to other objects (that's the inj
 
 "pronunciation":http://www.audioenglish.net/dictionary/dijon.htm
 
+Dijon is a city in France. They make the best mustard. And I can pretend it's an acronym for
+Dependency Injection of Javascript Objects N... umm, never found a good fit for 'N'
+
 h2. Contact
 
 You can contact me on Twitter with questions/remarks : "@camillereynders":http://twitter.com/camillereynders
@@ -18,7 +21,7 @@ info [at] creynders [dot] be
 h2. Resources
 
 "API documentation":http://creynders.github.com/dijon-framework/docs
-"Demo": https://github.com/creynders/todomvc/tree/master/architecture-examples/dijon
+"Demo":https://github.com/creynders/todomvc/tree/master/architecture-examples/dijon
 
 h2. FEATURES
 
@@ -35,8 +38,8 @@ Dijon consists out of one object: dijon.System. You can call it directly or inst
 whatever rocks your boat.
 
 There are three different but closely related entities that can be registered with Dijon:
-- objects, functions and "classes" can be registered to be lazily instantiated or called, either as factory
-or a singleton producer.
+- objects, functions and "classes" can be registered to be lazily instantiated or called, either as a factory
+or a singleton (a "good" singleton).
 - outlets are injection points, they define what objects should be injected into which receiving objects
 - handlers are callbacks that are registered to be called when a certain event (or route if you prefer) is 
 sent through the system.
