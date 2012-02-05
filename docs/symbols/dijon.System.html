@@ -384,9 +384,9 @@ using the value of <code>key</code> as outlet name</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#notify">notify</a></b>(eventName)
+								<div class="fixedFont"><b><a href="../symbols/dijon.System.html#notify">notify</a></b>(eventName/route)
 								</div>
-								<div class="description"></div>
+								<div class="description">calls all handlers mapped to <code>eventName/route</code></div>
 							</td>
 						</tr>
 					
@@ -667,6 +667,25 @@ var isMapped = system.hasMapping( 'foo' );</pre>
 					
 					
 					
+					<pre class="code">var UserModel = function(){
+}
+system.mapSingleton( 'userModel', UserModel );
+var SomeClass = function(){
+     user = undefined; //inject
+}
+system.mapSingleton( 'o', SomeClass );
+system.mapOutlet( 'userModel', 'o', 'user' );
+
+var foo = {
+     user : undefined //inject
+}
+
+system.injectInto( foo, 'o' );
+
+//foo.user now holds a reference to the singleton instance of UserModel</pre>
+					
+					
+					
 						
 							<dl class="detailList">
 							<dt class="heading">Parameters:</dt>
@@ -681,7 +700,8 @@ var isMapped = system.hasMapping( 'foo' );</pre>
 									<span class="light fixedFont">{String}</span> <b>key</b>
 									<i>Optional</i>
 								</dt>
-								<dd></dd>
+								<dd>use the outlet mappings as defined for <code>key</code>, otherwise only the globally
+mapped outlets will be used.</dd>
 							
 							</dl>
 						
@@ -713,6 +733,17 @@ var isMapped = system.hasMapping( 'foo' );</pre>
 						
 						
 					</div>
+					
+					
+					
+					<pre class="code">var SomeClass = function(){
+}
+system.mapSingleton( 'o', SomeClass );
+
+var s1 = system.getInstance( 'o' );
+var s2 = system.instantiate( 'o' );
+
+//s1 and s2 reference different instances of SomeClass</pre>
 					
 					
 					
@@ -819,6 +850,83 @@ var s2 = system.getInstance( 'o' );
 					
 					
 					
+					<pre class="code">var userView = {
+     showUserProfile : function(){
+         //do stuff
+     }
+}
+system.mapValue( 'userView', userView );
+<strong>system.mapHandler( 'user/profile', 'userView', 'showUserProfile' );</strong>
+system.notify( 'user/profile' );
+
+//userView.showUserProfile is called</pre>
+					
+					<pre class="code">var userView = {
+     showUserProfile : function(){
+         //do stuff
+     }
+}
+system.mapValue( 'userView', userView );
+<strong>system.mapHandler( 'showUserProfile', 'userView' );</strong>
+system.notify( 'showUserProfile' );
+
+//userView.showUserProfile is called</pre>
+					
+					<pre class="code">var userView = {
+     showUserProfile : function(){
+         //do stuff
+     }
+}
+system.mapValue( 'userView', userView );
+<strong>system.mapHandler( 'showUserProfile' );</strong>
+system.notify( 'showUserProfile' );
+
+//userView.showUserProfile is called</pre>
+					
+					<pre class="code">var showUserProfile = function(){
+         //do stuff
+}
+<strong>system.mapHandler( 'user/profile', undefined, showUserProfile );</strong>
+system.notify( 'user/profile' );
+
+//showUserProfile is called</pre>
+					
+					<pre class="code">var userView = {};
+var showUserProfile = function(){
+         //do stuff
+}
+system.mapValue( 'userView', userView );
+<strong>system.mapHandler( 'user/profile', 'userView', showUserProfile );</strong>
+system.notify( 'user/profile' );
+
+//showUserProfile is called within the scope of the userView object</pre>
+					
+					<pre class="code">var userView = {
+     showUserProfile : function(){
+         //do stuff
+     }
+}
+system.mapValue( 'userView', userView );
+<strong>system.mapHandler( 'user/profile', 'userView', 'showUserProfile', true );</strong>
+system.notify( 'user/profile' );
+system.notify( 'user/profile' );
+system.notify( 'user/profile' );
+
+//userView.showUserProfile is called exactly once [!]</pre>
+					
+					<pre class="code">var userView = {
+     showUserProfile : function( route ){
+         //do stuff
+     }
+}
+system.mapValue( 'userView', userView );
+<strong>system.mapHandler( 'user/profile', 'userView', 'showUserProfile', false, true );</strong>
+system.notify( 'user/profile' );
+
+//userView.showUserProfile is called and the route/eventName is passed to the handler</pre>
+					
+					
+					
 						
 							<dl class="detailList">
 							<dt class="heading">Parameters:</dt>
@@ -834,7 +942,7 @@ var s2 = system.getInstance( 'o' );
 									<i>Optional, Default: undefined</i>
 								</dt>
 								<dd>If <code>key</code> is <code>undefined</code> the handler will be mapped for all
-mapped objects.</dd>
+mapped objects. <strong>USE WITH EXTREME CAUTION</strong></dd>
 							
 								<dt>
 									<span class="light fixedFont">{String|Function}</span> <b>handler</b>
@@ -849,7 +957,7 @@ to the to-be-called function, or a direct function reference.</dd>
 									<span class="light fixedFont">{Boolean}</span> <b>oneShot</b>
 									<i>Optional, Default: false</i>
 								</dt>
-								<dd>Defines whether the handler should called exactly ones and then automatically
+								<dd>Defines whether the handler should be called exactly once and then automatically
 unmapped</dd>
 							
 								<dt>
@@ -875,6 +983,8 @@ unmapped</dd>
 						
 							<dl class="detailList">
 							<dt class="heading">See:</dt>
+							
+								<dd><a href="../symbols/dijon.System.html#notify">dijon.System#notify</a></dd>
 							
 								<dd><a href="../symbols/dijon.System.html#unmapHandler">dijon.System#unmapHandler</a></dd>
 							
@@ -1096,12 +1206,12 @@ var b = system.getObject( 'foo' ); //now contains 'bar'</pre>
 					<a name="notify"> </a>
 					<div class="fixedFont">
 					
-					
-					<b>notify</b>(eventName)
+					<span class="light">{<a href="../symbols/dijon.System.html">dijon.System</a>}</span>
+					<b>notify</b>(eventName/route)
 					
 					</div>
 					<div class="description">
-						
+						calls all handlers mapped to <code>eventName/route</code>
 						
 						
 					</div>
@@ -1113,7 +1223,7 @@ var b = system.getObject( 'foo' ); //now contains 'bar'</pre>
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{String}</span> <b>eventName</b>
+									<span class="light fixedFont">{String}</span> <b>eventName/route</b>
 									
 								</dt>
 								<dd></dd>
@@ -1124,7 +1234,21 @@ var b = system.getObject( 'foo' ); //now contains 'bar'</pre>
 						
 						
 						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/dijon.System.html">dijon.System</a>}</span> </dd>
+							
+							</dl>
 						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">See:</dt>
+							
+								<dd><a href="../symbols/dijon.System.html#mapHandler">dijon.System#mapHandler</a></dd>
+							
+							</dl>
 						
 
 					<hr />
@@ -1304,7 +1428,7 @@ only the globally mapped one will be removed)</dd>
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Sun Feb 05 2012 13:17:17 GMT+0100 (CET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Sun Feb 05 2012 16:53:41 GMT+0100 (CET)
 		</div>
 	</body>
 </html>
