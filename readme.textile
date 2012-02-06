@@ -34,6 +34,7 @@ Dijon was specifically created to facilitate easy MVC(S) structure setup.
 (See Demo)
 
 h2. Basics
+
 Dijon consists out of one object: dijon.System. You can call it directly or instantiate it through <code>new</code>,
 whatever rocks your boat.
 
