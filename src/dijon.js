@@ -8,7 +8,7 @@ var dijon = {
 	 * @constant
 	 * @type String
 	 */
-	VERSION : '0.5.0'
+	VERSION : '0.5.1'
 };//dijon
 
 
