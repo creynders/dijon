@@ -117,38 +117,36 @@ dijon.System.prototype = {
 	/**
 	 * defines <code>outletName</code> as an injection point in <code>targetKey</code>for the object mapped to <code>sourceKey</code>
      * @example
-     * var o = {
-     *     user : undefined //inject
-     * }
-     * system.mapValue( 'o', o );
-     * system.mapSingleton( 'userModel', UserModel );
-     * system.mapOutlet( 'userModel', 'o', 'user' );
-     *
-     * var obj = system.getObject( 'o' );
+     system.mapSingleton( 'userModel', TestClassA );
+     var o = {
+         user : undefined //inject
+     }
+     system.mapOutlet( 'userModel', 'o', 'user' );
+     system.mapValue( 'o', o );
+
+     var obj = system.getObject( 'o' );
      * //obj.user holds a reference to the singleton instance of UserModel
      *
      * @example
-     * var o = {
-     *      userModel : undefined //inject
-     * }
-     * system.mapValue( 'o', o );
-     * system.mapSingleton( 'userModel', UserModel );
-     * system.mapOutlet( 'userModel', 'o' );
-     *
-     * var obj = system.getObject( 'o' );
+     system.mapSingleton( 'userModel', TestClassA );
+     var o = {
+         userModel : undefined //inject
+     }
+     system.mapOutlet( 'userModel', 'o' );
+     system.mapValue( 'o', o );
+
+     var obj = system.getObject( 'o' );
      * //obj.userModel holds a reference to the singleton instance of UserModel
      *
      * @example
-     *
-     * var o = {
-     *      userModel : undefined
-     * }
-     *
-     * system.mapSingleton( 'userModel', UserModel );
-     * system.mapOutlet( 'userModel' );
-     *
-     * system.injectInto( o );
-     *
+     system.mapSingleton( 'userModel', TestClassA );
+     system.mapOutlet( 'userModel' );
+     var o = {
+         userModel : undefined //inject
+     }
+     system.mapValue( 'o', o );
+
+     var obj = system.getObject( 'o' );
      * //o.userModel holds a reference to the singleton instance of userModel
      *
      * @param {String} sourceKey the key mapped to the object that will be injected
@@ -221,8 +219,8 @@ dijon.System.prototype = {
      * }
      * system.mapClass( 'o', SomeClass );
      *
-     * var s1 = system.getInstance( 'o' );
-     * var s2 = system.getInstance( 'o' );
+     * var s1 = system.getObject( 'o' );
+     * var s2 = system.getObject( 'o' );
      *
      * //s1 and s2 reference two different instances of SomeClass
      *
@@ -249,8 +247,8 @@ dijon.System.prototype = {
      * }
      * system.mapSingleton( 'o', SomeClass );
      *
-     * var s1 = system.getInstance( 'o' );
-     * var s2 = system.getInstance( 'o' );
+     * var s1 = system.getObject( 'o' );
+     * var s2 = system.getObject( 'o' );
      *
      * //s1 and s2 reference the same instance of SomeClass
      *
@@ -273,15 +271,14 @@ dijon.System.prototype = {
 	/**
      * Force instantiation of the class mapped to <code>key</code>, whether it was mapped as a singleton or not.
      * When a value was mapped, the value will be returned.
-     * TODO: should this be changed?
+     * TODO: should this last rule be changed?
      * @example
-     * var SomeClass = function(){
-     * }
-     * system.mapSingleton( 'o', SomeClass );
-     *
-     * var s1 = system.getInstance( 'o' );
-     * var s2 = system.instantiate( 'o' );
-     *
+     var SomeClass = function(){
+     }
+     system.mapClass( 'o', SomeClass );
+
+     var s1 = system.getObject( 'o' );
+     var s2 = system.getObject( 'o' );
      * //s1 and s2 reference different instances of SomeClass
      *
 	 * @param {String} key
