@@ -92,9 +92,9 @@ dijon.System.prototype = {
 	 */
 	_retrieveFromCacheOrCreate : function( key, overrideRules ){
         if( overrideRules == undefined ) overrideRules = false;
+        var output = null;
         if( this._mappings.hasOwnProperty( key ) ){
             var config = this._mappings[ key ];
-            var output = null;
             if( !overrideRules && config.isSingleton ){
                 if( config.object == null  ){
                     config.object = this._createAndSetupInstance( key, config.clazz );
@@ -103,11 +103,12 @@ dijon.System.prototype = {
             }else{
                 if( config.clazz ) output = this._createAndSetupInstance( key, config.clazz );
                 else{
-
+                    //TODO shouldn't this be null
+                    output = config.object;
                 }
             }
         }else{
-            throw new Error( 1020 );
+            throw new Error( 1000 );
         }
 		return output
 	},
@@ -123,7 +124,7 @@ dijon.System.prototype = {
      * system.mapSingleton( 'userModel', UserModel );
      * system.mapOutlet( 'userModel', 'o', 'user' );
      *
-     * var obj = system.getInstance( 'o' );
+     * var obj = system.getObject( 'o' );
      * //obj.user holds a reference to the singleton instance of UserModel
      *
      * @example
@@ -134,7 +135,7 @@ dijon.System.prototype = {
      * system.mapSingleton( 'userModel', UserModel );
      * system.mapOutlet( 'userModel', 'o' );
      *
-     * var obj = system.getInstance( 'o' );
+     * var obj = system.getObject( 'o' );
      * //obj.userModel holds a reference to the singleton instance of UserModel
      *
      * @example
@@ -175,7 +176,7 @@ dijon.System.prototype = {
 	 * @return {Object}
 	 */
 	getObject : function( key ){
-	    if( key == undefined ) throw new Error( 1010 )
+	    if( key == undefined ) throw new Error( 1020 )
 		return this._retrieveFromCacheOrCreate( key );
 	},
 
@@ -189,13 +190,14 @@ dijon.System.prototype = {
      * @return {dijon.System}
 	 */
 	mapValue : function( key, useValue ){
-	    if( key == undefined ) throw new Error( 1010 );
+	    if( key == undefined ) throw new Error( 1030 );
 		this._mappings[ key ]= {
             clazz : null,
             object : useValue,
             isSingleton : true
 		}
         if( this.autoMapOutlets ) this.mapOutlet( key );
+        if( this.hasMapping( key ) ) this.injectInto( useValue, key );
         return this;
 	},
 
@@ -208,7 +210,7 @@ dijon.System.prototype = {
 	 * @return {Boolean}
 	 */
 	hasMapping : function( key ){
-	    if( key == undefined ) throw new Error( 1010 );
+	    if( key == undefined ) throw new Error( 1040 );
 		return this._mappings.hasOwnProperty( key );
 	},
 
@@ -229,8 +231,8 @@ dijon.System.prototype = {
      * @return {dijon.System}
 	 */
 	mapClass : function( key, clazz ){
-	    if( key == undefined ) throw new Error( 1010 );
-	    if( key == undefined ) throw new Error( 1010 );
+	    if( key == undefined ) throw new Error( 1050 );
+	    if( key == undefined ) throw new Error( 1051 );
 		this._mappings[ key ]= {
 				clazz : clazz,
 				object : null,
@@ -257,8 +259,8 @@ dijon.System.prototype = {
      * @return {dijon.System}
      */
     mapSingleton : function( key, clazz ){
-        if( key == undefined ) throw new Error( 1010 );
-        if( clazz == undefined ) throw new Error( 1010 );
+        if( key == undefined ) throw new Error( 1060 );
+        if( clazz == undefined ) throw new Error( 1061 );
         this._mappings[ key ] = {
             clazz : clazz,
             object : null,
@@ -269,7 +271,9 @@ dijon.System.prototype = {
     },
 
 	/**
-     * Force instantiation of the object mapped to <code>key</code>, whether it was mapped as a singleton or not.
+     * Force instantiation of the class mapped to <code>key</code>, whether it was mapped as a singleton or not.
+     * When a value was mapped, the value will be returned.
+     * TODO: should this be changed?
      * @example
      * var SomeClass = function(){
      * }
@@ -284,7 +288,7 @@ dijon.System.prototype = {
 	 * @return {Object}
 	 */
 	instantiate : function( key ){
-        if( key == undefined ) throw new Error( 1010 );
+        if( key == undefined ) throw new Error( 1070 );
 		return this._retrieveFromCacheOrCreate( key, true );
 	},
 
@@ -313,7 +317,7 @@ dijon.System.prototype = {
      * @return {dijon.System}
 	 */
 	injectInto : function( instance, key ){
-        if( instance == undefined ) throw new Error( 1010 );
+        if( instance == undefined ) throw new Error( 1080 );
         var o = [];
         if( this._outlets.hasOwnProperty( 'global' ) ) o.push( this._outlets[ 'global' ] );
         if( key != undefined && this._outlets.hasOwnProperty( key ) ) o.push( this._outlets[ key ] );
@@ -336,7 +340,7 @@ dijon.System.prototype = {
      * @return {dijon.System}
 	 */
 	unmap : function( key ){
-        if( key == undefined ) throw new Error( 1010 );
+        if( key == undefined ) throw new Error( 1090 );
 		delete this._mappings[ key ];
 
         return this;
@@ -350,8 +354,8 @@ dijon.System.prototype = {
 	 * @see dijon.System#addOutlet
 	 */
 	unmapOutlet : function( target, outlet ){
-        if( target == undefined ) throw new Error( 1010 );
-        if( outlet == undefined ) throw new Error( 1010 );
+        if( target == undefined ) throw new Error( 1100 );
+        if( outlet == undefined ) throw new Error( 1101 );
 		delete this._outlets[ target ][ outlet ];
 
         return this;
@@ -449,7 +453,7 @@ dijon.System.prototype = {
      * @see dijon.System#unmapHandler
      */
     mapHandler : function( eventName, key, handler, oneShot, passEvent ){
-        if( eventName == undefined ) throw new Error( 1010 );
+        if( eventName == undefined ) throw new Error( 1110 );
         if( key == undefined ) key = 'global';
         if( handler == undefined ) handler = eventName;
         if( oneShot == undefined ) oneShot = false;
@@ -480,7 +484,7 @@ dijon.System.prototype = {
      * @see dijon.System#mapHandler
      */
     unmapHandler : function( eventName, key, handler  ){
-        if( eventName == undefined ) throw new Error( 1010 );
+        if( eventName == undefined ) throw new Error( 1120 );
         if( key == undefined ) key = 'global';
         if( handler == undefined ) handler = eventName;
         if( this._handlers.hasOwnProperty( eventName ) && this._handlers[ eventName ].hasOwnProperty( key ) ){
@@ -503,6 +507,7 @@ dijon.System.prototype = {
      * @see dijon.System#mapHandler
      */
     notify : function( eventName ){
+        if( eventName == undefined ) throw new Error( 1130 );
         var argsWithEvent = Array.prototype.slice.call( arguments );
         var argsClean = argsWithEvent.slice(1);
         if( this._handlers.hasOwnProperty( eventName ) ){
