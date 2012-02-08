@@ -47,7 +47,6 @@ dijon.System = function(){
      *
      * //o now has a member 'userModel' which holds a reference to the singleton instance
      * //of UserModel
-     * @property
      * @type Boolean
      * @default true
      */
@@ -65,7 +64,6 @@ dijon.System = function(){
      * system.mapSingleton( 'userModel', UserModel );
      * system.injectInto( o ):
      * //o.userModel now holds a reference to the singleton instance of UserModel
-     * @property
      * @type Boolean
      * @default false
      */
@@ -361,16 +359,16 @@ dijon.System.prototype = {
     /**
      * maps a handler for an event/route.<br/>
      * @example
-     * var userView = {
-     *      showUserProfile : function(){
-     *          //do stuff
-     *      }
-     * }
-     * system.mapValue( 'userView', userView );
-     * <strong>system.mapHandler( 'user/profile', 'userView', 'showUserProfile' );</strong>
-     * system.notify( 'user/profile' );
-     *
-     * //userView.showUserProfile is called
+     var hasExecuted = false;
+     var userView = {
+          showUserProfile : function(){
+              hasExecuted = true;
+          }
+     }
+     system.mapValue( 'userView', userView );
+     system.mapHandler( 'user/profile', 'userView', 'showUserProfile' );
+     system.notify( 'user/profile' );
+     //hasExecuted is true
      * @example
      * var userView = {
      *      showUserProfile : function(){
@@ -379,17 +377,6 @@ dijon.System.prototype = {
      * }
      * system.mapValue( 'userView', userView );
      * <strong>system.mapHandler( 'showUserProfile', 'userView' );</strong>
-     * system.notify( 'showUserProfile' );
-     *
-     * //userView.showUserProfile is called
-     * @example
-     * var userView = {
-     *      showUserProfile : function(){
-     *          //do stuff
-     *      }
-     * }
-     * system.mapValue( 'userView', userView );
-     * <strong>system.mapHandler( 'showUserProfile' );</strong>
      * system.notify( 'showUserProfile' );
      *
      * //userView.showUserProfile is called
@@ -436,8 +423,8 @@ dijon.System.prototype = {
      *
      * //userView.showUserProfile is called and the route/eventName is passed to the handler
      * @param {String} eventName/route
-     * @param {String} [key=undefined] If <code>key</code> is <code>undefined</code> the handler will be mapped for all
-     * mapped objects. <strong>USE WITH EXTREME CAUTION</strong>
+     * @param {String} [key=undefined] If <code>key</code> is <code>undefined</code> the handler will be called without
+     * scope.
      * @param {String|Function} [handler=eventName] If <code>handler</code> is <code>undefined</code> the value of
      * <code>eventName</code> will be used as the name of the member holding the reference to the to-be-called function.
      * <code>handler</code> accepts either a string, which will be used as the name of the member holding the reference

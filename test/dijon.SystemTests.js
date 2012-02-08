@@ -167,20 +167,44 @@
         var b = system.getObject( 'b' );
         strictEqual( b.bar, undefined );
     })
-    test( 'addHandler: simple use', function(){
+    test( 'mapHandler: event, key and handlerName given', function(){
         var hasExecuted = false;
-        var c = function(){
-            this.loginStart = function(){
-                hasExecuted = true;
-            }
+        var userView = {
+             showUserProfile : function(){
+                 hasExecuted = true;
+             }
         }
-        system.mapSingleton( 'a', c );
-        system.mapHandler( 'loginStart', 'a' )
-        system.notify( 'loginStart' );
+        system.mapValue( 'userView', userView );
+        system.mapHandler( 'user/profile', 'userView', 'showUserProfile' );
+        system.notify( 'user/profile' );
+
+        ok( hasExecuted );
+    })
+    test( 'mapHandler: event and key given', function(){
+        var hasExecuted = false;
+        var userView = {
+             showUserProfile : function(){
+                 hasExecuted = true;
+             }
+        }
+        system.mapValue( 'userView', userView );
+        system.mapHandler( 'showUserProfile', 'userView' );
+        system.notify( 'showUserProfile' );
+
+        ok( hasExecuted );
+    })
+    test( 'mapHandler: event and handler given', function(){
+        var hasExecuted = false;
+        var showUserProfile = function(){
+             hasExecuted = true;
+        }
+        system.mapHandler( 'showUserProfile', null, showUserProfile );
+        system.notify( 'showUserProfile' );
+
         ok( hasExecuted );
     })
 
-    test( 'addHandler: oneShot', function(){
+    test( 'mapHandler: oneShot', function(){
         var hasExecuted = 0;
         var c = function(){
             this.loginStart = function(){
@@ -196,20 +220,6 @@
         system.notify( 'loginStart' );
         ok( hasExecuted==1);
     })
-
-    test( 'addHandler: diffreten handler name', function(){
-         var hasExecuted = false;
-         var c = function(){
-             this.onLoginStart = function(){
-                 hasExecuted = true;
-             }
-         }
-         system.mapSingleton( 'a', c );
-         system.mapHandler( 'loginStart', 'a', 'onLoginStart' )
-         system.notify( 'loginStart' );
-         ok( hasExecuted );
-     })
-
 
     test( 'unmapHandler: simple use', function(){
         var hasExecuted = 0;
