@@ -15,12 +15,14 @@ Dependency Injection of Javascript Objects N... umm, never found a good fit for 
 ## Contact
 
 You can contact me on Twitter with questions/remarks : [@camillereynders](http://twitter.com/camillereynders)
+
 or send me a mail at:
 info [at] creynders [dot] be
 
 ## Resources
 
 [API documentation](http://creynders.github.com/dijon-framework/docs)
+
 [TodoMVC Demo](https://github.com/creynders/todomvc/tree/master/architecture-examples/dijon)
 
 ## FEATURES
