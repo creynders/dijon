@@ -51,6 +51,7 @@ h2. Examples
 "TodoMVC demo":https://github.com/creynders/todomvc/tree/master/architecture-examples/dijon
 
 h3. Simple stuff
+<pre>
 <code>
 	//create a dijon.System instance
 	var system = new dijon.System();
@@ -75,9 +76,11 @@ h3. Simple stuff
 	//as well
 	system.notify( 'Context#startup' );
 </code>
-	
+</pre>
+
 h3. Dynamic and automapping
 Dijon allows for extremely flexible and dynamic mappings. Hey, it's JavaScript... 
+<pre>
 <code>
 	//we can map 'global' outlets
 	system.mapOutlet( 'userModel' );
@@ -110,3 +113,4 @@ Dijon allows for extremely flexible and dynamic mappings. Hey, it's JavaScript..
 	//foo.someObject now holds a reference to the singleton instance of SomeClass
 
 </code>
+</pre>
