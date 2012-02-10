@@ -39,7 +39,7 @@ info [at] creynders [dot] be
 Dijon was specifically created to facilitate easy MVC(S) structure setup.
 (See Demo)
 
-* Instead of IOC the Service Locator pattern can be used as well.
+* Instead of DI the Service Locator pattern can be used as well.
 
 ## Basics
 
