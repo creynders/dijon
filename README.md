@@ -31,17 +31,12 @@ info [at] creynders [dot] be
 ## FEATURES
 
 * Framework independent: doesn't rely on any other 3rd party frameworks
-
 * Framework integration: easily used on top of other frameworks
-
 * Coding style independent: can be used in class-based or module pattern style.
-
 * Routing: flexible enough to be used as a router
-
 * MVC: although there are no specific classes or functions that enforce an MVC structure on your code,
 Dijon was specifically created to facilitate easy MVC(S) structure setup.
 (See Demo)
-
 * Instead of DI the Service Locator pattern can be used as well.
 
 
@@ -54,11 +49,12 @@ There are three different but closely related entities that can be registered wi
 
 * Objects, functions and "classes" can be registered to be lazily instantiated or called, either as a factory
 or a singleton (a "good" singleton)
-
 * Outlets are injection points, they define what objects should be injected into which receiving objects
-
 * Handlers are callbacks that are registered to be called when a certain event (or route if you prefer) is
 sent through the system.
+
+Right after the dependencies of an object have been satisfied, the system will look for a ```setup``` method and automatically call it.
+(Robotlegs equivalent of the ```PostConstruct``` meta tag or the ```Mediator#onRegister``` method)
 
 
 ## Examples
