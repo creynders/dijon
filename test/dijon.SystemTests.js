@@ -19,6 +19,7 @@
 
     //TODO: test Injectro#setValue
 
+
     module( 'dijon.system', {
         setup : function(){
             system = new dijon.System();
@@ -198,7 +199,7 @@
         var showUserProfile = function(){
              hasExecuted = true;
         }
-        system.mapHandler( 'showUserProfile', null, showUserProfile );
+        system.mapHandler( 'showUserProfile', undefined, showUserProfile );
         system.notify( 'showUserProfile' );
 
         ok( hasExecuted );
@@ -212,7 +213,7 @@
             }
         }
         system.mapSingleton( 'a', c );
-        system.mapHandler( 'loginStart', 'a', null, true );
+        system.mapHandler( 'loginStart', 'a', undefined, true );
         system.notify( 'loginStart' );
         system.notify( 'loginStart' );
         system.notify( 'loginStart' );
