@@ -12,6 +12,10 @@ are called and what objects should be passed on to other objects (that's the inj
 Dijon is a city in France. They make the best mustard. And I can pretend it's an acronym for
 Dependency Injection of Javascript Objects N... umm, never found a good fit for 'N'.
 
+## Status
+
+Dijon is currently v0.5.2 and stable to use
+
 
 ## Contact
 
