@@ -74,6 +74,14 @@
          * @default false
          */
         this.autoMapOutlets = false;
+
+        /**
+         * The name of the method that will be called for all instances, right after injection has occured.
+         * @type String
+         * @default 'setup'
+         */
+        this.postInjectionHook = 'setup';
+
     };//dijon.System
 
     dijon.System.prototype = {
@@ -370,8 +378,8 @@
                     }
                 }
             }
-            if ( "setup" in instance ) {
-                instance.setup.call( instance );
+            if ( typeof instance[ this.postInjectionHook ] === 'function' ) {
+                instance[ this.postInjectionHook ].call( instance );
             }
 
             return this;
