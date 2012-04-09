@@ -2,25 +2,20 @@
 module.exports = function(grunt) {
   "use strict";
 
-  var pkg = {
-      name: 'dijon',
-      version : '0.5.2'
-  };
-
-  var files = {
-      full : 'bin/' + pkg.name + '-' + pkg.version + '.js',
-      min : 'bin/' + pkg.name + '-' + pkg.version + '.min' + '.js'
-  };
-
   // Project configuration.
   grunt.initConfig({
+    pkg : {
+        name: 'dijon',
+        version : '0.5.2',
+        url : 'https://github.com/creynders/dijon-framework',
+        author : 'Camille Reynders'
+    },
     meta: {
-      version: pkg.version,
-      banner: '/*! PROJECT_NAME - v<%= meta.version %> - ' +
+      banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-        '* http://PROJECT_WEBSITE/\n' +
+        '* <%= pkg.url %>/\n' +
         '* Copyright (c) <%= grunt.template.today("yyyy") %> ' +
-        'YOUR_NAME; Licensed MIT */'
+        '<%= pkg.author %>; Licensed MIT */'
     },
     lint: {
       files: ['grunt.js', 'src/**/*.js']
@@ -28,16 +23,10 @@ module.exports = function(grunt) {
     qunit: {
       index: ['test/index.html']
     },
-    concat: {
-      dist: {
-        src: ['<banner:meta.banner>', '<file_strip_banner:src/FILE_NAME.js>'],
-        dest: files.full
-      }
-    },
     min: {
       dist: {
-        src: ['<banner:meta.banner>', '<config:concat.dist.dest>'],
-        dest: files.min
+        src: ['<banner:meta.banner>', '<file_strip_banner:src/<%= pkg.name %>.js>'],
+        dest: 'bin/<%= pkg.name %>-<%= pkg.version %>.min.js'
       }
     },
     watch: {
