@@ -79,6 +79,7 @@
          * The name of the method that will be called for all instances, right after injection has occured.
          * @type String
          * @default 'setup'
+         * @since v0.5.3
          */
         this.postInjectionHook = 'setup';
 
