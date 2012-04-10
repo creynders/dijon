@@ -4,18 +4,13 @@ module.exports = function(grunt) {
 
   // Project configuration.
   grunt.initConfig({
-    pkg : {
-        name: 'dijon',
-        version : '0.5.2',
-        url : 'https://github.com/creynders/dijon-framework',
-        author : 'Camille Reynders'
-    },
+    pkg: '<json:package.json>',
     meta: {
       banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
         '* <%= pkg.url %>/\n' +
         '* Copyright (c) <%= grunt.template.today("yyyy") %> ' +
-        '<%= pkg.author %>; Licensed MIT */'
+        '<%= pkg.author %>; Licensed <%= pkg.licenses[0].type %> */'
     },
     lint: {
       files: ['grunt.js', 'src/**/*.js']
