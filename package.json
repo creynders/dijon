@@ -17,9 +17,6 @@
       "url": "http://github.com/creynders/dijon/blob/master/LICENSE"
     }
   ],
-  "main": "src/grunt",
-  "bin": "bin/grunt",
-  "preferGlobal": true,
   "keywords": [
     "dijon",
     "di",
