@@ -14,7 +14,7 @@
          * @constant
          * @type String
          */
-        VERSION:'0.5.2'
+        VERSION:'0.5.3'
     };//dijon
 
 
