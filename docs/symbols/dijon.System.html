@@ -191,8 +191,6 @@ ul.inheritsList
 	
 	<li><i><a href="../symbols/_global_.html">_global_</a></i></li>
 	
-	<li><a href="../symbols/dijon.html">dijon</a></li>
-	
 	<li><a href="../symbols/dijon.System.html">dijon.System</a></li>
 	
 </ul>
@@ -266,6 +264,16 @@ ul.inheritsList
 								<div class="description">Enables the automatic mapping of outlets for mapped values, singletons and classes
 When this is true any value, singleton or class that is mapped will automatically be mapped as a global outlet
 using the value of <code>key</code> as outlet name</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/dijon.System.html#postInjectionHook">postInjectionHook</a></b>
+								</div>
+								<div class="description">The name of the method that will be called for all instances, right after injection has occured.</div>
 							</td>
 						</tr>
 					
@@ -496,6 +504,40 @@ system.injectInto( o ):
 							<dt class="heading">Default Value:</dt>
 							<dd>
 								false
+							</dd>
+							</dl>
+						
+
+					<hr />
+				
+					<a name="postInjectionHook"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{String}</span>
+					<b>postInjectionHook</b>
+					
+					</div>
+					<div class="description">
+						The name of the method that will be called for all instances, right after injection has occured.
+						
+						
+					</div>
+					
+					
+
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Since:</dt>
+								<dd>v0.5.3</dd>
+							</dl>
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Default Value:</dt>
+							<dd>
+								'setup'
 							</dd>
 							</dl>
 						
@@ -738,12 +780,12 @@ TODO: should this last rule be changed?
 					
 					
 					
-					<pre class="code">     var SomeClass = function(){
-     }
-     system.mapClass( 'o', SomeClass );
+					<pre class="code">         var SomeClass = function(){
+         }
+         system.mapClass( 'o', SomeClass );
 
-     var s1 = system.getObject( 'o' );
-     var s2 = system.getObject( 'o' );
+         var s1 = system.getObject( 'o' );
+         var s2 = system.getObject( 'o' );
 //s1 and s2 reference different instances of SomeClass</pre>
 					
 					
@@ -851,16 +893,16 @@ var s2 = system.getObject( 'o' );
 					
 					
 					
-					<pre class="code">var userView = {
-     showUserProfile : function(){
-         //do stuff
-     }
-}
-system.mapValue( 'userView', userView );
-<strong>system.mapHandler( 'user/profile', 'userView', 'showUserProfile' );</strong>
-system.notify( 'user/profile' );
-
-//userView.showUserProfile is called</pre>
+					<pre class="code">         var hasExecuted = false;
+         var userView = {
+         showUserProfile : function(){
+         hasExecuted = true;
+         }
+         }
+         system.mapValue( 'userView', userView );
+         system.mapHandler( 'user/profile', 'userView', 'showUserProfile' );
+         system.notify( 'user/profile' );
+         //hasExecuted is true</pre>
 					
 					<pre class="code">var userView = {
      showUserProfile : function(){
@@ -869,17 +911,6 @@ system.notify( 'user/profile' );
 }
 system.mapValue( 'userView', userView );
 <strong>system.mapHandler( 'showUserProfile', 'userView' );</strong>
-system.notify( 'showUserProfile' );
-
-//userView.showUserProfile is called</pre>
-					
-					<pre class="code">var userView = {
-     showUserProfile : function(){
-         //do stuff
-     }
-}
-system.mapValue( 'userView', userView );
-<strong>system.mapHandler( 'showUserProfile' );</strong>
 system.notify( 'showUserProfile' );
 
 //userView.showUserProfile is called</pre>
@@ -942,8 +973,8 @@ system.notify( 'user/profile' );
 									<span class="light fixedFont">{String}</span> <b>key</b>
 									<i>Optional, Default: undefined</i>
 								</dt>
-								<dd>If <code>key</code> is <code>undefined</code> the handler will be mapped for all
-mapped objects. <strong>USE WITH EXTREME CAUTION</strong></dd>
+								<dd>If <code>key</code> is <code>undefined</code> the handler will be called without
+scope.</dd>
 							
 								<dt>
 									<span class="light fixedFont">{String|Function}</span> <b>handler</b>
@@ -1009,34 +1040,34 @@ unmapped</dd>
 					
 					
 					
-					<pre class="code">     system.mapSingleton( 'userModel', TestClassA );
-     var o = {
+					<pre class="code">         system.mapSingleton( 'userModel', TestClassA );
+         var o = {
          user : undefined //inject
-     }
-     system.mapOutlet( 'userModel', 'o', 'user' );
-     system.mapValue( 'o', o );
+         }
+         system.mapOutlet( 'userModel', 'o', 'user' );
+         system.mapValue( 'o', o );
 
-     var obj = system.getObject( 'o' );
+         var obj = system.getObject( 'o' );
 //obj.user holds a reference to the singleton instance of UserModel</pre>
 					
-					<pre class="code">     system.mapSingleton( 'userModel', TestClassA );
-     var o = {
+					<pre class="code">         system.mapSingleton( 'userModel', TestClassA );
+         var o = {
          userModel : undefined //inject
-     }
-     system.mapOutlet( 'userModel', 'o' );
-     system.mapValue( 'o', o );
+         }
+         system.mapOutlet( 'userModel', 'o' );
+         system.mapValue( 'o', o );
 
-     var obj = system.getObject( 'o' );
+         var obj = system.getObject( 'o' );
 //obj.userModel holds a reference to the singleton instance of UserModel</pre>
 					
-					<pre class="code">     system.mapSingleton( 'userModel', TestClassA );
-     system.mapOutlet( 'userModel' );
-     var o = {
+					<pre class="code">         system.mapSingleton( 'userModel', TestClassA );
+         system.mapOutlet( 'userModel' );
+         var o = {
          userModel : undefined //inject
-     }
-     system.mapValue( 'o', o );
+         }
+         system.mapValue( 'o', o );
 
-     var obj = system.getObject( 'o' );
+         var obj = system.getObject( 'o' );
 //o.userModel holds a reference to the singleton instance of userModel</pre>
 					
 					
@@ -1427,7 +1458,7 @@ only the globally mapped one will be removed)</dd>
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Mon Feb 06 2012 09:23:28 GMT+0100 (CET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Tue Apr 10 2012 09:17:23 GMT+0200 (CEST)
 		</div>
 	</body>
 </html>
