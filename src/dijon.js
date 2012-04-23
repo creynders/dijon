@@ -221,7 +221,7 @@
             if ( this.autoMapOutlets ) {
                 this.mapOutlet( key );
             }
-            if ( this.hasMapping( key ) ) {
+            if ( this.hasMapping( key )) {
                 this.injectInto( useValue, key );
             }
             return this;
@@ -361,27 +361,28 @@
             if ( typeof instance === 'undefined' ) {
                 throw new Error( 1080 );
             }
-            var o = [];
-            if ( this._outlets.hasOwnProperty( 'global' ) ) {
-                o.push( this._outlets[ 'global' ] );
-            }
-            if ( typeof key !== 'undefined' && this._outlets.hasOwnProperty( key ) ) {
-                o.push( this._outlets[ key ] );
-            }
-            for ( var i in o ) {
-                var l = o [ i ];
-                for ( var outlet in l ) {
-                    var source = l[ outlet ];
-                    //must be "in" [!]
-                    if ( !this.strictInjections || outlet in instance ) {
-                        instance[ outlet ] = this.getObject( source );
-                    }
-                }
-            }
-            if ( "setup" in instance ) {
-                instance.setup.call( instance );
-            }
-
+			if( ( typeof instance === 'object' ) ){
+				var o = [];
+				if ( this._outlets.hasOwnProperty( 'global' ) ) {
+					o.push( this._outlets[ 'global' ] );
+				}
+				if ( typeof key !== 'undefined' && this._outlets.hasOwnProperty( key ) ) {
+					o.push( this._outlets[ key ] );
+				}
+				for ( var i in o ) {
+					var l = o [ i ];
+					for ( var outlet in l ) {
+						var source = l[ outlet ];
+						//must be "in" [!]
+						if ( !this.strictInjections || outlet in instance ) {
+							instance[ outlet ] = this.getObject( source );
+						}
+					}
+				}
+				if ( "setup" in instance ) {
+					instance.setup.call( instance );
+				}
+			}
             return this;
         },
 
