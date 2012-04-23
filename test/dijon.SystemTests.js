@@ -32,13 +32,30 @@
     test( 'mapSingleton', function(){
         system.mapSingleton( 'a', TestClassA );
         ok( system.hasMapping( 'a' ) );
-    })
+    });
 
-    test( 'mapValue', function(){
+    test( 'mapValue, constructor function', function(){
         var a = new TestClassA();
         system.mapValue( 'a', a );
         ok( system.hasMapping( 'a' ) );
-    })
+    });
+
+	test( 'mapValue, generic object: dependencies should be satisified', function(){
+		var foo = {};
+		system.mapValue( 'foo', foo );
+		var a = {
+			foo : undefined
+		};
+		system.mapOutlet( 'foo', 'a', 'foo' );
+		system.mapValue( 'a', a );
+		strictEqual( a.foo, foo );
+	} );
+
+	test( 'mapValue, string', function(){
+		var a = 'mofo';
+		system.mapValue( 'a', a );
+		strictEqual( system.getObject( 'a'), a );
+	} );
 
     test( 'mapClass: hasMapping', function(){
         system.mapClass( 'a', function(){} );
