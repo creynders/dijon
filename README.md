@@ -14,7 +14,7 @@ Dependency Injection of Javascript Objects N... umm, never found a good fit for 
 
 ## Status
 
-Dijon is currently v0.5.2 and stable to use
+Dijon is stable to use
 
 
 ## Contact
