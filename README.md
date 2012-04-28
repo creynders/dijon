@@ -29,7 +29,7 @@ info [at] creynders [dot] be
 
 [API documentation](http://creynders.github.com/dijon-framework/docs)
 
-[TodoMVC Demo - source](https://github.com/addyosmani/todomvc/tree/gh-pages/labs/architecture-examples/dijon)
+[TodoMVC Demo - source](https://github.com/addyosmani/todomvc/tree/master/labs/architecture-examples/dijon)
 
 [TodoMVC Demo - live](http://creynders.github.com/todomvc/architecture-examples/dijon/)
 
@@ -64,9 +64,9 @@ Right after the dependencies of an object have been satisfied, the system will l
 
 __One major advantage of Dijon is the ability to centralize ALL dependency configuration (wiring)__. One of the problems that IOC/DI frameworks aim to solve is dependency management. Class A depends on class B depends on class C etc. This easily leads to all kinds of difficulties: when to instantiate what class, how do you pass the instance to the dependent actors, memory leaks of orphaned instances, …
 
-In Dijon the tiers communicate with each other through events and actors expose “outlets” in which other actors get injected. __This means that these objects are completely unaware of each others life-cycles and just know one thing: “when I need it, it’ll be there”__. What happens before and after their use of a specific object is something they don’t have to care about. At all.
+In Dijon the tiers communicate with each other through events and actors expose “outlets” in which other actors get injected. __This means that these objects are completely unaware of each others life-cycles and just know one thing: “when I need it, it’ll be there”__. What happens before and after their use of a specific actor is something they don’t have to care about. At all.
 
-This leads to an __extremely flexible setup with completely decoupled objects and centralized wiring__. One of the benefits of having a centralized dependency configuration is that you always know where to look and add things. When you create a new object, all you need to do is make sure its source file is included and then wire it up in your config file, where you have a nice overview of all the objects and how they relate and communicate with each other.
+This leads to an __extremely flexible setup with completely decoupled objects and centralized wiring__. One of the benefits of having a centralized dependency configuration is that you always know where to look and add things. When you create a new actor, all you need to do is make sure its source file is included and then wire it up in your config file, where you have a nice overview of all the actors and how they relate and communicate with each other.
 
 ## Examples
 
