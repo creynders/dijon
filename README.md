@@ -29,7 +29,7 @@ info [at] creynders [dot] be
 
 [API documentation](http://creynders.github.com/dijon-framework/docs)
 
-[TodoMVC Demo - source](https://github.com/addyosmani/todomvc/tree/master/labs/architecture-examples/dijon)
+[TodoMVC Demo - source](https://github.com/addyosmani/todomvc/tree/gh-pages/labs/architecture-examples/dijon)
 
 [TodoMVC Demo - live](http://creynders.github.com/todomvc/architecture-examples/dijon/)
 
