@@ -11,10 +11,10 @@
     var dijon = {
         /**
          * framework version number
-         * @constant
+         * @constant @@version
          * @type String
          */
-        VERSION:'0.5.3'
+        VERSION:'@@version'
     };//dijon
 
 

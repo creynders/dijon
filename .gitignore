@@ -1,3 +1,5 @@
 *.komodoproject
 .idea
 *-old.*
+node_modules
+.grunt

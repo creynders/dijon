@@ -1,0 +1,26 @@
+{
+    "forin"   :true,
+    "noarg"   :true,
+    "noempty" :true,
+    "eqeqeq"  :true,
+    "bitwise" :true,
+    "strict"  :true,
+    "undef"   :true,
+    "curly"   :true,
+    "maxerr"  :50,
+    "laxbreak":true,
+    "laxcomma":true,
+    "strict"  :true,
+    "globals" : {
+        "describe"  :true,
+        "it"        :true,
+        "expect"    :true,
+        "jasmine"   :true,
+        "runs"      :true,
+        "waits"     :true,
+        "beforeEach":true,
+        "afterEach" :true,
+        "dijon"     :true,
+        "console"   :true
+	}
+}
