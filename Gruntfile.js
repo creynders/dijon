@@ -1,74 +1,76 @@
 /*global module:false*/
-module.exports = function (grunt) {
-    "use strict";
+module.exports = function(grunt){
+	"use strict";
 
-    // Project configuration.
-    grunt.initConfig({
-        pkg: grunt.file.readJSON('package.json'),
-        uglify: {
-            options: {
-                banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' + '<%= grunt.template.today("yyyy-mm-dd") %> ' + 'Copyright (c) <%= grunt.template.today("yyyy") %> ' + '<%= pkg.author %>; Licensed <%= pkg.licenses[0].type %> */'
-            },
-            build: {
-                src: 'src/<%= pkg.name %>.js',
-                dest: 'bin/<%= pkg.name %>-<%= pkg.version %>.min.js'
-            }
-        },
-        watch: {
-            files: '<config:lint.files>',
-            tasks: 'lint test'
-        },
-        jshint: {
-            all: ['Gruntfile.js', 'src/**/*.js', 'specs/**/*.js'],
-            options: {
-                jshintrc: '.jshintrc'
-            }
-        },
-        concat: {
-            source: {
-                src: ['src/**/*.js'],
-                dest: 'bin/<%= pkg.name %>-<%= pkg.version %>.js'
-            }
-        },
-        replace: {
-            dist: {
-                options: {
-                    variables: {
-                        'version': '<%= pkg.version %>'
-                    }
-                },
-                src: ['bin/**/*<%= pkg.version %>*.js']
-            }
-        },
-        jasmine: {
-            source: ['src/**/*.js'],
-            dist: [ 'bin/*<%= pkg.version %>.min.js' ],
-            options: {
-                specs: ['specs/**/*.js']
-            }
-        },
-        jsdoc: {
-            dist: {
-                src: ['src/*.js'],
-                options: {
-                    destination: 'docs',
-                    private: false
-                }
-            }
-        }
-    });
+	var pkgConfig = grunt.file.readJSON('package.json');
+	pkgConfig.version = grunt.file.readJSON('version.json').version;
+	// Project configuration.
+	grunt.initConfig({
+		pkg     : pkgConfig,
+		uglify  : {
+			options : {
+				banner : '/*! <%= pkg.name %> - v<%= pkg.version %> - ' + '<%= grunt.template.today("yyyy-mm-dd") %> ' + 'Copyright (c) <%= grunt.template.today("yyyy") %> ' + '<%= pkg.author %>; Licensed <%= pkg.licenses[0].type %> */'
+			},
+			build   : {
+				src  : 'dist/<%= pkg.name %>.js',
+				dest : 'dist/<%= pkg.name %>.min.js'
+			}
+		},
+		watch   : {
+			files : '<config:lint.files>',
+			tasks : 'lint test'
+		},
+		jshint  : {
+			all     : ['Gruntfile.js', 'src/**/*.js', 'specs/**/*.js'],
+			options : {
+				jshintrc : '.jshintrc'
+			}
+		},
+		concat  : {
+			source : {
+				src  : ['src/**/*.js'],
+				dest : 'dist/<%= pkg.name %>.js'
+			}
+		},
+		jasmine : {
+			source  : ['src/**/*.js'],
+			dist    : ['bin/*.min.js'],
+			options : {
+				specs : ['specs/**/*.js']
+			}
+		},
+		jsdoc   : {
+			dist : {
+				src     : ['src/*.js'],
+				options : {
+					destination : 'docs',
+					private     : false
+				}
+			}
+		},
+		version : {
+			defaults : {
+				src : [
+					'package.json', 'bower.json', 'src/<%= pkg.name %>.js'
+				]
+			}
+		},
+		clean:{
+			dist: ['dist']
+		}
+	});
 
-    grunt.loadNpmTasks('grunt-jsdoc');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-jasmine');
-    grunt.loadNpmTasks('grunt-replace');
+	grunt.loadNpmTasks('grunt-jsdoc');
+	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-contrib-jasmine');
+	grunt.loadNpmTasks('grunt-version');
+	grunt.loadNpmTasks('grunt-contrib-clean');
 
-    // Default task.
-    grunt.registerTask('test', ['jshint', 'jasmine:source']);
-    grunt.registerTask('consolidate', ['concat', 'uglify', 'replace']);
-    grunt.registerTask('build', ['test', 'consolidate']);
-    grunt.registerTask('docs', ['jsdoc']);
-    grunt.registerTask('travis', ['jshint', 'jasmine']);
+	// Default task.
+	grunt.registerTask('test', ['jasmine:source']);
+	grunt.registerTask('build', ['version', 'test', 'clean:dist', 'concat', 'uglify']);
+	grunt.registerTask('docs', ['jsdoc']);
+	grunt.registerTask('travis', ['jshint', 'jasmine']);
 };

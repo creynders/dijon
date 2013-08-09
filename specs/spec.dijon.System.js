@@ -52,7 +52,7 @@ describe( "dijon.System", function(){
             expect(system.postInjectionHook ).toEqual('setup');
         });
         it('should throw an error when trying to retrieve unmapped',function(){
-            expect(function(){system.getObject(keyA)}).toThrow(new Error(1000));
+            expect(function(){system.getObject(keyA)}).toThrow('no mapping found for this key');
         });
     });
     describe('a mapped singleton',function(){
@@ -285,18 +285,5 @@ describe( "dijon.System", function(){
             system.notify(event);
             expect(called ).toBeFalsy();
         });
-    });
-    describe('loose injections', function(){
-//        beforeEach(function(){
-//            system.strictInjections = false;
-//            system.mapSingleton(keyB,SupportClassB);
-//            system.mapOutlet(keyB);
-//            var b = system.getObject(keyB);
-//        });
-//        it('should allow for injection without mapping an outlet', function(){
-//            system.mapSingleton(keyA,SupportClassA);
-//            var instance = system.getObject(keyA);
-//            expect(instance[keyB]).toBeInstanceOf(SupportClassB);
-//        });
     });
 });

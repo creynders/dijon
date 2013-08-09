@@ -1,0 +1,14 @@
+{
+  "name": "dijon",
+  "version": "0.6.0",
+  "main": ["dist/dijon.js", "dist/dijon.min.js"],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "specs",
+    "src"
+  ]
+}
