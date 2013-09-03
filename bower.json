@@ -1,6 +1,6 @@
 {
   "name": "dijon",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "main": ["dist/dijon.js", "dist/dijon.min.js"],
   "ignore": [
     "**/.*",

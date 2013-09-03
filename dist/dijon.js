@@ -39,7 +39,7 @@
          * framework version number
          * @type String
          */
-        version:'0.6.0'
+        version:'0.6.1'
     };//dijon
 
 
