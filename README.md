@@ -27,7 +27,7 @@ info [at] creynders [dot] be
 
 ## Resources
 
-[API documentation](http://creynders.github.com/dijon-framework/docs)
+[API documentation](http://creynders.github.com/dijon/docs)
 
 [TodoMVC Demo - source](https://github.com/addyosmani/todomvc/tree/gh-pages/labs/architecture-examples/dijon)
 
