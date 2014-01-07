@@ -135,3 +135,7 @@ var foo = {};
 system.injectInto( foo );
 //foo.someObject now holds a reference to the singleton instance of SomeClass
 ```
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/creynders/dijon/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
