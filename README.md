@@ -1,3 +1,5 @@
+[![GitHub version](https://badge.fury.io/gh/creynders%2Fdijon.png)](http://badge.fury.io/gh/creynders%2Fdijon)
+
 # DIJON FRAMEWORK
 
 Dijon is an IOC and DI micro-framework for Javascript. Originally it was meant to be a port of Robotlegs,
