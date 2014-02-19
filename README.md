@@ -139,5 +139,5 @@ system.injectInto( foo );
 ```
 
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/creynders/dijon/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/creynders/dijon/trend.png)](https://bitdeli.com/free "Bitdeli Badge")[![Analytics](https://ga-beacon.appspot.com/UA-12080113-4/dijon/README.md)](https://github.com/igrigorik/ga-beacon)
 
