@@ -374,8 +374,8 @@
 						}
 					}
 				}
-				if ( "setup" in instance ) {
-					instance.setup.call( instance );
+				if ( this.postInjectionHook in instance ) {
+					instance[ this.postInjectionHook ].call( instance );
 				}
 			}
             return this;

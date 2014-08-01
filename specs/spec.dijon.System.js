@@ -54,6 +54,17 @@ describe( "dijon.System", function(){
         it('should throw an error when trying to retrieve unmapped',function(){
             expect(function(){system.getObject(keyA)}).toThrow('no mapping found for this key');
         });
+        it('should call the post injection hook', function(){
+            var called = false;
+            var singleton = function(){};
+            singleton.prototype.setupSpy = function(){
+                called = true;
+            };
+            system.postInjectionHook = 'setupSpy';
+            system.mapSingleton('postInjectionHookTest', singleton );
+            system.instantiate('postInjectionHookTest');
+            expect(called ).toBeTruthy();
+        });
     });
     describe('a mapped singleton',function(){
         beforeEach( function(){
