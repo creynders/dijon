@@ -72,5 +72,4 @@ module.exports = function(grunt){
 	grunt.registerTask('test', ['jasmine:source']);
 	grunt.registerTask('build', ['version', 'test', 'clean:dist', 'concat', 'uglify']);
 	grunt.registerTask('docs', ['jsdoc']);
-	grunt.registerTask('travis', ['jshint', 'jasmine']);
 };
