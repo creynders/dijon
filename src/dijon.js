@@ -137,7 +137,7 @@
             if( this._mappings.hasOwnProperty( key ) ){
                 var config = this._mappings[ key ];
                 if( !overrideRules && config.isSingleton ){
-                    if( config.object == null ){
+                    if( config.object === null ){
                         config.object = this._createAndSetupInstance( key, config.clazz );
                     }
                     output = config.object;

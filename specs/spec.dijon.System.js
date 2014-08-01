@@ -15,7 +15,7 @@ describe( "dijon.System", function(){
         this.callback = undefined;
         this.setup = function(){
             this.callback && this.callback.call( this, this );
-        }
+        };
     }
 
     function SupportClassB(){
@@ -53,7 +53,7 @@ describe( "dijon.System", function(){
         } );
         it( 'should throw an error when trying to retrieve unmapped', function(){
             expect( function(){
-                system.getObject( keyA )
+                system.getObject( keyA );
             } ).toThrow( 'no mapping found for this key' );
         } );
         it( 'should call the post injection hook', function(){
