@@ -1,4 +1,4 @@
-# DIJON FRAMEWORK
+# DIJON FRAMEWORK [![GitHub version](https://badge.fury.io/gh/creynders%2Fdijon.png)](http://badge.fury.io/gh/creynders%2Fdijon)
 
 Dijon is an IOC and DI micro-framework for Javascript. Originally it was meant to be a port of Robotlegs,
 but deviated to something quite different. It remains however heavily inspired by Robotlegs, and more specifically
@@ -27,7 +27,7 @@ info [at] creynders [dot] be
 
 ## Resources
 
-[API documentation](http://creynders.github.com/dijon-framework/docs)
+[API documentation](http://creynders.github.com/dijon/docs)
 
 [TodoMVC Demo - source](https://github.com/addyosmani/todomvc/tree/gh-pages/labs/architecture-examples/dijon)
 
@@ -135,3 +135,7 @@ var foo = {};
 system.injectInto( foo );
 //foo.someObject now holds a reference to the singleton instance of SomeClass
 ```
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/creynders/dijon/trend.png)](https://bitdeli.com/free "Bitdeli Badge")[![Analytics](https://ga-beacon.appspot.com/UA-12080113-4/dijon/README.md)](https://github.com/igrigorik/ga-beacon)
+
