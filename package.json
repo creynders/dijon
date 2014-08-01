@@ -1,7 +1,7 @@
 {
   "name": "dijon",
   "description": "A DI/IOC micro-framework inspired by robotlegs",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "author": "Camille Reynders (http://www.creynders.be/)",
   "homepage": "http://github.com/creynders/dijon",
   "repository": {
