@@ -16,6 +16,10 @@ Dependency Injection of Javascript Objects N... umm, never found a good fit for 
 
 Dijon is stable to use
 
+## Backbone
+
+If you're looking for DI in Backbone, Dijon got integrated/ported/transmogrified into [Backbone.Geppetto](https://github.com/ModelN/backbone.geppetto)
+It features a few other missing pieces of the Backbone/Marionette puzzle, be sure to check it out.
 
 ## Contact
 
