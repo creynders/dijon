@@ -120,7 +120,7 @@ var foo = {
 system.injectInto( foo );
 //foo.userModel now holds a reference to the UserModel instance
 
-//as long as system.strictInjections is false Dijon will only inject globally mapped objects
+//as long as system.strictInjections is true Dijon will only inject globally mapped objects
 //into members that _have_ a member with the correct name
 //however if we do his
 system.strictInjections = false;
